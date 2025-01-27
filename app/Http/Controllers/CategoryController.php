@@ -5,20 +5,90 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Category;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Storage;
+
 
 
 class CategoryController extends Controller
 {
-    public function store(Request $request)
+
+    public function index()
     {
-        $validated = $request->validate([
-            'add_category' => 'required|string|max:255',
-        ]);
-
-        $category = new Category();
-        $category->category_name = $request->input('add_category');
-        $category->save();
-
-        return redirect()->back()->with('success', 'Category added successfully!');
+        $categories = Category::all();
+        return view('imageupload', compact('categories'));
     }
+
+    public function create()
+    {
+        $categories = Category::all();
+        return view('imageupload', compact('categories'));
+    }
+   
+    public function store(Request $request)
+{
+
+    $request->validate([
+        'category_name' => 'required|string|max:255',
+        'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+    ]);
+
+    $imagePath = null;
+    if ($request->hasFile('image')) {
+        $imagePath = $request->file('image')->store('category_images', 'public');  
+    }
+
+    Category::create([
+        'category_name' => $request->category_name,
+        'image' => $imagePath,  
+    ]);
+
+    $categories = Category::all();
+
+    return redirect()->route('category.create')->with('success', 'Category added successfully!')->with('categories', $categories);
+}
+            public function edit($id)
+            {
+                $category = Category::findOrFail($id);
+                return view('category.editcategory', compact('category'));
+            }
+
+            public function update(Request $request, $id)
+            {
+                $category = Category::findOrFail($id);
+        
+                $request->validate([
+                    'category_name' => 'required|string|max:255',
+                    'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+                ]);
+        
+                $category->category_name = $request->category_name;
+        
+                if ($request->hasFile('image')) {
+                    
+                    if ($category->image) {
+                        Storage::delete('public/' . $category->image);
+                    }
+        
+                    $category->image = $request->file('image')->store('category_images', 'public');
+                }
+        
+                $category->save();
+        
+                return redirect()->route('category.create')->with('success', 'Category updated successfully!');
+            }
+
+            public function destroy($id)
+            {
+                $category = Category::findOrFail($id);
+
+                
+                if ($category->image) {
+                    Storage::delete('public/' . $category->image);
+                }
+
+                $category->delete();
+
+                return redirect()->route('category.create')->with('success', 'Category deleted successfully!');
+            }
+        
 }

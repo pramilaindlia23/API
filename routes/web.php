@@ -19,7 +19,7 @@ use Illuminate\Support\Facades\Auth;
 |
 */
 
-Route::get('/', function () {
+Route::get('/welcome', function () {
     return view('welcome');
 });
 /// register Routes ///
@@ -63,7 +63,17 @@ Route::get('paragraph',function(){
 
 
 
-Route::post('/category', [CategoryController::class, 'store'])->name('category.store');
+Route::get('/create', [CategoryController::class, 'create'])->name('category.create'); 
+
+Route::post('/categories', [CategoryController::class, 'store'])->name('category.store');
+
+Route::get('/categories', [CategoryController::class, 'index'])->name('categories.index');
+
+Route::get('/category/{id}/edit', [CategoryController::class, 'edit'])->name('category.editcategory');
+
+Route::post('/category/{id}/update', [CategoryController::class, 'update'])->name('category.update');
+
+Route::delete('/category/{id}', [CategoryController::class, 'destroy'])->name('category.destroy');
 
 
 

@@ -9,7 +9,7 @@ class Image extends Model
 {
     use HasFactory;
     protected $fillable = [
-        'add_category', 'file_path', 'mime_type', 'file_size','category_name'
+        'add_category', 'file_path', 'mime_type', 'file_size','category_name','category_id'
     ];
     public function category()
     {
