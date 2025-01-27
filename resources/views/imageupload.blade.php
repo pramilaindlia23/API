@@ -14,15 +14,22 @@
             <div class="alert alert-success">{{ session('success') }}</div>
         @endif
 
-        <form action="{{ route('category.store') }}" method="POST" enctype="multipart/form-data">
+        <form action="{{ route('category.store') }}" method="POST">
             @csrf
-        
             <div class="mb-3">
                 <label for="category_name" class="form-label">Category Name</label>
                 <input type="text" class="form-control" id="category_name" name="category_name" required>
             </div>
-        
+            <button type="submit" class="btn btn-primary">Add Category</button>
+        </form>
+
+        <h3 class="mt-5">Upload Image for Category</h3>
+
+        <!-- Image upload form -->
+        <form action="{{ route('uploadImage') }}" method="POST" enctype="multipart/form-data">
+            @csrf
             <div class="mb-3">
+                <label for="category_id" class="form-label">Select Category</label>
                 <select class="form-select" id="category_id" name="category_id" required>
                     <option value="" disabled selected>Select a category</option>
                     @foreach($categories as $category)
@@ -30,13 +37,13 @@
                     @endforeach
                 </select>
             </div>
-        
+
             <div class="mb-3">
                 <label for="image" class="form-label">Category Image</label>
-                <input type="file" class="form-control" id="image" name="image" accept="image/*">
+                <input type="file" class="form-control" id="image" name="image" accept="image/*" required>
             </div>
-        
-            <button type="submit" class="btn btn-primary">Add Category</button>
+
+            <button type="submit" class="btn btn-primary">Upload Image</button>
         </form>
         <h2>Categories</h2>
 
@@ -47,7 +54,7 @@
         <a href="{{ route('category.create') }}" class="btn btn-primary mb-3">Add New Category</a>
 
         <table class="table">
-            <thead>
+            <thead class="card-body">
                 <tr>
                     <th>#</th>
                     <th>Category Name</th>

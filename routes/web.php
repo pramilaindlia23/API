@@ -63,11 +63,13 @@ Route::get('paragraph',function(){
 
 
 
-Route::get('/create', [CategoryController::class, 'create'])->name('category.create'); 
+Route::get('/create', [CategoryController::class, 'create'])->name('category.create');
 
 Route::post('/categories', [CategoryController::class, 'store'])->name('category.store');
 
 Route::get('/categories', [CategoryController::class, 'index'])->name('categories.index');
+Route::post('/upload-image', [CategoryController::class, 'uploadImage'])->name('uploadImage');
+
 
 Route::get('/category/{id}/edit', [CategoryController::class, 'edit'])->name('category.editcategory');
 

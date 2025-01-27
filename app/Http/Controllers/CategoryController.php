@@ -12,11 +12,7 @@ use Illuminate\Support\Facades\Storage;
 class CategoryController extends Controller
 {
 
-    public function index()
-    {
-        $categories = Category::all();
-        return view('imageupload', compact('categories'));
-    }
+    
 
     public function create()
     {
@@ -25,27 +21,34 @@ class CategoryController extends Controller
     }
    
     public function store(Request $request)
-{
+    {
+        $request->validate([
+            'category_name' => 'required|string|max:255',
+        ]);
 
-    $request->validate([
-        'category_name' => 'required|string|max:255',
-        'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-    ]);
+        $category = Category::create([
+            'category_name' => $request->category_name,
+        ]);
 
-    $imagePath = null;
-    if ($request->hasFile('image')) {
-        $imagePath = $request->file('image')->store('category_images', 'public');  
+        return redirect()->route('category.create')->with('success', 'Category added successfully!');
     }
+    public function uploadImage(Request $request)
+    {
+        $request->validate([
+            'category_id' => 'required|exists:categories,id',
+            'image' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
+        ]);
 
-    Category::create([
-        'category_name' => $request->category_name,
-        'image' => $imagePath,  
-    ]);
+        $category = Category::find($request->category_id);
 
-    $categories = Category::all();
+      
+        $imagePath = $request->file('image')->store('category_images', 'public');
 
-    return redirect()->route('category.create')->with('success', 'Category added successfully!')->with('categories', $categories);
-}
+       
+        $category->update(['image' => $imagePath]);
+
+        return redirect()->route('category.create')->with('success', 'Image uploaded successfully!');
+    }
             public function edit($id)
             {
                 $category = Category::findOrFail($id);
