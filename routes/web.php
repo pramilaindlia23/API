@@ -22,19 +22,24 @@ use Illuminate\Support\Facades\Auth;
 Route::get('/welcome', function () {
     return view('welcome');
 });
+
 /// register Routes ///
 Route::get('register',[UserController::class,'show'])->name('register');
 Route::post('/register', [UserController::class, 'register']);
+
 /// Login Routes ///
 Route::get('login', [UserController::class, 'showlogin'])->name('login');
 Route::post('login', [UserController::class, 'login']);
+
 /// Dashboard Routes ///
 Route::get('dashboard',[UserController::class,'dashboard'])->name('dashboard');
 Route::middleware('auth')->get('/dashboard', [UserController::class, 'dashboard'])->name('dashboard');
+
 /// Users Routes ///
 Route::get('userlist',function(){
     return view('userlist');
 });
+
 Route::get('/userlist', [UserController::class, 'index'])->name('userlist');
 Route::get('/users', action: [UserController::class, 'index'])->name('users.index');
 Route::get('/users/{id}/edit', [UserController::class, 'edit'])->name('users.edit');
@@ -62,6 +67,7 @@ Route::get('paragraph',function(){
 })->name('paragraphupload');
 
 
+/// Category Route ///
 
 Route::get('/create', [CategoryController::class, 'create'])->name('category.create');
 

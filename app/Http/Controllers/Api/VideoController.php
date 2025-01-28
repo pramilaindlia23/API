@@ -15,53 +15,34 @@ class VideoController extends Controller
 {
     public function upload(Request $request)
     {
-        $validator = Validator::make($request->all(), [
+        $validated = $request->validate([
             'title' => 'required|string|max:255',
-            'video' => 'required|file|mimes:mp4,avi,mkv|max:10240', 
+            'category_id' => 'required|exists:video_cats,id', // Ensure category exists
+            'video' => 'required|file|mimes:mp4,avi,mkv|max:10240', // Max file size of 10MB
         ]);
 
-        if ($validator->fails()) {
-            return response()->json([
-                'message' => 'Validation failed',
-                'errors' => $validator->errors(),
-            ], Response::HTTP_BAD_REQUEST);
-        }
-
+        // Store the video file
         $videoFile = $request->file('video');
         $videoName = time() . '_' . $videoFile->getClientOriginalName();
         $filePath = $videoFile->storeAs('videos', $videoName, 'public');
 
+        // Create a new video record in the database
         $video = Video::create([
-            'title' => $request->title,
+            'title' => $validated['title'],
+            'category_id' => $validated['category_id'],
             'file_path' => $filePath,
             'mime_type' => $videoFile->getClientMimeType(),
             'file_size' => $videoFile->getSize(),
         ]);
 
-        return response()->json([
-            'message' => 'Video uploaded successfully',
-            'video' => $video,
-        ], Response::HTTP_CREATED);
+        return response()->json(['message' => 'Video uploaded successfully!', 'video' => $video], 201);
     }
 
-    public function show($id)
+    public function index()
     {
-        $video = Video::find($id);
-
-        if (!$video) {
-            return response()->json([
-                'message' => 'Video not found',
-            ], Response::HTTP_NOT_FOUND);
-        }
-
-        return response()->json($video);
+        $videos = Video::with('category')->get(); // Include category data with the video
+        return response()->json($videos);
     }
-
-public function index()
-{
-    $videos = Video::all();
-
-    return response()->json($videos);
-}
+    
 
 }

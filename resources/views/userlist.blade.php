@@ -34,11 +34,14 @@
                 <div class="container-fluid">
 
                     <!-- User List Table -->
-                    <div class="container mt-5">
-                        <h1 class="text-center mb-4">List of Users</h1>
-                    
+                    <div class="container mt-2">
+                            <h1 class="card-body text-center mb-4">List of Users</h1>
+                        </div>
+                        
+                        <a href="{{ route('register') }}" class="btn btn-success float-right ml-3">Add a new User</a>
+
                         <!-- Table -->
-                        <table class="table table-bordered table-striped">
+                        <table class=" card-body table table-bordered table-striped">
                             <thead class="thead-dark">
                                 <tr>
                                     <th>#</th>

@@ -8,7 +8,10 @@ use Illuminate\Database\Eloquent\Model;
 class Video extends Model
 {
     use HasFactory;
-    protected $fillable = [
-        'title', 'file_path', 'mime_type', 'file_size'
-    ];
+    protected $fillable = ['title', 'category_id', 'file_path', 'mime_type', 'file_size'];
+
+    public function category()
+    {
+        return $this->belongsTo(VideoCat::class);
+    }
 }

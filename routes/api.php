@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\VideoController;
 use App\Http\Controllers\Api\ImageController;
 use App\Http\Controllers\Api\ParagraphController;
+use App\Http\Controllers\VideoCatController;
 
 /*
 |--------------------------------------------------------------------------
@@ -22,8 +23,8 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 //// videos routes /////
 Route::post('upload-video', [VideoController::class, 'upload']);
-Route::get('video/{id}', [VideoController::class, 'show']);
 Route::get('video-list', [VideoController::class, 'index']);
+Route::get('video/{id}', [VideoController::class, 'show']);
 
 ///// images routes /////
 
@@ -39,4 +40,10 @@ Route::get('paragraph{id}',[ParagraphController::class,'showparagraph']);
 Route::get('paragraphs', [ParagraphController::class, 'index']); 
 
 
-Route::get('/categories', [ImageController::class, 'getCategories']);
+// api.php
+
+Route::post('videocategory', [VideoCatController::class, 'store']); // Create category
+Route::get('categories', [VideoCatController::class, 'index']);
+
+// Route::post('upload-video', [VideoController::class, 'upload']); // Video upload route
+Route::get('videos', [VideoController::class, 'index']);

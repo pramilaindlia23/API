@@ -66,31 +66,12 @@
                 <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
                     <div class="bg-white py-2 collapse-inner rounded">
                         <h6 class="collapse-header">Custom Components:</h6>
-                        <a class="collapse-item" href="{{ route('imageupload') }}">Images</a>
+                        <a class="collapse-item" href="{{ route('category.create') }}">Images</a>
                         <a class="collapse-item" href="{{ route('videoupload') }}">Videos</a>
-                        <a class="collapse-item" href="{{ route('paragraphupload') }}">Paragraph</a>
+                        <a class="collapse-item" href="{{ route('paragraphupload') }}">Add |Text</a>
                     </div>
                 </div>
                 
-            </li>
-
-            <!-- Nav Item - Utilities Collapse Menu -->
-            <li class="nav-item">
-                <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseUtilities"
-                    aria-expanded="true" aria-controls="collapseUtilities">
-                    <i class="fas fa-fw fa-wrench"></i>
-                    <span>Utilities</span>
-                </a>
-                <div id="collapseUtilities" class="collapse" aria-labelledby="headingUtilities"
-                    data-parent="#accordionSidebar">
-                    <div class="bg-white py-2 collapse-inner rounded">
-                        <h6 class="collapse-header">Custom Utilities:</h6>
-                        <a class="collapse-item" href="utilities-color.html">Colors</a>
-                        <a class="collapse-item" href="utilities-border.html">Borders</a>
-                        <a class="collapse-item" href="utilities-animation.html">Animations</a>
-                        <a class="collapse-item" href="utilities-other.html">Other</a>
-                    </div>
-                </div>
             </li>
 
             <!-- Divider -->
@@ -115,9 +96,6 @@
                         <a class="collapse-item" href="{{ route(name: 'register') }}">Register</a>
                         <a class="collapse-item" href="{{ route(name: 'userlist') }}">userlist</a>
                         <div class="collapse-divider"></div>
-                        <h6 class="collapse-header">Other Pages:</h6>
-                        <a class="collapse-item" href="404.html">404 Page</a>
-                        <a class="collapse-item" href="blank.html">Blank Page</a>
                     </div>
                 </div>
             </li>
@@ -127,8 +105,6 @@
                     <span>User List</span>
                 </a>
             </li>
-
-            
 
         </ul>
         <!-- End of Sidebar -->
@@ -291,7 +267,7 @@
                                 </a>
                                 <a class="dropdown-item d-flex align-items-center" href="#">
                                     <div class="dropdown-list-image mr-3">
-                                        <img class="rounded-circle" src="assets/https://source.unsplash.com/Mv9hjnEUHR4/60x60"
+                                        <img class="rounded-circle" src="https://source.unsplash.com/Mv9hjnEUHR4/60x60"
                                             alt="...">
                                         <div class="status-indicator bg-success"></div>
                                     </div>
@@ -313,7 +289,7 @@
                                 @if(Auth::check())
                                     <span class="mr-2 d-none d-lg-inline text-dark h4">{{ Auth::user()->name }}</span>
                                     <img class="img-profile rounded-circle" 
-                                         src="{{ Auth::user()->profile_picture ? asset('storage/' . Auth::user()->profile_picture) : asset('img/undraw_profile.svg') }}">
+                                         src="{{ Auth::user()->profile_picture ? asset('storage/' . Auth::user()->profile_picture) : asset('assets/img/undraw_profile.svg') }}">
                                 @endif
                             </a>
                             <!-- Dropdown - User Information -->

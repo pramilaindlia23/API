@@ -11,13 +11,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('videos', function (Blueprint $table) {
+        Schema::create('videocategory', function (Blueprint $table) {
             $table->id();
-            $table->string('title');
-            $table->foreignId('category_id')->constrained('video_cats')->onDelete('cascade');
-            $table->string('file_path');
-            $table->string('mime_type');
-            $table->bigInteger('file_size');
+            $table->string('category_name'); // Make sure this matches your column name
             $table->timestamps();
         });
     }
@@ -27,6 +23,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('videos');
+        Schema::dropIfExists('videocategory');
     }
 };
