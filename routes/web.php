@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\ImageController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\VideoController;
 
 use Illuminate\Support\Facades\Auth;
 
@@ -83,7 +84,8 @@ Route::post('/category/{id}/update', [CategoryController::class, 'update'])->nam
 
 Route::delete('/category/{id}', [CategoryController::class, 'destroy'])->name('category.destroy');
 
-
+Route::get('/video/edit/{id}', [VideoController::class, 'edit'])->name('videos.edit');
+Route::put('/video/update/{id}', [VideoController::class, 'update'])->name('videos.update');
 
 
 
