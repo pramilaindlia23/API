@@ -100,4 +100,8 @@ Route::get('/', [ProductController::class, 'index'])->name('product.index');
 Route::get('/product/create', [ProductController::class, 'create'])->name('products.create');
 Route::post('/product/store', [ProductController::class, 'store'])->name('product.store');
 
+// product //
+Route::get('/products', function () {
+    return view('products.index');
+});
 

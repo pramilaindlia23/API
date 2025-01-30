@@ -5,13 +5,13 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Product;
 
-
 class ProductController extends Controller
 {
     public function index()
     {
         $products = Product::all();
-        return view('products.index', compact('products'));
+
+        return response()->json($products);
     }
 
     public function create()
@@ -21,7 +21,7 @@ class ProductController extends Controller
 
     public function store(Request $request)
     {
-        // Validate the input
+        
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'price' => 'required|numeric',
@@ -34,7 +34,7 @@ class ProductController extends Controller
             $imagePath = $request->file('image')->store('images/products', 'public');
         }
 
-        // Create a new product in the database
+       
         Product::create([
             'name' => $validated['name'],
             'price' => $validated['price'],

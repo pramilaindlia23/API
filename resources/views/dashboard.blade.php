@@ -68,7 +68,8 @@
                         <h6 class="collapse-header">Custom Components:</h6>
                         <a class="collapse-item" href="{{ route('category.create') }}">Images</a>
                         <a class="collapse-item" href="{{ route('videoupload') }}">Videos</a>
-                        <a class="collapse-item" href="{{ route('paragraphupload') }}">Add |Text</a>
+                        <a class="collapse-item" href="{{ route('paragraphupload') }}">Incoming Events</a>
+                        <a class="collapse-item" href="{{ route('paragraphupload') }}">Audios</a>
                     </div>
                 </div>
                 

@@ -6,6 +6,7 @@ use App\Http\Controllers\VideoController;
 use App\Http\Controllers\Api\ImageController;
 use App\Http\Controllers\Api\ParagraphController;
 use App\Http\Controllers\VideoCatController;
+use App\Http\Controllers\ProductController;
 
 /*
 |--------------------------------------------------------------------------
@@ -50,6 +51,10 @@ Route::delete('paragraphs/{id}', [ParagraphController::class, 'destroy']);
 
 Route::post('videocategory', [VideoCatController::class, 'store']); 
 Route::get('categories', [VideoCatController::class, 'index']);
+
+//products //
+Route::get('/products', [ProductController::class, 'index']);
+
 
 
 
