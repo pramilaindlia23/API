@@ -5,6 +5,9 @@ use App\Http\Controllers\Api\ImageController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\VideoController;
+use App\Http\Controllers\CartController;
+use App\Http\Controllers\ProductController;
+
 
 use Illuminate\Support\Facades\Auth;
 
@@ -87,5 +90,14 @@ Route::delete('/category/{id}', [CategoryController::class, 'destroy'])->name('c
 Route::get('/video/edit/{id}', [VideoController::class, 'edit'])->name('videos.edit');
 Route::put('/video/update/{id}', [VideoController::class, 'update'])->name('videos.update');
 
+
+Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
+Route::post('/cart/add/{id}', [CartController::class, 'add'])->name('cart.add');
+Route::post('/cart/remove/{id}', [CartController::class, 'remove'])->name('cart.remove');
+Route::post('/cart/update/{id}', [CartController::class, 'update'])->name('cart.update');
+
+Route::get('/', [ProductController::class, 'index'])->name('product.index');
+Route::get('/product/create', [ProductController::class, 'create'])->name('products.create');
+Route::post('/product/store', [ProductController::class, 'store'])->name('product.store');
 
 
