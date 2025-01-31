@@ -14,8 +14,7 @@ return new class extends Migration
         Schema::create('reels', function (Blueprint $table) {
             $table->id();
             $table->string('filename');
-            $table->string('path');
-            $table->integer('duration')->nullable();
+            $table->string('reel');
             $table->timestamps();
         });
     }

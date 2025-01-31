@@ -22,12 +22,12 @@
     
     @include('dashboard.header')
 <div class="container mt-5">
-    <h1 class="text-center mb-4">Upload Paragraph</h1>
+    <h1 class="text-center mb-4">Upload Text</h1>
 
     <!-- Paragraph Upload Form in a Bootstrap Card -->
     <div class="card shadow-sm mx-auto" style="max-width: 500px;">
         <div class="card-header bg-primary text-white text-center">
-            <h4>Upload New Paragraph</h4>
+            <h4>Upload New Text</h4>
         </div>
         <div class="card-body">
             <form id="upload-form">
@@ -38,11 +38,11 @@
                 </div>
 
                 <div class="mb-3">
-                    <label for="content" class="form-label">Paragraph</label>
+                    <label for="content" class="form-label">Text</label>
                     <textarea class="form-control" id="content" name="content" rows="5" required></textarea>
                 </div>
 
-                <button type="submit" class="btn btn-primary w-100">Upload Paragraph</button>
+                <button type="submit" class="btn btn-primary w-100">Upload Text</button>
             </form>
         </div>
     </div>
@@ -71,7 +71,7 @@
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title" id="editParagraphModalLabel">Edit Paragraph</h5>
+          <h5 class="modal-title" id="editParagraphModalLabel">Edit Text</h5>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
@@ -85,9 +85,9 @@
               <div class="mb-3">
                   <label for="edit-content" class="form-label">Content</label>
                   <textarea class="form-control" id="edit-content" rows="5" required></textarea>
-              </div>
+              </div>    
   
-              <button type="submit" class="btn btn-primary w-100">Update Paragraph</button>
+              <button type="submit" class="btn btn-primary w-100">Update Text</button>
           </form>
         </div>
       </div>

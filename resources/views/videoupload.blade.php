@@ -105,7 +105,7 @@
             e.preventDefault();
 
             const categoryName = document.getElementById('category_name').value;
-            fetch('http://127.0.0.1:8000/api/videocategory', {
+            fetch('api/videocategory', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -132,7 +132,7 @@
 
             const formData = new FormData(uploadForm);
 
-            fetch('http://127.0.0.1:8000/api/upload-video', {
+            fetch('api/upload-video', {
                 method: 'POST',
                 body: formData,
             })
@@ -154,7 +154,7 @@
 
         // Fetch and display videos
         function loadVideos() {
-            fetch('http://127.0.0.1:8000/api/videos')
+            fetch('api/videos')
                 .then(response => response.json())
                 .then(videos => {
                     const videoList = document.getElementById('video-list');
@@ -193,7 +193,7 @@
         // Delete video
         function deleteVideo(videoId) {
             if (confirm('Are you sure you want to delete this video?')) {
-                fetch(`http://127.0.0.1:8000/api/video/${videoId}`, {
+                fetch(`api/video/${videoId}`, {
                     method: 'DELETE',
                 })
                 .then(response => response.json())
@@ -207,7 +207,7 @@
 
         // Fetch categories for the upload form
         function fetchCategories() {
-            fetch('http://127.0.0.1:8000/api/categories')
+            fetch('api/categories')
                 .then(response => response.json())
                 .then(categories => {
                     const categorySelect = document.getElementById('category_id');

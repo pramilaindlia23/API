@@ -10,7 +10,6 @@ class Reel extends Model
     use HasFactory;
     protected $fillable = [
         'filename',
-        'path',
-        'duration',
+        'reel',
     ];
 }

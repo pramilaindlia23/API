@@ -65,9 +65,22 @@ Route::get('audio/{id}', [AudioController::class, 'show']);
 Route::get('audio/play/{filename}', [AudioController::class, 'play']);
 
 //Reels //
-Route::post('reels', [ReelController::class, 'store']);  // Upload video
-Route::get('reels', [ReelController::class, 'index']);  // List all reels
-Route::get('reels/{id}', [ReelController::class, 'show']);
+
+Route::post('/reels', [ReelController::class, 'upload']);
+
+
+Route::get('/reels', [ReelController::class, 'index']);
+
+
+Route::get('/reels/{id}', [ReelController::class, 'show']);
+
+
+Route::put('/reels/{id}', [ReelController::class, 'update']);   
+
+Route::delete('/reels/{id}', [ReelController::class, 'destroy']);
+
+
+
 
 
 

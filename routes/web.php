@@ -7,6 +7,7 @@ use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\VideoController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\ProductController;
+use App\Http\Controllers\ReelController;
 
 
 use Illuminate\Support\Facades\Auth;
@@ -109,7 +110,9 @@ Route::get('/products', function () {
 Route::view('audio/upload', 'audio.audioupload')->name('audio/upload');
 
 //reels //
-Route::view('reels/upload', 'reels.reel')->name('reels/upload');
+Route::post('/reels', [ReelController::class, 'store'])->name('reels.store');
+Route::get('/get/reels', [ReelController::class, 'index']);
+
 
 
 
