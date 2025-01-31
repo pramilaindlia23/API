@@ -7,6 +7,9 @@ use App\Http\Controllers\Api\ImageController;
 use App\Http\Controllers\Api\ParagraphController;
 use App\Http\Controllers\VideoCatController;
 use App\Http\Controllers\ProductController;
+use App\Http\Controllers\AudioController;
+use App\Http\Controllers\ReelController;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -54,6 +57,17 @@ Route::get('categories', [VideoCatController::class, 'index']);
 
 //products //
 Route::get('/products', [ProductController::class, 'index']);
+
+// audio //
+Route::post('audio', [AudioController::class, 'store']); 
+Route::get('audio', [AudioController::class, 'index']);
+Route::get('audio/{id}', [AudioController::class, 'show']); 
+Route::get('audio/play/{filename}', [AudioController::class, 'play']);
+
+//Reels //
+Route::post('reels', [ReelController::class, 'store']);  // Upload video
+Route::get('reels', [ReelController::class, 'index']);  // List all reels
+Route::get('reels/{id}', [ReelController::class, 'show']);
 
 
 

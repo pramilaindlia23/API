@@ -69,7 +69,7 @@
                         <a class="collapse-item" href="{{ route('category.create') }}">Images</a>
                         <a class="collapse-item" href="{{ route('videoupload') }}">Videos</a>
                         <a class="collapse-item" href="{{ route('paragraphupload') }}">Incoming Events</a>
-                        <a class="collapse-item" href="{{ route('paragraphupload') }}">Audios</a>
+                        <a class="collapse-item" href="{{ route('audio/upload') }}">Audios</a>
                     </div>
                 </div>
                 
