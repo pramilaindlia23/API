@@ -70,6 +70,9 @@
                         <a class="collapse-item" href="{{ route('videoupload') }}">Videos</a>
                         <a class="collapse-item" href="{{ route('paragraphupload') }}">Upcoming Events</a>
                         <a class="collapse-item" href="{{ route('audio/upload') }}">Audios</a>
+                        
+                        {{-- <a class="collapse-item" href="{{ route('upload-reel') }}">Reels</a> --}}
+
                     </div>
                 </div>
                 

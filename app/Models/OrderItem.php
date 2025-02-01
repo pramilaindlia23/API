@@ -5,11 +5,10 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Reel extends Model
+class OrderItem extends Model
 {
     use HasFactory;
     protected $fillable = [
-        'filename',
-        'path',
+        'order_id', 'product_id', 'quantity', 'price'
     ];
 }

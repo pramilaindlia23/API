@@ -15,35 +15,28 @@ class CartController extends Controller
         return view('cart.index', compact('cart'));
     }
 
-    public function add(Request $request, $id)
-    {
-        $product = Product::find($id);
+    public function add($id)
+{
+    
+    $product = Product::findOrFail($id);
 
-        if (!$product) {
-            return redirect()->back()->with('error', 'Product not found.');
-        }
-
-        $cart = session()->get('cart', []);
-
-        // If product exists, increase quantity
-        if (isset($cart[$id])) {
-            $cart[$id]['quantity']++;
-        } else {
-            // Add new product to cart
-            $cart[$id] = [
-                'name' => $product->name,
-                'quantity' => 1,
-                'price' => $product->price,
-                'image' => $product->image,
-            ];
-        }
-
-        // Save cart to session
-        session()->put('cart', $cart);
-
-        return redirect()->route('cart.index')->with('success', 'Product added to cart!');
+    $cart = session()->get('cart', []);
+    
+    if (isset($cart[$id])) {
+        $cart[$id]['quantity']++;
+    } else {
+        $cart[$id] = [
+            'name' => $product->name,
+            'price' => $product->price,
+            'quantity' => 1,
+            'image' => $product->image,
+        ];
     }
 
+    session()->put('cart', $cart);
+
+    return response()->json(['message' => 'Product added to cart successfully!', 'cart' => $cart]);
+}
     // Remove item from the cart
     public function remove($id)
     {

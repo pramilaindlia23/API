@@ -8,6 +8,8 @@ use App\Http\Controllers\VideoController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ReelController;
+use App\Http\Controllers\CheckoutController;
+
 
 
 use Illuminate\Support\Facades\Auth;
@@ -92,10 +94,11 @@ Route::get('/video/edit/{id}', [VideoController::class, 'edit'])->name('videos.e
 Route::put('/video/update/{id}', [VideoController::class, 'update'])->name('videos.update');
                
 
-Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
 Route::post('/cart/add/{id}', [CartController::class, 'add'])->name('cart.add');
+Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
 Route::post('/cart/remove/{id}', [CartController::class, 'remove'])->name('cart.remove');
 Route::post('/cart/update/{id}', [CartController::class, 'update'])->name('cart.update');
+
 
 Route::get('/products', [ProductController::class, 'index'])->name('product.index');
 Route::get('/product/create', [ProductController::class, 'create'])->name('products.create');
@@ -110,8 +113,20 @@ Route::get('/products', function () {
 Route::view('audio/upload', 'audio.audioupload')->name('audio/upload');
 
 //reels //
-Route::post('/reels', [ReelController::class, 'store'])->name('reels.store');
-Route::get('/get/reels', [ReelController::class, 'index']);
+
+// Route::get('/upload-reel',function(){
+//     return view('reels.reel')->name('/upload-reel');
+// });
+// Display the form (GET request)
+Route::view('upload-reel', 'reels.reel')->name('upload-reel');
+Route::post('upload-reel', [ReelController::class, 'upload'])->name('upload.reel');
+
+// checkout //
+Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout.index');
+Route::post('/checkout', [CheckoutController::class, 'store'])->name('checkout.store');
+
+
+// Route::get('/order/{order}', [OrderController::class, 'show'])->name('order.show');
 
 
 

@@ -19,19 +19,13 @@
     <!-- Add Axios CDN -->
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <script>
-       
         document.addEventListener('DOMContentLoaded', function() {
             axios.get('/api/products') 
                 .then(function(response) {
-                   
                     const products = response.data;
-
-                   
                     const container = document.getElementById('products-container');
-
-                  
+    
                     products.forEach(function(product) {
-                      
                         const productCard = `
                             <div class="col">
                                 <div class="card h-100 shadow-sm border-light rounded">
@@ -42,14 +36,31 @@
                                         <p class="card-text text-muted">$${product.price}</p>
                                     </div>
                                     <div class="card-footer text-center">
-                                        <button class="btn btn-primary w-100">Add to Cart</button>
+                                        <button class="btn btn-primary w-100 add-to-cart" data-id="${product.id}">Add to Cart</button>
                                     </div>
                                 </div>
                             </div>
                         `;
-
                         
                         container.innerHTML += productCard;
+                    });
+    
+                    // Add event listener to 'Add to Cart' buttons
+                    const addToCartButtons = document.querySelectorAll('.add-to-cart');
+                    addToCartButtons.forEach(function(button) {
+                        button.addEventListener('click', function() {
+                            const productId = button.getAttribute('data-id');
+    
+                            // Send the request to add the product to the cart
+                            axios.post(`/cart/add/${productId}`)
+                                .then(function(response) {
+                                    alert(response.data.message); // Show success message
+                                })
+                                .catch(function(error) {
+                                    console.error('Error adding product to cart:', error);
+                                    alert('There was an error adding the product to your cart.');
+                                });
+                        });
                     });
                 })
                 .catch(function(error) {
@@ -57,6 +68,7 @@
                 });
         });
     </script>
+    
 
 </body>
 </html>
