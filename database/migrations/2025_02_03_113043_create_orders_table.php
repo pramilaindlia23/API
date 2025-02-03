@@ -13,14 +13,15 @@ return new class extends Migration
     {
         Schema::create('orders', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained()->onDelete('cascade');
+            
+            $table->unsignedBigInteger('user_id')->nullable();  // Nullable for guest orders
             $table->string('name');
             $table->string('email');
             $table->text('address');
             $table->string('city');
             $table->string('zip');
-            $table->decimal('total', 10, 2);
-            $table->enum('status', ['pending', 'completed', 'cancelled'])->default('pending');
+            $table->decimal('total', 8, 2);  // Total price
+            $table->string('status')->default('pending'); 
             $table->timestamps();
         });
     }

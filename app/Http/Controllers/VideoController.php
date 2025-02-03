@@ -17,7 +17,7 @@ class VideoController extends Controller
         $validated = $request->validate([
             'title' => 'required|string|max:255',
             'category_id' => 'required|exists:videocategory,id',
-            'video' => 'required|mimes:mp4,avi,mkv|max:200000', 
+            'video' => 'required|mimes:mp4,3gp,mp3,avi,mkv|max:200000', 
         ]);
 
         

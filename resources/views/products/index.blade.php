@@ -54,7 +54,7 @@
                             // Send the request to add the product to the cart
                             axios.post(`/cart/add/${productId}`)
                                 .then(function(response) {
-                                    alert(response.data.message); // Show success message
+                                    alert(response.data.message); 
                                 })
                                 .catch(function(error) {
                                     console.error('Error adding product to cart:', error);
@@ -66,6 +66,7 @@
                 .catch(function(error) {
                     console.error('There was an error fetching the products:', error);
                 });
+                
         });
     </script>
     

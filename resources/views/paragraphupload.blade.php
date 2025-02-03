@@ -137,7 +137,7 @@
         e.preventDefault();
 
         const formData = new FormData(form);
-        fetch('http://127.0.0.1:8000/api/paragraph', {  
+        fetch('api/paragraph', {  
             method: 'POST',
             body: formData, 
         })
@@ -157,7 +157,7 @@
 
     //  the edit form in a modal //
     function editParagraph(id) {
-        fetch(`http://127.0.0.1:8000/api/paragraphs/${id}`)
+        fetch(`api/paragraphs/${id}`)
             .then(response => response.json())
             .then(paragraph => {
                 document.getElementById('edit-paragraph-id').value = paragraph.id;
@@ -178,7 +178,7 @@
         const updatedTitle = document.getElementById('edit-title').value;
         const updatedContent = document.getElementById('edit-content').value;
 
-        fetch(`http://127.0.0.1:8000/api/paragraphs/${paragraphId}`, {
+        fetch(`api/paragraphs/${paragraphId}`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',

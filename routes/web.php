@@ -126,7 +126,11 @@ Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout.in
 Route::post('/checkout', [CheckoutController::class, 'store'])->name('checkout.store');
 
 
-// Route::get('/order/{order}', [OrderController::class, 'show'])->name('order.show');
+// Route::get('/order/confirmation/{order}', [OrderController::class, 'confirmation'])->name('order.confirmation');
+
+Route::get('/checkout/success', function () {
+    return view('checkout.success');
+})->name('checkout.success');
 
 
 
