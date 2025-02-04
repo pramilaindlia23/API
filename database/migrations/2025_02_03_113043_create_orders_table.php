@@ -20,6 +20,7 @@ return new class extends Migration
             $table->text('address');
             $table->string('city');
             $table->string('zip');
+            $table->string('discount_code')->nullable();
             $table->decimal('total', 8, 2);  // Total price
             $table->string('status')->default('pending'); 
             $table->timestamps();

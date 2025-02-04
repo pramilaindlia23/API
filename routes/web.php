@@ -26,7 +26,7 @@ use Illuminate\Support\Facades\Auth;
 |
 */
 
-Route::get('/', function () {
+Route::get('/home', function () {
     return view('welcome');
 });
 
@@ -122,15 +122,22 @@ Route::view('upload-reel', 'reels.reel')->name('upload-reel');
 Route::post('upload-reel', [ReelController::class, 'upload'])->name('upload.reel');
 
 // checkout //
-Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout.index');
-Route::post('/checkout', [CheckoutController::class, 'store'])->name('checkout.store');
+Route::prefix('checkout')->group(function () {
+    Route::get('/', [CheckoutController::class, 'index'])->name('checkout.index');
+    
+    Route::post('/', [CheckoutController::class, 'store'])->name('checkout.store');
+    
+    Route::get('/confirmation/{orderId}', [CheckoutController::class, 'confirmation'])->name('checkout.confirmation');
+});
+Route::get('/checkout/success', [CheckoutController::class, 'success'])->name('checkout.success');
+
 
 
 // Route::get('/order/confirmation/{order}', [OrderController::class, 'confirmation'])->name('order.confirmation');
 
-Route::get('/checkout/success', function () {
-    return view('checkout.success');
-})->name('checkout.success');
+// Route::get('/checkout/success', function () {
+//     return view('checkout.success');
+// })->name('checkout.success');
 
 
 

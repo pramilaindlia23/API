@@ -28,7 +28,7 @@
         @include('dashboard.header')
     <div class="container mt-5">
     
-        <h2 class="text-center mb-4 card-body bg-success">Cart</h2>
+        <h2 class="text-center mb-4 card-body bg-success">Shopping Cart</h2>
         <!-- Success and Error Alerts -->
         @if(session('success'))
             <div class="alert alert-success alert-dismissible fade show" role="alert">
@@ -61,6 +61,7 @@
                         @foreach($cart as $id => $item)
                             <tr>
                                 <td>{{ $item['name'] }}</td>
+                                {{-- <td>${{ $item['price'] }}</td> --}}
                                 <td>
                                     <form action="{{ route('cart.update', $id) }}" method="POST">
                                         @csrf
@@ -77,7 +78,6 @@
                                     </form>
                                 </td>
                                 
-                             
                             </tr>
                         @endforeach
                     </tbody>
@@ -92,6 +92,9 @@
             </div>
 
            
+        <div class="text-right">
+            <a href="{{ route('checkout.index') }}" class="btn btn-success">Proceed to Checkout</a>
+        </div>
 
         @else
             <div class="alert alert-info text-center">

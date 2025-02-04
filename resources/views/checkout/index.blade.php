@@ -47,6 +47,10 @@
                     <label for="zip" class="form-label">Postal Code</label>
                     <input type="text" class="form-control" id="zip" name="zip" required>
                 </div>
+                <div class="mb-3">
+                    <label for="discount_code">Discount Code</label>
+                    <input type="text" id="discount_code" name="discount_code" class="form-control" placeholder="Enter your discount code">
+                </div>
             </div>
 
             <hr>
