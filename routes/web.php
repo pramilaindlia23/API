@@ -9,6 +9,9 @@ use App\Http\Controllers\CartController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ReelController;
 use App\Http\Controllers\CheckoutController;
+use App\Http\Controllers\OrderController;
+
+
 
 
 
@@ -26,7 +29,7 @@ use Illuminate\Support\Facades\Auth;
 |
 */
 
-Route::get('/home', function () {
+Route::get('/', function () {
     return view('welcome');
 });
 
@@ -73,7 +76,6 @@ Route::get('paragraph',function(){
     return view('paragraphupload');
 })->name('paragraphupload');
 
-
 /// Category Route ///
 
 Route::get('/create', [CategoryController::class, 'create'])->name('category.create');
@@ -114,10 +116,6 @@ Route::view('audio/upload', 'audio.audioupload')->name('audio/upload');
 
 //reels //
 
-// Route::get('/upload-reel',function(){
-//     return view('reels.reel')->name('/upload-reel');
-// });
-// Display the form (GET request)
 Route::view('upload-reel', 'reels.reel')->name('upload-reel');
 Route::post('upload-reel', [ReelController::class, 'upload'])->name('upload.reel');
 
@@ -130,14 +128,10 @@ Route::prefix('checkout')->group(function () {
     Route::get('/confirmation/{orderId}', [CheckoutController::class, 'confirmation'])->name('checkout.confirmation');
 });
 Route::get('/checkout/success', [CheckoutController::class, 'success'])->name('checkout.success');
+// Order //
+Route::post('/orders/{id}/cancel', [OrderController::class, 'cancelOrder'])->name('orders.cancel');
 
 
-
-// Route::get('/order/confirmation/{order}', [OrderController::class, 'confirmation'])->name('order.confirmation');
-
-// Route::get('/checkout/success', function () {
-//     return view('checkout.success');
-// })->name('checkout.success');
 
 
 

@@ -9,10 +9,16 @@ class Order extends Model
 {
     use HasFactory;
     protected $fillable = [
-        'user_id', 'name', 'email', 'address', 'city', 'zip', 'total', 'status'
+        'user_id', 'name', 'email', 'address', 'city', 'zip', 
+        'total', 'discount_code', 'status'
     ];
-    public function items()
+    public function orderItems()
     {
-        return $this->hasMany(OrderItem::class);
+        return $this->hasMany(OrderItem::class, 'order_id');
+    }
+
+    public function canBeCancelled()
+    {
+        return in_array($this->status, ['pending', 'processing']);
     }
 }

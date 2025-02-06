@@ -9,6 +9,8 @@ use App\Http\Controllers\VideoCatController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\AudioController;
 use App\Http\Controllers\ReelController;
+use App\Http\Controllers\OrderController;
+
 
 
 /*
@@ -69,6 +71,13 @@ Route::get('audio/play/{filename}', [AudioController::class, 'play']);
 Route::post('/reels', [ReelController::class, 'upload']); 
 Route::get('/reels', [ReelController::class, 'index']); 
 Route::delete('/reels/{id}', [ReelController::class, 'destroy']); 
+
+// Order //
+Route::get('/orders', [OrderController::class, 'show']);
+
+Route::post('/orders/{id}/cancel', [OrderController::class, 'cancelOrder']);
+
+
 
 
 

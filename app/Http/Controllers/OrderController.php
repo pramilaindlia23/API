@@ -15,10 +15,10 @@ class OrderController extends Controller
     // Display the checkout page
     public function index()
     {
-        // Get the cart from the session
+        
         $cart = session()->get('cart', []);
 
-        // If the cart is empty, redirect back with an error
+       
         if (empty($cart)) {
             return redirect()->route('cart.index')->with('error', 'Your cart is empty.');
         }
@@ -37,21 +37,16 @@ class OrderController extends Controller
         'zip' => 'required|string|max:20',
     ]);
 
-    
     $cart = session()->get('cart', []);
-
    
     \Log::info('Cart Data:', $cart);
-
    
     if (empty($cart)) {
         return redirect()->route('checkout.index')->with('error', 'Your cart is empty.');
     }
-
    
     $total = 0;
 
-    
     foreach ($cart as $item) {
         if (!isset($item['id'], $item['price'], $item['quantity'])) {
            
@@ -59,11 +54,9 @@ class OrderController extends Controller
             return redirect()->route('cart.index')->with('error', 'One or more cart items are missing required information.');
         }
 
-      
         $total += $item['price'] * $item['quantity'];
     }
 
-    // Create a new order in the database
     $order = Order::create([
         'user_id' => auth()->check() ? auth()->id() : null,
         'name' => $request->name,
@@ -75,40 +68,59 @@ class OrderController extends Controller
         'status' => 'pending',
     ]);
 
-    // Save each cart item as an order item
     foreach ($cart as $item) {
         if (isset($item['id'], $item['price'], $item['quantity'])) {
             OrderItem::create([
                 'order_id' => $order->id,
-                'product_id' => $item['id'], // Ensure this is the correct product ID
+                'product_id' => $item['id'], 
                 'quantity' => $item['quantity'],
                 'price' => $item['price'],
             ]);
         }
     }
 
-    // Clear the cart from the session
     session()->forget('cart');
 
-    // Redirect to the confirmation page
     return redirect()->route('order.confirmation', ['order' => $order->id]);
 }
-
-
-    // Display the order confirmation page
     public function confirmation($orderId)
     {
-        // Find the order by its ID
         $order = Order::find($orderId);
 
-        // If the order doesn't exist, redirect with an error
         if (!$order) {
             return redirect()->route('checkout.index')->with('error', 'Order not found.');
         }
 
-        // Load order items and their associated products
         $order->load('items.product');
 
         return view('order.confirmation', compact('order'));
     }
+
+    public function show()
+    {
+        $orders = Order::with('orderItems')->get();
+        
+        return response()->json([
+            'success' => true,
+            'data' => $orders
+        ], 200);
+    }
+    public function cancelOrder($id)
+    {
+        $order = Order::find($id);
+    
+        if (!$order) {
+            return response()->json(['message' => 'Order not found'], 404);
+        }
+    
+        if ($order->status === 'canceled') {
+            return response()->json(['message' => 'Order is already canceled'], 400);
+        }
+    
+        $order->status = 'canceled';
+        $order->save();
+    
+        return response()->json(['message' => 'Order canceled successfully', 'order' => $order], 200);
+    }
+ 
 }

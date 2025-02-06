@@ -35,7 +35,7 @@ class CheckoutController extends Controller
         ]);
     
         $cart = session()->get('cart', []);
-        
+    
         if (empty($cart)) {
             return redirect()->route('checkout.index')->with('error', 'Your cart is empty.');
         }
@@ -45,32 +45,44 @@ class CheckoutController extends Controller
             $total += $item['price'] * $item['quantity'];
         }
     
+        // Check for discount
         $discount = 0;
-        if ($request->has('discount_code')) {
-            $discountCode = $request->input('discount_code');
-            if ($discountCode == 'DISCOUNT10') {
-                $discount = 0.10 * $total;
-            } elseif ($discountCode == 'DISCOUNT20') {
-                $discount = 0.20 * $total;
-            }
+        $discountCode = strtoupper($request->input('discount_code', ''));
+
+        $discountMap = [
+            '10' => 'DISCOUNT10',
+            '20' => 'DISCOUNT20',
+        ];
+        if (array_key_exists($discountCode, $discountMap)) {
+            $discountCode = $discountMap[$discountCode];
         }
+        $validDiscounts = [
+            'DISCOUNT10' => 0.10,
+            'DISCOUNT20' => 0.20,
+        ];
+        if (array_key_exists($discountCode, $validDiscounts)) {
+            $discount = $total * $validDiscounts[$discountCode];
+        }
+        
+        $discountedTotal = max($total - $discount, 0);
     
-        $total -= $discount;
-    
+        // Create order
         $order = Order::create([
-            'user_id' => auth()->check() ? auth()->id() : null, 
+            'user_id' => auth()->check() ? auth()->id() : null,
             'name' => $request->name,
             'email' => $request->email,
             'address' => $request->address,
             'city' => $request->city,
             'zip' => $request->zip,
-            'total' => $total,
-            'discount_code' => $discountCode ?? null, 
-            'status' => 'pending', 
+            'total' => $discountedTotal,
+            'discount_code' => $discountCode ?: null,
+            'status' => 'pending',
         ]);
+       
     
+        // Store order items
         foreach ($cart as $productId => $item) {
-            OrderItem::create([
+            $orderItem = OrderItem::create([
                 'order_id' => $order->id,
                 'product_id' => $productId,
                 'quantity' => $item['quantity'],
@@ -80,11 +92,16 @@ class CheckoutController extends Controller
     
         Mail::to($request->email)->send(new OrderConfirmationMail($order));
     
-        // Clear the cart
         session()->forget('cart');
     
-       
-        return redirect()->route('checkout.success', ['total' => $total, 'discount' => $discount, 'order' => $order]);
+        session([
+            'total' => $total, 
+            'discount' => $discount,
+            'discount_code' => $discountCode,
+            'discounted_total' => $discountedTotal
+        ]);
+    
+        return redirect()->route('checkout.success');
     }
         public function confirmation($orderId)
     {
@@ -98,25 +115,18 @@ class CheckoutController extends Controller
 
         return view('checkout.confirmation', compact('order'));
     }
-
-    public function success(Request $request)
+    public function success()
     {
-        $order = Order::latest()->first();
+        $order = Order::latest()->first(); 
     
         if (!$order) {
             return redirect()->route('checkout.index')->with('error', 'No order found.');
         }
     
-        $total = $order->total;
-        // dd($total);
-    
-        return view('checkout.success', compact('order', 'total'));
-
+        return view('checkout.success', compact('order'));
     }
-    
     private function getDiscount($discountCode, $total)
     {
-
         switch ($discountCode) {
             case 'DISCOUNT10':
                 return 0.10 * $total;

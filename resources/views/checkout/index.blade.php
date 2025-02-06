@@ -68,13 +68,29 @@
                     @endforeach
                 </div>
                 <hr>
-                <div class="d-flex justify-content-between fw-bold">
-                    <div>Total</div>
+            
+                <div class="d-flex justify-content-between">
+                    <div>Subtotal</div>
                     <div>${{ number_format($total, 2) }}</div>
                 </div>
+            
+                @if(session('discount') > 0)
+                    <div class="d-flex justify-content-between text-danger">
+                        <div>Discount ({{ session('discount_code') }})</div>
+                        <div>- ${{ number_format(session('discount', 0), 2) }}</div>
+                    </div>
+                @endif
+            
+                <hr>
+            
+                <div class="d-flex justify-content-between fw-bold">
+                    <div>Total</div>
+                    <div>${{ number_format(session('discounted_total', $total), 2) }}</div>
+                </div>
             </div>
-
+            
             <button type="submit" class="btn btn-success w-100 mt-4">Place Order</button>
+            
         </form>
     </div>
 
