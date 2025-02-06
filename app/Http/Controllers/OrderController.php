@@ -18,7 +18,6 @@ class OrderController extends Controller
         
         $cart = session()->get('cart', []);
 
-       
         if (empty($cart)) {
             return redirect()->route('cart.index')->with('error', 'Your cart is empty.');
         }
@@ -27,7 +26,7 @@ class OrderController extends Controller
     }
 
     public function store(Request $request)
-{
+    {
    
     $request->validate([
         'name' => 'required|string|max:255',
@@ -95,7 +94,6 @@ class OrderController extends Controller
 
         return view('order.confirmation', compact('order'));
     }
-
     public function show()
     {
         $orders = Order::with('orderItems')->get();
@@ -105,6 +103,21 @@ class OrderController extends Controller
             'data' => $orders
         ], 200);
     }
+    public function SpecificUser($id)
+{
+    $orders = Order::where('user_id', $id)->with('orderItems')->get();
+    
+    if ($orders->isEmpty()) {
+        return response()->json([
+            'success' => false,
+            'message' => 'No orders found for this user.'
+        ], 404);
+    }
+    return response()->json([
+        'success' => true,
+        'data' => $orders
+    ], 200);
+}
     public function cancelOrder($id)
     {
         $order = Order::find($id);
@@ -122,5 +135,52 @@ class OrderController extends Controller
     
         return response()->json(['message' => 'Order canceled successfully', 'order' => $order], 200);
     }
- 
+
+    public function placeOrder(Request $request)
+        {
+            
+            $cart = session()->get('cart', []);
+            if (empty($cart)) {
+                return response()->json(['error' => 'Cart is empty'], 400);
+            }
+
+            $userId = auth()->check() ? auth()->id() : null;
+
+            $totalPrice = array_sum(array_column($cart, 'price'));
+
+            $order = Order::create([
+                'user_id' => $userId, 
+                'total' => $totalPrice,
+                'status' => 'pending',
+            ]);
+
+            // Add ordered items
+            foreach ($cart as $productId => $item) {
+                $product = Product::find($productId);
+                
+                if ($product && $product->stock >= $item['quantity']) {
+                    OrderItem::create([
+                        'order_id' => $order->id,
+                        'product_id' => $product->id,
+                        'quantity' => $item['quantity'],
+                        'price' => $product->price,
+                    ]);
+
+                    // Reduce stock
+                    $product->decrement('stock', $item['quantity']);
+                } else {
+                    return response()->json(['error' => "Not enough stock for {$product->name}"], 400);
+                }
+            }
+
+            // Clear cart session
+            session()->forget('cart');
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Order placed successfully',
+                'order_id' => $order->id,
+            ], 200);
+        }
+
 }

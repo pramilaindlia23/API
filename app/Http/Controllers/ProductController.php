@@ -10,7 +10,7 @@ class ProductController extends Controller
     public function index()
     {
         $products = Product::all();
-
+        // dd($products);
         return response()->json($products);
     }
 
@@ -20,25 +20,35 @@ class ProductController extends Controller
     }
 
     public function store(Request $request)
-    {
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'price' => 'required|numeric',
-            'description' => 'nullable|string',
-            'image' => 'nullable|image|max:2048',
-        ]);
-        $imagePath = null;
-        if ($request->hasFile('image')) {
-            $imagePath = $request->file('image')->store('images/products', 'public');
-        }
+{
+    $request->validate([
+        'name' => 'required|string',
+        'price' => 'required|numeric',
+        'description' => 'nullable|string',
+        'discount_code' => 'nullable|string',
+        'image' => 'nullable|image|max:2048',
+        'stock' => 'required|integer|min:0'
+    ]);
 
-        Product::create([   
-            'name' => $validated['name'],
-            'price' => $validated['price'],
-            'description' => $validated['description'],
-            'image' => $imagePath,
-        ]);
-
-        return redirect()->route('products.create')->with('success', 'Product added successfully!');
+    $imagePath = null;
+    if ($request->hasFile('image')) {
+        $imagePath = $request->file('image')->store('product_images', 'public');
     }
+
+    Product::create([
+        'name' => $request->name,
+        'price' => $request->price,
+        'description' => $request->description,
+        'discount_code' => $request->discount_code,
+        'image' => $imagePath,
+        'stock' => $request->stock
+    ]);
+
+    return redirect()->route('products.index')->with('success', 'Product created successfully.');
 }
+
+
+
+
+}
+

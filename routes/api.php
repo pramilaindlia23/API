@@ -13,6 +13,7 @@ use App\Http\Controllers\OrderController;
 
 
 
+
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -74,8 +75,10 @@ Route::delete('/reels/{id}', [ReelController::class, 'destroy']);
 
 // Order //
 Route::get('/orders', [OrderController::class, 'show']);
+Route::get('/user/{id}/orders', [OrderController::class, 'SpecificUser']);
 
 Route::post('/orders/{id}/cancel', [OrderController::class, 'cancelOrder']);
+Route::post('/place-order', [OrderController::class, 'placeOrder']);
 
 
 

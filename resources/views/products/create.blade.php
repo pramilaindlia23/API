@@ -20,7 +20,12 @@
             <label for="name" class="form-label">Product Name</label>
             <input type="text" class="form-control" id="name" name="name" value="{{ old('name') }}" placeholder="Enter Product Name" required>
         </div>
-    
+
+        <div class="mb-3">
+            <label for="stock" class="form-label">Stock Quantity</label>
+            <input type="number" class="form-control" id="stock" name="stock" value="{{ old('stock') }}" placeholder="Enter stock quantity" required>
+        </div>
+        
         <div class="mb-3">
             <label for="price" class="form-label">Price</label>
             <input type="number" class="form-control" id="price" name="price" value="{{ old('price') }}" placeholder="Enter price">
@@ -30,6 +35,8 @@
             <label for="discount_code" class="form-label">Discount Code</label>
             <input type="text" id="discount_code" name="discount_code" class="form-control" placeholder="Enter your discount code">
         </div>
+
+        <div id="product-container" class="row"></div>
     
         <div class="mb-3">
             <label for="description" class="form-label">Description</label>

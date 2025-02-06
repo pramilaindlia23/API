@@ -102,7 +102,7 @@ Route::post('/cart/remove/{id}', [CartController::class, 'remove'])->name('cart.
 Route::post('/cart/update/{id}', [CartController::class, 'update'])->name('cart.update');
 
 
-Route::get('/products', [ProductController::class, 'index'])->name('product.index');
+Route::get('/products', [ProductController::class, 'index'])->name('products.index');
 Route::get('/product/create', [ProductController::class, 'create'])->name('products.create');
 Route::post('/product/store', [ProductController::class, 'store'])->name('product.store');
 
