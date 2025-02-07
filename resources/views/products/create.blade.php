@@ -13,7 +13,7 @@
 <div class="container mt-5">
     <h2 class="text-center mb-5 bg-success text-white p-3 rounded">Create New Product</h2>
 
-    <form action="{{ route('product.store') }}" method="POST" enctype="multipart/form-data">
+    <form action="{{ route('product.store') }}" method="POST" id='product-form'  enctype="multipart/form-data">
         @csrf
     
         <div class="mb-3">
@@ -35,8 +35,7 @@
             <label for="discount_code" class="form-label">Discount Code</label>
             <input type="text" id="discount_code" name="discount_code" class="form-control" placeholder="Enter your discount code">
         </div>
-
-        <div id="product-container" class="row"></div>
+        
     
         <div class="mb-3">
             <label for="description" class="form-label">Description</label>
@@ -51,7 +50,33 @@
         <button type="submit" class="btn btn-success width-100 rounded">Add Product</button>
     </form>
 </div>
+<script>
+            document.addEventListener('DOMContentLoaded', function () {
+                const priceInput = document.getElementById('price');
+                const discountCodeInput = document.getElementById('discount_code');
+                const discountedPriceInput = document.getElementById('discounted_price');
 
+                function updateDiscount() {
+                    let price = parseFloat(priceInput.value) || 0;
+                    let discountCode = discountCodeInput.value;
+                    let discount = 0;
+
+                    if (discountCode === 'SAVE10') {
+                        discount = price * 0.10; 
+                    } else if (discountCode === 'SAVE20') {
+                        discount = price * 0.20; 
+                    }
+
+                    let finalPrice = (price - discount).toFixed(2);
+                    discountedPriceInput.value = finalPrice;
+                }
+
+                discountCodeInput.addEventListener('input', updateDiscount);
+                priceInput.addEventListener('input', updateDiscount);
+            });
+</script>
+
+    
 </body>
 </html>
 

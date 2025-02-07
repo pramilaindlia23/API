@@ -8,11 +8,17 @@ use App\Models\Product;
 class ProductController extends Controller
 {
     public function index()
-    {
-        $products = Product::all();
-        // dd($products);
-        return response()->json($products);
-    }
+{
+    $products = Product::all();
+    $products = $products->map(function ($product) {
+        $discountAmount = $product->discounted_price ?? 0; // If no discount, set 0
+        $product->final_price = $product->price - $discountAmount;
+        return $product;
+    });
+
+    return response()->json($products);
+}
+
 
     public function create()
     {
@@ -24,11 +30,21 @@ class ProductController extends Controller
     $request->validate([
         'name' => 'required|string',
         'price' => 'required|numeric',
-        'description' => 'nullable|string',
         'discount_code' => 'nullable|string',
+        'stock' => 'required|integer|min:0',
+        'discounted_price' => 'nullable|numeric|min:0',
+        'description' => 'nullable|string',
         'image' => 'nullable|image|max:2048',
-        'stock' => 'required|integer|min:0'
     ]);
+
+    
+    $discountedPrice = $request->discounted_price ?? 0.00;
+
+    if ($request->discount_code === 'SAVE10') {
+        $discountedPrice = $request->price * 0.10; 
+    } elseif ($request->discount_code === 'SAVE20') {
+        $discountedPrice = $request->price * 0.20; 
+    }
 
     $imagePath = null;
     if ($request->hasFile('image')) {
@@ -38,15 +54,15 @@ class ProductController extends Controller
     Product::create([
         'name' => $request->name,
         'price' => $request->price,
-        'description' => $request->description,
         'discount_code' => $request->discount_code,
+        'discounted_price' => $discountedPrice,
+        'stock' => $request->stock,
+        'description' => $request->description,
         'image' => $imagePath,
-        'stock' => $request->stock
     ]);
 
     return redirect()->route('products.index')->with('success', 'Product created successfully.');
 }
-
 
 
 

@@ -10,6 +10,8 @@ use App\Http\Controllers\ProductController;
 use App\Http\Controllers\AudioController;
 use App\Http\Controllers\ReelController;
 use App\Http\Controllers\OrderController;
+use App\Models\Product;
+
 
 
 
@@ -80,6 +82,9 @@ Route::get('/user/{id}/orders', [OrderController::class, 'SpecificUser']);
 Route::post('/orders/{id}/cancel', [OrderController::class, 'cancelOrder']);
 Route::post('/place-order', [OrderController::class, 'placeOrder']);
 
+Route::get('/products', function () {
+    return response()->json(Product::all());
+});
 
 
 
