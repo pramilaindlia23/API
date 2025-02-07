@@ -26,46 +26,47 @@
     });
 
     </script>
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            axios.get('/api/products')
-                .then(function (response) {
-                    const products = response.data;
-                    const container = document.getElementById('products-container');
-        
-                    products.forEach(function (product) {
-                        const originalPrice = parseFloat(product.price);
-                        const discountAmount = parseFloat(product.discounted_price) || 0;
-                        const finalPrice = (originalPrice - discountAmount).toFixed(2);
-        
-                        const priceDisplay = discountAmount > 0 
-                            ? `<span style="text-decoration: line-through;">$${originalPrice.toFixed(2)}</span> 
-                               <strong>$${finalPrice}</strong>` 
-                            : `<strong>$${originalPrice.toFixed(2)}</strong>`; 
-        
-                        const productCard = `
-                            <div class="col">
-                                <div class="card h-100 shadow-sm border-light rounded">
-                                    <img src="/storage/${product.image}" class="card-img-top" alt="${product.name}" style="height: 200px; object-fit: cover;">
-                                    <div class="card-body">
-                                        <h5 class="card-title">${product.name}</h5>
-                                        <p class="card-text">${product.description}</p>
-                                        <p class="card-text text-muted">${priceDisplay}</p>
-                                    </div>
-                                    <div class="card-footer text-center">
-                                        <button class="btn btn-primary w-100 add-to-cart" data-id="${product.id}">Add to Cart</button>
-                                    </div>
-                                </div>
+  
+        <script>
+          document.addEventListener('DOMContentLoaded', function () {
+    axios.get('/api/products')
+        .then(function (response) {
+            const products = response.data;
+            const container = document.getElementById('products-container');
+
+            products.forEach(function (product) {
+                const originalPrice = parseFloat(product.price);
+                const discountedPrice = parseFloat(product.discounted_price);
+                const discountedAmount = (originalPrice - discountedPrice).toFixed(2);
+
+                const productCard = `
+                    <div class="col">
+                        <div class="card h-100 shadow-sm border-light rounded">
+                            <img src="/storage/${product.image}" class="card-img-top" alt="${product.name}" style="height: 200px; object-fit: cover;">
+                            <div class="card-body">
+                                <h5 class="card-title">${product.name}</h5>
+                                <p class="card-text">${product.description}</p>
+                                <p class="card-text text-muted">
+                                    <span style="text-decoration: line-through;">$${originalPrice}</span> 
+                                    <small>$${discountedPrice}</small>  <!-- Discounted Price -->
+                                    <br> <strong> Amount: $${discountedAmount}</strong>
+                                </p>
                             </div>
-                        `;
-        
-                        container.innerHTML += productCard;
-                    });
-                })
-                .catch(function (error) {
-                    console.error('There was an error fetching the products:', error);
-                });
+                            <div class="card-footer text-center">
+                                <button class="btn btn-primary w-100 add-to-cart" data-id="${product.id}">Add to Cart</button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+
+                container.innerHTML += productCard;
+            });
+        })
+        .catch(function (error) {
+            console.error('There was an error fetching the products:', error);
         });
+});
+
         </script>
 </body>
 </html>

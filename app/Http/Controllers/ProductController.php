@@ -19,32 +19,29 @@ class ProductController extends Controller
     return response()->json($products);
 }
 
-
     public function create()
     {
         return view('products.create');
     }
 
-    public function store(Request $request)
+public function store(Request $request)
 {
     $request->validate([
         'name' => 'required|string',
         'price' => 'required|numeric',
-        'discount_code' => 'nullable|string',
-        'stock' => 'required|integer|min:0',
-        'discounted_price' => 'nullable|numeric|min:0',
+        'discounted_price' => 'required|numeric',
         'description' => 'nullable|string',
+        'stock' => 'required|integer|min:0',
         'image' => 'nullable|image|max:2048',
     ]);
 
-    
-    $discountedPrice = $request->discounted_price ?? 0.00;
+    $discountAmount = $request->price - $request->discounted_price;
 
-    if ($request->discount_code === 'SAVE10') {
-        $discountedPrice = $request->price * 0.10; 
-    } elseif ($request->discount_code === 'SAVE20') {
-        $discountedPrice = $request->price * 0.20; 
-    }
+    // dd([
+    //     'Price' => $request->price,
+    //     'Discounted Price' => $request->discounted_price,
+    //     'Calculated Discount Amount' => $discountAmount,
+    // ]);
 
     $imagePath = null;
     if ($request->hasFile('image')) {
@@ -54,10 +51,10 @@ class ProductController extends Controller
     Product::create([
         'name' => $request->name,
         'price' => $request->price,
-        'discount_code' => $request->discount_code,
-        'discounted_price' => $discountedPrice,
-        'stock' => $request->stock,
+        'discounted_price' => $request->discounted_price,
+        'discount_amount' => $discountAmount,  
         'description' => $request->description,
+        'stock' => $request->stock,
         'image' => $imagePath,
     ]);
 
