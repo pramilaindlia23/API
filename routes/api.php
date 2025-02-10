@@ -10,6 +10,9 @@ use App\Http\Controllers\ProductController;
 use App\Http\Controllers\AudioController;
 use App\Http\Controllers\ReelController;
 use App\Http\Controllers\OrderController;
+use App\Http\Controllers\ReviewController;
+use App\Http\Controllers\CartController;
+
 use App\Models\Product;
 
 
@@ -85,11 +88,9 @@ Route::post('/place-order', [OrderController::class, 'placeOrder']);
 Route::get('/products', function () {
     return response()->json(Product::all());
 });
+Route::post('/add-to-cart/{id}', [CartController::class, 'add']);
 
-
-
-
-
+Route::post('/rate-product', [ReviewController::class, 'store']);
 
 
 

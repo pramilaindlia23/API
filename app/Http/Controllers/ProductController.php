@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Product;
+use App\Models\Review;
+
 
 class ProductController extends Controller
 {
@@ -15,15 +17,36 @@ class ProductController extends Controller
         $product->final_price = $product->price - $discountAmount;
         return $product;
     });
+    $products = Product::with('reviews')->get()->map(function ($product) {
+        $product->average_rating = $product->reviews()->avg('rating') ?? 0;
+        return $product;
+    });
+   
 
     return response()->json($products);
 }
+
+
+// public function index()
+// {
+//     $products = Product::with('reviews')->get()->map(function ($product) {
+//         if ($product->price > 0) {
+//             $product->discount_percentage = round((($product->price - $product->discounted_price) / $product->price) * 100, 2);
+//         } else {
+//             $product->discount_percentage = 0;
+//         }
+
+//         $product->average_rating = $product->reviews()->avg('rating') ?? 0;
+//         return $product;
+//     });
+
+//     return response()->json(['products' => $products]);
+// }
 
     public function create()
     {
         return view('products.create');
     }
-
 public function store(Request $request)
 {
     $request->validate([
@@ -60,7 +83,34 @@ public function store(Request $request)
 
     return redirect()->route('products.index')->with('success', 'Product created successfully.');
 }
+public function applyDiscount(Request $request)
+{
+    $product = Product::find($request->product_id);
+    
+    if (!$product) {
+        return response()->json(['message' => 'Product not found'], 404);
+    }
 
+    $discountCode = $request->discount_code;
+    $discountPercentage = 0;
+
+   
+    if ($discountCode === 'SAVE10') {
+        $discountPercentage = 10;
+    } elseif ($discountCode === 'SAVE20') {
+        $discountPercentage = 20;
+    }
+
+   
+    $discountedPrice = $product->price - ($product->price * $discountPercentage / 100);
+
+    return response()->json([
+        'original_price' => $product->price,
+        'discount_code' => $discountCode, 
+        'discount_percentage' => $discountPercentage, 
+        'discounted_price' => round($discountedPrice, 2)
+    ]);
+}
 
 
 }

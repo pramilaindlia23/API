@@ -51,29 +51,32 @@
     </form>
 </div>
 <script>
-            document.addEventListener('DOMContentLoaded', function () {
-                const priceInput = document.getElementById('price');
-                const discountCodeInput = document.getElementById('discount_code');
-                const discountedPriceInput = document.getElementById('discounted_price');
+        document.addEventListener('DOMContentLoaded', function () {
+            const originalPrice = parseFloat(product.price);
+            const discountedPrice = parseFloat(product.discounted_price);
+            const discountPercentage = ((originalPrice - discountedPrice) / originalPrice * 100).toFixed(2);
+    function updateDiscount() {
+        let price = parseFloat(priceInput.value) || 0;
+        let discountCode = discountCodeInput.value;
+        let discountPercent = 0;
 
-                function updateDiscount() {
-                    let price = parseFloat(priceInput.value) || 0;
-                    let discountCode = discountCodeInput.value;
-                    let discount = 0;
+        // Check Discount Code and Apply Percentage
+        if (discountCode === 'SAVE10') {
+            discountPercent = 10; // 10% discount
+        } else if (discountCode === 'SAVE20') {
+            discountPercent = 20; // 20% discount
+        } else {
+            discountPercent = 0; // No discount
+        }
 
-                    if (discountCode === 'SAVE10') {
-                        discount = price * 0.10; 
-                    } else if (discountCode === 'SAVE20') {
-                        discount = price * 0.20; 
-                    }
+        // Update Discount Percentage Display
+        discountPercentageDisplay.textContent = discountPercent + "%"; // 👈 Show percentage instead of price
+    }
 
-                    let finalPrice = (price - discount).toFixed(2);
-                    discountedPriceInput.value = finalPrice;
-                }
+    discountCodeInput.addEventListener('input', updateDiscount);
+    priceInput.addEventListener('input', updateDiscount);
+});
 
-                discountCodeInput.addEventListener('input', updateDiscount);
-                priceInput.addEventListener('input', updateDiscount);
-            });
 </script>
 
     

@@ -9,6 +9,8 @@ use App\Models\Product;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\OrderConfirmationMail; 
+use Illuminate\Support\Facades\Validator;
+
 
 class OrderController extends Controller
 {
@@ -137,50 +139,89 @@ class OrderController extends Controller
     }
 
     public function placeOrder(Request $request)
-        {
-            
-            $cart = session()->get('cart', []);
-            if (empty($cart)) {
-                return response()->json(['error' => 'Cart is empty'], 400);
-            }
-
-            $userId = auth()->check() ? auth()->id() : null;
-
-            $totalPrice = array_sum(array_column($cart, 'price'));
-
-            $order = Order::create([
-                'user_id' => $userId, 
-                'total' => $totalPrice,
-                'status' => 'pending',
-            ]);
-
-            // Add ordered items
-            foreach ($cart as $productId => $item) {
-                $product = Product::find($productId);
-                
-                if ($product && $product->stock >= $item['quantity']) {
-                    OrderItem::create([
-                        'order_id' => $order->id,
-                        'product_id' => $product->id,
-                        'quantity' => $item['quantity'],
-                        'price' => $product->price,
-                    ]);
-
-                    // Reduce stock
-                    $product->decrement('stock', $item['quantity']);
-                } else {
-                    return response()->json(['error' => "Not enough stock for {$product->name}"], 400);
-                }
-            }
-
-            // Clear cart session
-            session()->forget('cart');
-
-            return response()->json([
-                'success' => true,
-                'message' => 'Order placed successfully',
-                'order_id' => $order->id,
-            ], 200);
+    {
+        // Validate request
+        $validator = Validator::make($request->all(), [
+            'user_id' => 'required|exists:users,id',
+            'name' => 'required|string|max:255',
+            'email' => 'required|email',
+            'address' => 'required|string',
+            'city' => 'required|string',
+            'zip' => 'required|string',
+            'items' => 'required|array',
+            'items.*.product_id' => 'required|exists:products,id',
+            'items.*.quantity' => 'required|integer|min:1',
+            'total' => 'required|numeric|min:0',
+            'discount_code' => 'nullable|string',
+        ]);
+    
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
         }
+    
+        // Create order
+        $order = Order::create([
+            'user_id' => $request->user_id,
+            'name' => $request->name,
+            'email' => $request->email,
+            'address' => $request->address,
+            'city' => $request->city,
+            'zip' => $request->zip,
+            'items' => json_encode($request->items), 
+            'total' => $request->total,
+            'discount_code' => $request->discount_code,
+            'status' => 'pending',
+        ]);
+    
+        return response()->json(['message' => 'Order placed successfully', 'order' => $order], 201);
+    }
+    
+
+    // public function placeOrder(Request $request)
+    //     {
+            
+    //         $cart = session()->get('cart', []);
+    //         if (empty($cart)) {
+    //             return response()->json(['error' => 'Cart is empty'], 400);
+    //         }
+
+    //         $userId = auth()->check() ? auth()->id() : null;
+
+    //         $totalPrice = array_sum(array_column($cart, 'price'));
+
+    //         $order = Order::create([
+    //             'user_id' => $userId, 
+    //             'total' => $totalPrice,
+    //             'status' => 'pending',
+    //         ]);
+
+    //         // Add ordered items
+    //         foreach ($cart as $productId => $item) {
+    //             $product = Product::find($productId);
+                
+    //             if ($product && $product->stock >= $item['quantity']) {
+    //                 OrderItem::create([
+    //                     'order_id' => $order->id,
+    //                     'product_id' => $product->id,
+    //                     'quantity' => $item['quantity'],
+    //                     'price' => $product->price,
+    //                 ]);
+
+    //                 // Reduce stock
+    //                 $product->decrement('stock', $item['quantity']);
+    //             } else {
+    //                 return response()->json(['error' => "Not enough stock for {$product->name}"], 400);
+    //             }
+    //         }
+
+    //         // Clear cart session
+    //         session()->forget('cart');
+
+    //         return response()->json([
+    //             'success' => true,
+    //             'message' => 'Order placed successfully',
+    //             'order_id' => $order->id,
+    //         ], 200);
+    //     }
 
 }
