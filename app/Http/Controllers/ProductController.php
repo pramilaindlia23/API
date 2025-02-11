@@ -22,27 +22,8 @@ class ProductController extends Controller
         return $product;
     });
    
-
     return response()->json($products);
 }
-
-
-// public function index()
-// {
-//     $products = Product::with('reviews')->get()->map(function ($product) {
-//         if ($product->price > 0) {
-//             $product->discount_percentage = round((($product->price - $product->discounted_price) / $product->price) * 100, 2);
-//         } else {
-//             $product->discount_percentage = 0;
-//         }
-
-//         $product->average_rating = $product->reviews()->avg('rating') ?? 0;
-//         return $product;
-//     });
-
-//     return response()->json(['products' => $products]);
-// }
-
     public function create()
     {
         return view('products.create');
@@ -52,19 +33,22 @@ public function store(Request $request)
     $request->validate([
         'name' => 'required|string',
         'price' => 'required|numeric',
-        'discounted_price' => 'required|numeric',
+        'discount_code' => 'nullable|string', 
         'description' => 'nullable|string',
         'stock' => 'required|integer|min:0',
         'image' => 'nullable|image|max:2048',
     ]);
 
-    $discountAmount = $request->price - $request->discounted_price;
+    $discountPercentage = 0;
 
-    // dd([
-    //     'Price' => $request->price,
-    //     'Discounted Price' => $request->discounted_price,
-    //     'Calculated Discount Amount' => $discountAmount,
-    // ]);
+    if ($request->discount_code === 'SAVE10') {
+        $discountPercentage = 10;  
+    } elseif ($request->discount_code === 'SAVE20') {
+        $discountPercentage = 20;  
+    }
+
+    $discountAmount = ($request->price * $discountPercentage) / 100;
+    $discountedPrice = round($request->price - $discountAmount, 2);
 
     $imagePath = null;
     if ($request->hasFile('image')) {
@@ -74,8 +58,9 @@ public function store(Request $request)
     Product::create([
         'name' => $request->name,
         'price' => $request->price,
-        'discounted_price' => $request->discounted_price,
+        'discount_code' => $request->discount_code, 
         'discount_amount' => $discountAmount,  
+        'discounted_price' => $discountedPrice,
         'description' => $request->description,
         'stock' => $request->stock,
         'image' => $imagePath,
@@ -83,6 +68,7 @@ public function store(Request $request)
 
     return redirect()->route('products.index')->with('success', 'Product created successfully.');
 }
+
 public function applyDiscount(Request $request)
 {
     $product = Product::find($request->product_id);
