@@ -12,6 +12,8 @@ use App\Http\Controllers\ReelController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\CartController;
+use App\Http\Controllers\ProductCatController;
+
 
 use App\Models\Product;
 
@@ -65,6 +67,16 @@ Route::get('categories', [VideoCatController::class, 'index']);
 
 //products //
 Route::get('/products', [ProductController::class, 'index']);
+Route::get('/products', function () {
+    return response()->json(Product::all());
+});
+
+Route::post('/add-to-cart/{id}', [CartController::class, 'add']);
+
+Route::post('/rate-product', [ReviewController::class, 'store']);
+Route::post('/save-cats', [ProductCatController::class, 'store']);
+Route::get('/show-cats', [ProductCatController::class, 'index']);
+
 
 // audio //
 Route::post('audio', [AudioController::class, 'store']); 
@@ -85,12 +97,7 @@ Route::get('/user/{id}/orders', [OrderController::class, 'SpecificUser']);
 Route::post('/orders/{id}/cancel', [OrderController::class, 'cancelOrder']);
 Route::post('/place-order', [OrderController::class, 'placeOrder']);
 
-Route::get('/products', function () {
-    return response()->json(Product::all());
-});
-Route::post('/add-to-cart/{id}', [CartController::class, 'add']);
 
-Route::post('/rate-product', [ReviewController::class, 'store']);
 
 
 

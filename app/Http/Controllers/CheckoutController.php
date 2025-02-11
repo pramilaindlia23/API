@@ -16,10 +16,12 @@ class CheckoutController extends Controller
     public function index()
     {
         $cart = session()->get('cart', []);
+        
        
         if (empty($cart)) {
             return redirect()->route('cart.index')->with('error', 'Your cart is empty.');
         }
+        // dd(session('cart'));
 
         return view('checkout.index', compact('cart'));
     }
@@ -40,11 +42,18 @@ class CheckoutController extends Controller
             return redirect()->route('checkout.index')->with('error', 'Your cart is empty.');
         }
     
+        // $total = 0;
+        // foreach ($cart as $item) {
+        //     $total += $item['price'] * $item['quantity'];
+        // }
         $total = 0;
+
         foreach ($cart as $item) {
-            $total += $item['price'] * $item['quantity'];
+            $quantity = $item['quantity'] ?? 1; 
+            $price = $item['price'] ?? 0; 
+
+            $total += $price * $quantity;
         }
-    
         // Check for discount
         $discount = 0;
         $discountCode = strtoupper($request->input('discount_code', ''));

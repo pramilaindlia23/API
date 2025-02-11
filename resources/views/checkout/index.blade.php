@@ -60,12 +60,27 @@
                 <div class="mb-3">
                     @php $total = 0; @endphp
                     @foreach(session('cart', []) as $item)
+                        <div class="d-flex justify-content-between mb-2">
+                            <div>{{ $item['name'] }} (x{{ $item['quantity'] ?? 1 }})</div>
+                            <div>${{ number_format(($item['price'] ?? 0) * ($item['quantity'] ?? 1), 2) }}</div>
+                        </div>
+                    @endforeach
+
+                    {{-- @foreach(session('cart', []) as $item)
+    <div class="d-flex justify-content-between mb-2">
+        <div>{{ $item['name'] }} (x{{ $item['quantity'] ?? 1 }})</div>
+        <div>${{ number_format(($item['price'] ?? 0) * ($item['quantity'] ?? 1), 2) }}</div>
+    </div>
+    @php $total += ($item['price'] ?? 0) * ($item['quantity'] ?? 1); @endphp
+@endforeach --}}
+
+                    {{-- @foreach(session('cart', []) as $item)
                     <div class="d-flex justify-content-between mb-2">
                         <div>{{ $item['name'] }} (x{{ $item['quantity'] }})</div>
                         <div>${{ number_format($item['price'] * $item['quantity'], 2) }}</div>
                     </div>
                     @php $total += $item['price'] * $item['quantity']; @endphp
-                    @endforeach
+                    @endforeach --}}
                 </div>
                 <hr>
             

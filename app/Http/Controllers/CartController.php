@@ -8,43 +8,101 @@ use App\Models\Product;
 
 class CartController extends Controller
 {
+
+    public function __construct()
+{
+    $this->middleware('web'); 
+}
     // Add product to the cart
-    public function add($id)
-    {
-        $product = Product::find($id);
-        
-        if (!$product) {
-            return response()->json(['message' => 'Product not found'], 404);
-        }
+    // public function add(Request $request, $id)
+    // {
+    //     $product = Product::find($id);
+    
+    //     if (!$product) {
+    //         return redirect()->back()->with('error', 'Product not found.');
+    //     }
+    
+    //     // Fetch cart session
+    //     $cart = session()->get('cart', []);
+    
+    //     // Ensure "quantity" key exists
+    //     if (!isset($cart[$id])) {
+    //         $cart[$id] = [
+    //             "name" => $product->name,
+    //             "price" => $product->price,
+    //             "quantity" => 1 
+    //         ];
+    //     } else {
+    //         $cart[$id]['quantity']++;
+    //     }
+    
+    //     session()->put('cart', $cart);
+    
+    //     return redirect()->back()->with('success', 'Product added to cart.');
+    // }
+//     public function add(Request $request, $id)
+// {
+//     $product = Product::find($id);
 
-        $cart = session()->get('cart', []);
+//     if (!$product) {
+//         return redirect()->back()->with('error', 'Product not found.');
+//     }
 
-        //  increment its quantity
-        if (isset($cart[$id])) {
-            $cart[$id]['quantity']++;
-        } else {
-           
-            $cart[$id] = [
-                'name' => $product->name,
-                'price' => $product->price,
-                'quantity' => 1,
-                'image' => $product->image
-            ];
-        }
+//     $cart = session()->get('cart', []);
 
-        
-        session()->put('cart', $cart);
+//     if (!isset($cart[$id])) {
+//         $cart[$id] = [
+//             "name" => $product->name,
+//             "price" => $product->price,
+//             "quantity" => 1 
+//         ];
+//     } else {
+//         $cart[$id]['quantity']++;
+//     }
 
-        return response()->json(['message' => 'Product added to cart', 'cart' => $cart]);
+//     session()->put('cart', $cart);
+
+//     return redirect()->back()->with('success', 'Product added to cart.');
+// }
+public function add(Request $request, $id)
+{
+    $product = Product::find($id);
+
+    if (!$product) {
+        return redirect()->back()->with('error', 'Product not found.');
     }
 
+    // Fetch cart session
+    $cart = session()->get('cart', []);
+
+    // Ensure "quantity" key exists
+    if (!isset($cart[$id])) {
+        $cart[$id] = [
+            "name" => $product->name,
+            "price" => $product->price,
+            "quantity" => 1 // Ensure quantity starts at 1
+        ];
+    } else {
+        // Increase quantity if already in cart
+        $cart[$id]['quantity']++;
+    }
+
+    // Save updated cart back to session
+    session()->put('cart', $cart);
+
+    return redirect()->back()->with('success', 'Product added to cart.');
+}
+
+    
     // Show cart
     public function index()
-    {
-        $cart = session()->get('cart', []);
-        return view('cart.index', compact('cart'));
-    }
-
+{
+    $cart = session()->get('cart', []);
+    // Debugging
+    // dd($cart); 
+    // dd(session()->all());
+    return view('cart.index', compact('cart'));
+}
     // Remove product from cart
     public function remove($id)
     {

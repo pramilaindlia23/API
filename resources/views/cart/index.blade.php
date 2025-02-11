@@ -44,8 +44,7 @@
             </div>
         @endif
 
-        <!-- Cart Items Table -->
-        @if(count($cart) > 0)
+        {{-- @if(count($cart) > 0)
             <div class="table-responsive">
                 <table class="table table-striped table-bordered">
                     <thead class="table-dark">
@@ -59,9 +58,10 @@
                     </thead>
                     <tbody>
                         @foreach($cart as $id => $item)
+                        <pre>{{ print_r($cart, true) }}</pre>
+
                             <tr>
                                 <td>{{ $item['name'] }}</td>
-                                {{-- <td>${{ $item['price'] }}</td> --}}
                                 <td>
                                     <form action="{{ route('cart.update', $id) }}" method="POST">
                                         @csrf
@@ -84,7 +84,6 @@
                 </table>
             </div>
 
-            <!-- Total -->
             <div class="text-end mt-3">
                 <h4>Total: ${{ number_format(array_sum(array_map(function($item) {
                     return $item['price'] * $item['quantity'];
@@ -100,7 +99,61 @@
             <div class="alert alert-info text-center">
                 Your cart is empty. Start adding products to your cart!
             </div>
-        @endif
+        @endif --}}
+        @if(count($cart) > 0)
+    <div class="table-responsive">
+        <table class="table table-striped table-bordered">
+            <thead class="table-dark">
+                <tr>
+                    <th>Name</th>
+                    <th>Quantity</th>
+                    <th>Price</th>
+                    <th>Total</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach($cart as $id => $item)
+                    <tr>
+                        <td>{{ $item['name'] }}</td>
+                        <td>
+                            <form action="{{ route('cart.update', $id) }}" method="POST">
+                                @csrf
+                                <input type="number" name="quantity" value="{{ $item['quantity'] ?? 1 }}" min="1" class="form-control form-control-sm w-50 d-inline-block">
+                                <button type="submit" class="btn btn-sm btn-warning">Update</button>
+                            </form>
+                        </td>
+                        <td>${{ number_format($item['price'], 2) }}</td>
+                        <td>${{ number_format(($item['price'] * ($item['quantity'] ?? 1)), 2) }}</td>
+                        <td>
+                            <form action="{{ route('cart.remove', $id) }}" method="POST">
+                                @csrf
+                                <button type="submit" class="btn btn-sm btn-danger">Remove</button>
+                            </form>
+                        </td>
+                    </tr>
+                @endforeach
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Total -->
+    <div class="text-end mt-3">
+        <h4>Total: ${{ number_format(array_sum(array_map(function($item) {
+            return ($item['price'] * ($item['quantity'] ?? 1));
+        }, $cart)), 2) }}</h4>
+    </div>
+
+    <div class="text-right">
+        <a href="{{ route('checkout.index') }}" class="btn btn-success">Proceed to Checkout</a>
+    </div>
+
+@else
+    <div class="alert alert-info text-center">
+        Your cart is empty. Start adding products to your cart!
+    </div>
+@endif
+
     </div>
     </div>
     </div>

@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Product;
 use App\Models\Review;
+use App\Models\ProductCat;
+
 
 
 class ProductController extends Controller
@@ -24,15 +26,21 @@ class ProductController extends Controller
    
     return response()->json($products);
 }
+    // public function create()
+    // {
+    //     return view('products.create');
+    // }
     public function create()
-    {
-        return view('products.create');
-    }
+{
+    $categories = ProductCat::all();
+    return view('products.create', compact('categories'));
+}
 
     public function store(Request $request)
     {
         $request->validate([
             'name' => 'required|string',
+            'category_id' => 'required|exists:categories,id',
             'price' => 'required|numeric',
             'discount_code' => 'nullable|string',
             'description' => 'nullable|string',
@@ -62,6 +70,7 @@ class ProductController extends Controller
     
         $product = Product::create([
             'name' => $request->name,
+            'category_id' => $request->category_id,
             'price' => $request->price,
             'discount_code' => $request->discount_code,  
             'discount_amount' => $discountAmount,  

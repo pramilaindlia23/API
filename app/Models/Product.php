@@ -17,7 +17,8 @@ class Product extends Model
        'discount_amount', 
        'discounted_price',
        'discount_code',
-       'discount_percentage'
+       'discount_percentage',
+       'category_id'
     ];
     public function reviews()
     {
@@ -26,6 +27,10 @@ class Product extends Model
     public function getAverageRatingAttribute()
     {
         return round($this->reviews()->avg('rating') ?? 0, 1);
+    }
+    public function category()
+    {
+        return $this->belongsTo(Category::class);
     }
 
 }

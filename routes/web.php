@@ -130,9 +130,16 @@ Route::prefix('checkout')->group(function () {
 Route::get('/checkout/success', [CheckoutController::class, 'success'])->name('checkout.success');
 // Order //
 Route::post('/orders/{id}/cancel', [OrderController::class, 'cancelOrder'])->name('orders.cancel');
+/// for testing ///
+// Route::get('/cart/debug', function () {
+//     return response()->json(session()->all()); // Show all session data
+// });
 
+// Route::get('/test-session', function () {
+//     session()->put('cart', ['test_product' => ['name' => 'Test', 'price' => 100]]);
+//     return response()->json(['message' => 'Session Set!']);
+// });
 
-
-
-
-
+// Route::get('/get-session', function () {
+//     return response()->json(session()->all());
+// });
