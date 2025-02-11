@@ -27,7 +27,7 @@
          });
          
       </script> --}}
-      <script>
+      {{-- <script>
          document.addEventListener("DOMContentLoaded", function () {
          axios.get('/api/products')
          .then(function (response) {
@@ -138,6 +138,59 @@
              });
          }
          
+      </script> --}}
+      <script>
+      document.addEventListener("DOMContentLoaded", function () {
+    axios.get('/api/products')
+        .then(function (response) {
+            const products = response.data.products || response.data;
+            const container = document.getElementById('products-container');
+            container.innerHTML = "";
+
+            products.forEach(function (product) {
+                const originalPrice = parseFloat(product.price) || 0;
+                const discountAmount = parseFloat(product.discount_amount) || 0;
+                const finalPrice = parseFloat(product.discounted_price) || originalPrice;
+
+                // Fix discount display
+                let discountText = discountAmount > 0 
+                    ? `<strong>✔ Discount: ${(discountAmount / originalPrice * 100).toFixed(0)}%</strong>` 
+                    : `<strong>✔ Discount: No Discount</strong>`;
+
+                const productCard = `
+                    <div class="col">
+                        <div class="card h-100 shadow-sm border-light rounded">
+                            <img src="/storage/${product.image}" class="card-img-top" alt="${product.name}" style="height: 200px; object-fit: cover;">
+                            <div class="card-body">
+                                <h5 class="card-title">${product.name}</h5>
+                                <p class="card-text">${product.description}</p>
+
+                                <p class="card-text text-muted">
+                                    <strong>Original Price:</strong>
+                                    <span style="text-decoration: line-through;">$${originalPrice.toFixed(2)}</span>
+                                </p>
+
+                                <p class="card-text text-success">
+                                    ${discountText}
+                                </p>
+
+                                <p class="card-text text-dark">
+                                    <strong>Final Price: $${finalPrice.toFixed(2)}</strong>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                `;
+
+                container.innerHTML += productCard;
+            });
+        })
+        .catch(function (error) {
+            console.error('Error fetching the products:', error);
+        });
+});
+
+
       </script>
    </body>
 </html>

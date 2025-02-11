@@ -16,7 +16,8 @@ class Product extends Model
         'stock',
        'discount_amount', 
        'discounted_price',
-       'discount_code'
+       'discount_code',
+       'discount_percentage'
     ];
     public function reviews()
     {

@@ -28,47 +28,52 @@ class ProductController extends Controller
     {
         return view('products.create');
     }
-public function store(Request $request)
-{
-    $request->validate([
-        'name' => 'required|string',
-        'price' => 'required|numeric',
-        'discount_code' => 'nullable|string', 
-        'description' => 'nullable|string',
-        'stock' => 'required|integer|min:0',
-        'image' => 'nullable|image|max:2048',
-    ]);
 
-    $discountPercentage = 0;
-
-    if ($request->discount_code === 'SAVE10') {
-        $discountPercentage = 10;  
-    } elseif ($request->discount_code === 'SAVE20') {
-        $discountPercentage = 20;  
+    public function store(Request $request)
+    {
+        $request->validate([
+            'name' => 'required|string',
+            'price' => 'required|numeric',
+            'discount_code' => 'nullable|string',
+            'description' => 'nullable|string',
+            'stock' => 'required|integer|min:0',
+            'image' => 'nullable|image|max:2048',
+        ]);
+    
+        $discountPercentage = 0;
+        if ($request->discount_code === 'SAVE10' || $request->discount_code === '10') {
+            $discountPercentage = 10;
+        } elseif ($request->discount_code === 'SAVE20' || $request->discount_code === '20') {
+            $discountPercentage = 20;
+        }
+    
+        $discountAmount = ($request->price * $discountPercentage) / 100;
+        $discountedPrice = $request->price - $discountAmount;
+    
+        if ($discountPercentage == 0) {
+            $discountAmount = 0;
+            $discountedPrice = $request->price;
+        }
+    
+        $imagePath = null;
+        if ($request->hasFile('image')) {
+            $imagePath = $request->file('image')->store('product_images', 'public');
+        }
+    
+        $product = Product::create([
+            'name' => $request->name,
+            'price' => $request->price,
+            'discount_code' => $request->discount_code,  
+            'discount_amount' => $discountAmount,  
+            'discounted_price' => $discountedPrice,  
+            'description' => $request->description,
+            'stock' => $request->stock,
+            'image' => $imagePath,
+        ]);
+    
+        return response()->json(['message' => 'Product added successfully', 'product' => $product], 201);
     }
-
-    $discountAmount = ($request->price * $discountPercentage) / 100;
-    $discountedPrice = round($request->price - $discountAmount, 2);
-
-    $imagePath = null;
-    if ($request->hasFile('image')) {
-        $imagePath = $request->file('image')->store('product_images', 'public');
-    }
-
-    Product::create([
-        'name' => $request->name,
-        'price' => $request->price,
-        'discount_code' => $request->discount_code, 
-        'discount_amount' => $discountAmount,  
-        'discounted_price' => $discountedPrice,
-        'description' => $request->description,
-        'stock' => $request->stock,
-        'image' => $imagePath,
-    ]);
-
-    return redirect()->route('products.index')->with('success', 'Product created successfully.');
-}
-
+ 
 public function applyDiscount(Request $request)
 {
     $product = Product::find($request->product_id);
@@ -87,7 +92,6 @@ public function applyDiscount(Request $request)
         $discountPercentage = 20;
     }
 
-   
     $discountedPrice = $product->price - ($product->price * $discountPercentage / 100);
 
     return response()->json([
