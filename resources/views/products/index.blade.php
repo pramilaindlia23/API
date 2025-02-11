@@ -139,8 +139,9 @@
          }
          
       </script> --}}
+
       <script>
-      document.addEventListener("DOMContentLoaded", function () {
+        document.addEventListener("DOMContentLoaded", function () {
     axios.get('/api/products')
         .then(function (response) {
             const products = response.data.products || response.data;
@@ -151,8 +152,16 @@
                 const originalPrice = parseFloat(product.price) || 0;
                 const discountAmount = parseFloat(product.discount_amount) || 0;
                 const finalPrice = parseFloat(product.discounted_price) || originalPrice;
+                const averageRating = product.average_rating || 0;
+                const maxStars = 5;
+                let starsHTML = '';
 
-                // Fix discount display
+                for (let i = 1; i <= maxStars; i++) {
+                    starsHTML += `<i class="fas fa-star rating-star ${i <= averageRating ? 'text-warning' : 'text-secondary'}" 
+                                    data-product-id="${product.id}" 
+                                    data-rating="${i}"></i>`;
+                }
+
                 let discountText = discountAmount > 0 
                     ? `<strong>✔ Discount: ${(discountAmount / originalPrice * 100).toFixed(0)}%</strong>` 
                     : `<strong>✔ Discount: No Discount</strong>`;
@@ -177,6 +186,14 @@
                                 <p class="card-text text-dark">
                                     <strong>Final Price: $${finalPrice.toFixed(2)}</strong>
                                 </p>
+
+                                <div class="rating-container" data-product-id="${product.id}">
+                                    ${starsHTML} 
+                                    <strong>(${averageRating}/5)</strong>
+                                </div>
+                            </div>
+                            <div class="card-footer text-center">
+                                <button class="btn btn-primary w-100 add-to-cart" data-id="${product.id}">Add to Cart</button>
                             </div>
                         </div>
                     </div>
@@ -184,12 +201,50 @@
 
                 container.innerHTML += productCard;
             });
+
+            document.querySelectorAll(".rating-star").forEach(star => {
+                star.addEventListener("click", function () {
+                    const productId = this.getAttribute("data-product-id");
+                    const rating = this.getAttribute("data-rating");
+                    submitRating(productId, rating);
+                });
+            });
+
+            document.querySelectorAll(".add-to-cart").forEach(button => {
+                button.addEventListener("click", function () {
+                    const productId = this.getAttribute("data-id");
+                    addToCart(productId);
+                });
+            });
         })
         .catch(function (error) {
             console.error('Error fetching the products:', error);
         });
 });
 
+function addToCart(productId) {
+    axios.post(`/api/add-to-cart/${productId}`)
+        .then(response => {
+            alert("Product added to cart successfully!");
+        })
+        .catch(error => {
+            alert("Error adding product to cart. Please try again.");
+        });
+}
+
+function submitRating(productId, rating) {
+    axios.post('/api/rate-product', {
+        product_id: productId,
+        rating: rating
+    })
+    .then(response => {
+        alert("Rating submitted successfully!");
+        location.reload();
+    })
+    .catch(error => {
+        alert("Error submitting rating. Please try again.");
+    });
+}
 
       </script>
    </body>
