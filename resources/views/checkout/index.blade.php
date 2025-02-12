@@ -20,7 +20,7 @@
         <div class="alert alert-danger text-center mb-4">{{ session('error') }}</div>
         @endif
 
-        <form action="{{ route('checkout.store') }}" method="POST">
+        {{-- <form action="{{ route('checkout.store') }}" method="POST">
             @csrf
 
             <div class="row mb-4">
@@ -65,22 +65,6 @@
                             <div>${{ number_format(($item['price'] ?? 0) * ($item['quantity'] ?? 1), 2) }}</div>
                         </div>
                     @endforeach
-
-                    {{-- @foreach(session('cart', []) as $item)
-    <div class="d-flex justify-content-between mb-2">
-        <div>{{ $item['name'] }} (x{{ $item['quantity'] ?? 1 }})</div>
-        <div>${{ number_format(($item['price'] ?? 0) * ($item['quantity'] ?? 1), 2) }}</div>
-    </div>
-    @php $total += ($item['price'] ?? 0) * ($item['quantity'] ?? 1); @endphp
-@endforeach --}}
-
-                    {{-- @foreach(session('cart', []) as $item)
-                    <div class="d-flex justify-content-between mb-2">
-                        <div>{{ $item['name'] }} (x{{ $item['quantity'] }})</div>
-                        <div>${{ number_format($item['price'] * $item['quantity'], 2) }}</div>
-                    </div>
-                    @php $total += $item['price'] * $item['quantity']; @endphp
-                    @endforeach --}}
                 </div>
                 <hr>
             
@@ -106,7 +90,109 @@
             
             <button type="submit" class="btn btn-success w-100 mt-4">Place Order</button>
             
+        </form> --}}
+        <form action="{{ route('checkout.store') }}" method="POST" enctype="multipart/form-data">
+            @csrf
+        
+            <div class="row mb-4">
+                <div class="col-12">
+                    <h5>Shipping Information</h5>
+                </div>
+        
+                <div class="col-12 col-md-6 mb-3">
+                    <label for="name" class="form-label">Full Name</label>
+                    <input type="text" class="form-control" id="name" name="name" required>
+                </div>
+        
+                <div class="col-12 col-md-6 mb-3">
+                    <label for="mobile" class="form-label">Mobile Number</label>
+                    <input type="text" class="form-control" id="mobile" name="mobile" required>
+                </div>
+        
+                <div class="col-12 col-md-6 mb-3">
+                    <label for="email" class="form-label">Email</label>
+                    <input type="email" class="form-control" id="email" name="email" required>
+                </div>
+                <div class="col-12 col-md-6 mb-3">
+                    <label for="brand_name" class="form-label">Brand Name</label>
+                    <input type="text" class="form-control" id="brand_name" name="brand_name" required>
+                </div>
+        
+                <div class="col-12  mb-3">
+                    <label for="address" class="form-label">Shipping Address</label>
+                    <textarea class="form-control" id="address" name="address" rows="3" required></textarea>
+                    {{-- <input type="address" class="form-control" id="address" name="address" required> --}}
+                </div>
+        
+                <div class="col-12 col-md-6 mb-3">
+                    <label for="city" class="form-label">City</label>
+                    <input type="text" class="form-control" id="city" name="city" required>
+                </div>
+        
+                <div class="col-12 col-md-6 mb-3">
+                    <label for="zip" class="form-label">Postal Code</label>
+                    <input type="text" class="form-control" id="zip" name="zip" required>
+                </div>
+        
+                
+        
+                {{-- <div class="col-12 col-md-6 mb-3">
+                    <label for="product_image" class="form-label">Product Image</label>
+                    <input type="file" class="form-control" id="product_image" name="product_image">
+                </div> --}}
+        
+                <div class="mb-3">
+                    <label for="discount_code">Discount Code</label>
+                    <input type="text" id="discount_code" name="discount_code" class="form-control" placeholder="Enter your discount code">
+                </div>
+            </div>
+        
+            <hr>
+        
+            <div>
+                <h5>Order Summary</h5>
+                <div class="mb-3">
+                    @php $total = 0; @endphp
+                    @foreach(session('cart', []) as $item)
+                        <div class="d-flex justify-content-between mb-2">
+                            <div>
+                                @if(isset($item['image']))
+                                <img src="{{ $item['image'] }}" alt="Product Image" width="50" class="me-2">
+                            @else
+                                <img src="{{ asset('images/default.png') }}" alt="No Image" width="50" class="me-2">
+                            @endif
+                            </div>
+                            <div>{{ $item['name'] }} (x{{ $item['quantity'] ?? 1 }})</div>
+                            <div>${{ number_format(($item['price'] ?? 0) * ($item['quantity'] ?? 1), 2) }}</div>
+                        </div>
+                    @endforeach
+                </div>
+                <hr>
+        
+                <div class="d-flex justify-content-between">
+                    <div>Subtotal</div>
+                    <div>${{ number_format($total, 2) }}</div>
+                </div>
+        
+                @if(session('discount') > 0)
+                    <div class="d-flex justify-content-between text-danger">
+                        <div>Discount ({{ session('discount_code') }})</div>
+                        <div>- ${{ number_format(session('discount', 0), 2) }}</div>
+                    </div>
+                @endif
+        
+                <hr>
+        
+                <div class="d-flex justify-content-between fw-bold">
+                    <div>Total</div>
+                    <div>${{ number_format(session('discounted_total', $total), 2) }}</div>
+                </div>
+            </div>
+        
+            <button type="submit" class="btn btn-success w-100 mt-4">Place Order</button>
+        
         </form>
+        
     </div>
 
 </body>

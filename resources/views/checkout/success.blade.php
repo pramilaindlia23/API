@@ -16,6 +16,15 @@
                 Your order has been successfully placed! Thank you for shopping with us.
             </div>
             <h3>Order Summary</h3>
+            {{-- <ul>
+                @foreach($order->orderItems as $item)
+                        <div class="d-flex align-items-center">
+                            <img src="{{ asset('storage/' . $item->image) }}" alt="Product Image" width="50">        <div>
+                                <strong>{{ $item->product_name }}</strong> (x{{ $item->quantity }}) - ${{ number_format($item->price, 2) }}
+                            </div>
+                        </div>
+                    @endforeach
+            </ul> --}}
 
             <div class="d-flex justify-content-between">
                 <div>Subtotal</div>
@@ -28,6 +37,7 @@
                     <div>- ${{ number_format(session('discount', 0), 2) }}</div>
                 </div>
             @endif
+            
             <hr>
             <div class="d-flex justify-content-between fw-bold">
                 <div>Total</div>

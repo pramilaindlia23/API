@@ -36,7 +36,14 @@ class OrderController extends Controller
         'address' => 'required|string|max:500',
         'city' => 'required|string|max:255',
         'zip' => 'required|string|max:20',
+        'mobile' => 'required',
+        'brand_name' => 'required',
+        'product_image' => 'nullable|image|max:2048',
     ]);
+    $imagePath = null;
+    if ($request->hasFile('product_image')) {
+        $imagePath = $request->file('product_image')->store('products', 'public');
+    }
 
     $cart = session()->get('cart', []);
    
@@ -67,6 +74,9 @@ class OrderController extends Controller
         'zip' => $request->zip,
         'total' => $total,
         'status' => 'pending',
+        'mobile' => $request->mobile,
+        'brand_name' => $request->brand_name,
+        'product_image' => $imagePath,
     ]);
 
     foreach ($cart as $item) {
@@ -81,8 +91,9 @@ class OrderController extends Controller
     }
 
     session()->forget('cart');
+    return redirect()->route('checkout.success',['order' => $order->id])->with('success', 'Order placed successfully!');
 
-    return redirect()->route('order.confirmation', ['order' => $order->id]);
+    // return redirect()->route('order.confirmation', ['order' => $order->id]);
 }
     public function confirmation($orderId)
     {

@@ -21,7 +21,6 @@ class CheckoutController extends Controller
         if (empty($cart)) {
             return redirect()->route('cart.index')->with('error', 'Your cart is empty.');
         }
-        // dd(session('cart'));
 
         return view('checkout.index', compact('cart'));
     }
@@ -30,6 +29,7 @@ class CheckoutController extends Controller
         $request->validate([
             'name' => 'required|string',
             'email' => 'required|email',
+            'mobile' => 'required',
             'address' => 'required|string',
             'city' => 'required|string',
             'zip' => 'required|string',
@@ -37,6 +37,7 @@ class CheckoutController extends Controller
         ]);
     
         $cart = session()->get('cart', []);
+        
     
         if (empty($cart)) {
             return redirect()->route('checkout.index')->with('error', 'Your cart is empty.');
@@ -80,6 +81,7 @@ class CheckoutController extends Controller
             'user_id' => auth()->check() ? auth()->id() : null,
             'name' => $request->name,
             'email' => $request->email,
+            'mobile' => $request->mobile,
             'address' => $request->address,
             'city' => $request->city,
             'zip' => $request->zip,
@@ -87,8 +89,6 @@ class CheckoutController extends Controller
             'discount_code' => $discountCode ?: null,
             'status' => 'pending',
         ]);
-       
-    
         // Store order items
         foreach ($cart as $productId => $item) {
             $orderItem = OrderItem::create([
@@ -96,12 +96,19 @@ class CheckoutController extends Controller
                 'product_id' => $productId,
                 'quantity' => $item['quantity'],
                 'price' => $item['price'],
+                'product_name' => $item['name'],
+                'image' => 'products_image/' . ($item['image'] ?? 'default.png'), // Correct path
+ 
             ]);
         }
+        // dd(session('cart'));
+
     
         Mail::to($request->email)->send(new OrderConfirmationMail($order));
     
         session()->forget('cart');
+        // dd(session('cart'));
+
     
         session([
             'total' => $total, 
@@ -110,7 +117,7 @@ class CheckoutController extends Controller
             'discounted_total' => $discountedTotal
         ]);
     
-        return redirect()->route('checkout.success');
+        return redirect()->route('checkout.success')->with('success', 'Order placed successfully!');
     }
         public function confirmation($orderId)
     {

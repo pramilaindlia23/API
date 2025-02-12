@@ -15,7 +15,7 @@ class Product extends Model
         'image',
         'stock',
        'discount_amount', 
-       'discounted_price',
+       'discounted_price',  
        'discount_code',
        'discount_percentage',
        'category_id'
