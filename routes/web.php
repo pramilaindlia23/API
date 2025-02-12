@@ -10,6 +10,8 @@ use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ReelController;
 use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\OrderController;
+use App\Http\Controllers\ProductCatController;
+
 
 
 
@@ -101,12 +103,14 @@ Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
 Route::post('/cart/remove/{id}', [CartController::class, 'remove'])->name('cart.remove');
 Route::post('/cart/update/{id}', [CartController::class, 'update'])->name('cart.update');
 
+// product //
 
-Route::get('/products', [ProductController::class, 'index'])->name('products.index');
+Route::get('/products', [ProductController::class, 'index'])->name('product.index');
 Route::get('/product/create', [ProductController::class, 'create'])->name('products.create');
 Route::post('/product/store', [ProductController::class, 'store'])->name('product.store');
+Route::post('/category/store', [ProductCatController::class, 'store'])->name('category.store');
 
-// product //
+
 Route::get('/products', function () {
     return view('products.index');
 });
@@ -130,16 +134,4 @@ Route::prefix('checkout')->group(function () {
 Route::get('/checkout/success', [CheckoutController::class, 'success'])->name('checkout.success');
 // Order //
 Route::post('/orders/{id}/cancel', [OrderController::class, 'cancelOrder'])->name('orders.cancel');
-/// for testing ///
-// Route::get('/cart/debug', function () {
-//     return response()->json(session()->all()); // Show all session data
-// });
 
-// Route::get('/test-session', function () {
-//     session()->put('cart', ['test_product' => ['name' => 'Test', 'price' => 100]]);
-//     return response()->json(['message' => 'Session Set!']);
-// });
-
-// Route::get('/get-session', function () {
-//     return response()->json(session()->all());
-// });

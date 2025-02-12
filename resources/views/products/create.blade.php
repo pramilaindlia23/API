@@ -12,7 +12,7 @@
 @endif
 <div class="container mt-5">
     <h2 class="text-center mb-5 bg-success text-white p-3 rounded">Create New Product</h2>
-    <form action="{{ route('product.store') }}" method="POST" id='product-form'  enctype="multipart/form-data">
+    {{-- <form action="{{ route('product.store') }}" method="POST" id='product-form'  enctype="multipart/form-data">
         @csrf
     
         <div class="mb-3">
@@ -46,27 +46,26 @@
         </div>
     
         <button type="submit" class="btn btn-success width-100 rounded">Add Product</button>
-    </form>
+    </form> --}}
     </div>
-    {{-- <form action="{{ route('product.store') }}" method="POST" id='product-form' enctype="multipart/form-data">
-        @csrf --}}
-    <!-- Product Category Form -->
-{{-- <h2 class="text-center mb-4">Add Product Category</h2>
+  
+<h2 class="text-center mb-4">Add Product Category</h2>
 <div class="card shadow-sm mb-5" style="max-width: 600px; margin: 0 auto;">
     <div class="card-body">
-        <form id="category-form">
+        <form action="{{ route('category.store') }}" method="POST">
+            @csrf
             <label for="category_name">Category Name</label>
             <input type="text" id="category_name" name="name" required class="form-control">
             <button type="submit" class="btn btn-primary mt-3">Add Category</button>
-        </form>
+        </form> 
     </div>
 </div>
 
-<!-- Product Upload Form -->
 <h2 class="text-center mb-4">Add New Product</h2>
 <div class="card shadow-sm" style="max-width: 600px; margin: 0 auto;">
     <div class="card-body">
-        <form id="product-form" enctype="multipart/form-data">
+        <form action="{{ route('product.store') }}" method="POST" enctype="multipart/form-data">
+            @csrf
             <div class="mb-3">
                 <label for="name" class="form-label">Product Name</label>
                 <input type="text" id="name" name="name" class="form-control" required>
@@ -76,6 +75,9 @@
                 <label for="category_id" class="form-label">Select Category</label>
                 <select id="category_id" name="category_id" class="form-control" required>
                     <option value="" disabled selected>Select a category</option>
+                    @foreach ($categories as $category)
+                        <option value="{{ $category->id }}">{{ $category->name }}</option>
+                    @endforeach
                 </select>
             </div>
 
@@ -101,15 +103,15 @@
 
             <div class="mb-3">
                 <label for="image" class="form-label">Product Image</label>
-                <input type="file" id="image" name="image" class="form-control-file" accept="image/*" required>
+                <input type="file" id="image" name="image" class="form-control" accept="image/*" required>
             </div>
 
             <button type="submit" class="btn btn-success w-100">Add Product</button>
         </form>
-    </div> --}}
+    </div> 
 </div>
 
-<script>
+{{-- <script>
     document.addEventListener('DOMContentLoaded', function () {
         const originalPrice = parseFloat(product.price);
         const discountedPrice = parseFloat(product.discounted_price);
@@ -136,7 +138,39 @@ discountCodeInput.addEventListener('input', updateDiscount);
 priceInput.addEventListener('input', updateDiscount);
 });
 
+</script> --}}
+
+    <script>
+    document.addEventListener('DOMContentLoaded', function () {
+        let priceInput = document.getElementById('price');
+        let discountCodeInput = document.getElementById('discount_code');
+        let discountPercentageDisplay = document.createElement('span');
+
+        discountCodeInput.parentNode.appendChild(discountPercentageDisplay);
+
+        function updateDiscount() {
+            let price = parseFloat(priceInput.value) || 0;
+            let discountCode = discountCodeInput.value.trim().toUpperCase();
+            let discountPercent = 0;
+
+            if (discountCode === 'SAVE10') {
+                discountPercent = 10; 
+            } else if (discountCode === 'SAVE20') {
+                discountPercent = 20;
+            }
+
+            discountPercentageDisplay.textContent = `Discount: ${discountPercent}%`;
+        }
+
+        discountCodeInput.addEventListener('input', updateDiscount);
+        priceInput.addEventListener('input', updateDiscount);
+    });
 </script>
+
+
+
+
+
 
     
 </body>

@@ -40,7 +40,7 @@ class ProductController extends Controller
     {
         $request->validate([
             'name' => 'required|string',
-            'category_id' => 'required|exists:categories,id',
+            'category_id' => 'required|exists:products_cats,id',
             'price' => 'required|numeric',
             'discount_code' => 'nullable|string',
             'description' => 'nullable|string',
@@ -78,9 +78,15 @@ class ProductController extends Controller
             'description' => $request->description,
             'stock' => $request->stock,
             'image' => $imagePath,
+            
         ]);
-    
-        return response()->json(['message' => 'Product added successfully', 'product' => $product], 201);
+        // dd($request->all()); 
+        return redirect()->route('product.index')->with('success', 'Product added successfully!');
+
+        // return response()->json(['message' =>
+        //  'Product added successfully',
+        //   'product' => $product],
+        //    201);
     }
  
 public function applyDiscount(Request $request)

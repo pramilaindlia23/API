@@ -101,6 +101,11 @@ class CheckoutController extends Controller
  
             ]);
         }
+        if ($request->hasFile('image')) {
+            $orderItem = $request->file('image')->store('products_image', 'public');
+        } else {
+            $orderItem = 'products_image/default.png'; // Fallback image
+        }
         // dd(session('cart'));
 
     

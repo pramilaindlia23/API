@@ -74,8 +74,8 @@ Route::get('/products', function () {
 Route::post('/add-to-cart/{id}', [CartController::class, 'add']);
 
 Route::post('/rate-product', [ReviewController::class, 'store']);
-Route::post('/save-cats', [ProductCatController::class, 'store']);
-Route::get('/show-cats', [ProductCatController::class, 'index']);
+Route::get('/categories', [ProductCatController::class, 'getCategories']);
+// Route::get('/show-cats', [ProductCatController::class, 'index']);
 
 
 // audio //

@@ -15,11 +15,13 @@
             <div class="alert alert-success text-center mb-4">
                 Your order has been successfully placed! Thank you for shopping with us.
             </div>
-            <h3>Order Summary</h3>
-            {{-- <ul>
+            {{-- <h3>Order Summary</h3>
+            <ul>
                 @foreach($order->orderItems as $item)
                         <div class="d-flex align-items-center">
-                            <img src="{{ asset('storage/' . $item->image) }}" alt="Product Image" width="50">        <div>
+                            <img src="{{ asset('storage/' . $item->image) }}" alt="Product Image" width="50">
+
+                              <div>
                                 <strong>{{ $item->product_name }}</strong> (x{{ $item->quantity }}) - ${{ number_format($item->price, 2) }}
                             </div>
                         </div>
