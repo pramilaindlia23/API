@@ -4,166 +4,307 @@
       <meta charset="UTF-8">
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
       <title>Products</title>
-      <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+      <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
       <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
    </head>
    <body>
       <div class="container mt-5">
          <a href="{{ route('products.create') }}" class="btn btn-dark float-right mt-3">Add New Product</a>
          <h2 class="text-center mb-5 bg-success text-white p-3 rounded">Our Products</h2>
-         {{-- @foreach ($products as $product)
-    <tr>
-        <td>{{ $product->name }}</td>
-        <td>{{ $product->category ? $product->category->name : 'No Category' }}</td>
-        <td>{{ $product->stock }}</td>
-        <td>${{ number_format($product->price, 2) }}</td>
-        <td>{{ $product->discount_code ?? 'None' }}</td>
-        <td>{{ $product->description }}</td>
-        <td>
-            <img src="{{ asset('storage/' . $product->image) }}" width="50">
-        </td>
-    </tr>
-@endforeach --}}
-
          <div class="row row-cols-1 row-cols-md-3 g-4" id="products-container">
-            <!-- Products will be dynamically inserted here -->
+            <div class="modal fade" id="categoryImagesModal" tabindex="-1" aria-labelledby="categoryImagesModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-lg">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="categoryImagesModalLabel">Category Images</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="row" id="category-images-container">
+                                <!-- Images will be loaded here dynamically -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            
          </div>
       </div>
       <!-- Add Axios CDN -->
       <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-      {{-- <script>
-         axios.get('/api/products')
-         .then(function (response) {
-             console.log('API Response:', response.data); 
-         })
-         .catch(function (error) {
-             console.error('There was an error fetching the products:', error);
-         });
-         
-      </script> --}}
-      {{-- <script>
-         document.addEventListener("DOMContentLoaded", function () {
-         axios.get('/api/products')
-         .then(function (response) {
-         const products = response.data.products || response.data;
-         const container = document.getElementById('products-container');
-         container.innerHTML = "";
-         
-         products.forEach(function (product) {
-             const originalPrice = parseFloat(product.price) || 0;
-             let discountPercentage = 0;
-         
-             if (product.discount_code === 'SAVE10' || product.discount_code === '10') {
-                 discountPercentage = 10;
-             } else if (product.discount_code === 'SAVE20' || product.discount_code === '20') {
-                 discountPercentage = 20;
-             }
-         
-             const finalPrice = (originalPrice - (originalPrice * discountPercentage / 100)).toFixed(2);
-             const averageRating = product.average_rating || 0;
-             const maxStars = 5;
-             let starsHTML = '';
-         
-             for (let i = 1; i <= maxStars; i++) {
-                 starsHTML += `<i class="fas fa-star rating-star ${i <= averageRating ? 'text-warning' : 'text-secondary'}" 
-                                 data-product-id="${product.id}" 
-                                 data-rating="${i}"></i>`;
-             }
-         
-             const productCard = `
-                 <div class="col">
-                     <div class="card h-100 shadow-sm border-light rounded">
-                         <img src="/storage/${product.image}" class="card-img-top" alt="${product.name}" style="height: 200px; object-fit: cover;">
-                         <div class="card-body">
-                             <h5 class="card-title">${product.name}</h5>
-                             <p class="card-text">${product.description}</p>
-         
-                            
-         
-                             <p class="card-text text-muted">
-                                 <strong>Original Price:</strong>
-                                 <span style="text-decoration: line-through;">$${originalPrice.toFixed(2)}</span>
-                             </p>
-         
-                             <p class="card-text text-success">
-                                 <strong>✔ Discount: ${discountPercentage}%</strong>
-                             </p>
-         
-                             <p class="card-text text-dark">
-                                 <strong>Final Price: $${finalPrice}</strong>
-                             </p>
-         
-                             <div class="rating-container" data-product-id="${product.id}">
-                                 ${starsHTML} 
-                                 <strong>(${averageRating}/5)</strong>
-                             </div>
-                         </div>
-                         <div class="card-footer text-center">
-                             <button class="btn btn-primary w-100 add-to-cart" data-id="${product.id}">Add to Cart</button>
-                         </div>
-                     </div>
-                 </div>
-             `;
-         
-             container.innerHTML += productCard;
-         });
-         
-         document.querySelectorAll(".rating-star").forEach(star => {
-             star.addEventListener("click", function () {
-                 const productId = this.getAttribute("data-product-id");
-                 const rating = this.getAttribute("data-rating");
-                 submitRating(productId, rating);
-             });
-         });
-         
-         document.querySelectorAll(".add-to-cart").forEach(button => {
-             button.addEventListener("click", function () {
-                 const productId = this.getAttribute("data-id");
-                 addToCart(productId);
-             });
-         });
-         })
-         .catch(function (error) {
-         console.error('Error fetching the products:', error);
-         });
-         });
-         
-         function addToCart(productId) {
-             axios.post(`/api/add-to-cart/${productId}`)
-                 .then(response => {
-                     alert("Product added to cart successfully!");
-                 })
-                 .catch(error => {
-                     alert("Error adding product to cart. Please try again.");
-                 });
-         }
-         
-         function submitRating(productId, rating) {
-             axios.post('/api/rate-product', {
-                 product_id: productId,
-                 rating: rating
-             })
-             .then(response => {
-                 alert("Rating submitted successfully!");
-                 location.reload();
-             })
-             .catch(error => {
-                 alert("Error submitting rating. Please try again.");
-             });
-         }
-         
-      </script> --}}
-
       <script>
-        
+        document.addEventListener("DOMContentLoaded", function () {
+            axios.get('/api/products')
+                .then(function (response) {
+                    const products = response.data.products || response.data;
+                    const container = document.getElementById('products-container');
+                    container.innerHTML = "";
+    
+                    products.forEach(function (product) {
+                        const originalPrice = parseFloat(product.price) || 0;
+                        const discountAmount = parseFloat(product.discount_amount) || 0;
+                        const finalPrice = parseFloat(product.discounted_price) || originalPrice;
+                        const averageRating = product.average_rating || 0;
+                        const maxStars = 5;
+    
+                        // Generate rating stars
+                        let starsHTML = '';
+                        for (let i = 1; i <= maxStars; i++) {
+                            starsHTML += `
+                                <i class="fas fa-star rating-star ${i <= averageRating ? 'text-warning' : 'text-secondary'}"
+                                    data-product-id="${product.id}" data-rating="${i}">
+                                </i>`;
+                        }
+    
+                        // Generate discount text
+                        let discountText = discountAmount > 0 
+                            ? `<strong>✔ Discount: ${(discountAmount / originalPrice * 100).toFixed(0)}%</strong>` 
+                            : `<strong>✔ Discount: No Discount</strong>`;
+    
+                        // Create Product Card
+                        const productCard = `
+                            <div class="col">
+                                <div class="card h-100 shadow-sm border-light rounded product-card" 
+                                     data-category-id="${product.category_id}">
+                                
+                                    <div id="carousel-${product.id}" class="carousel slide" data-bs-ride="carousel">
+                                        <div class="carousel-inner">
+                                            ${JSON.parse(product.images || '[]').map((image, index) => `
+                                                <div class="carousel-item ${index === 0 ? 'active' : ''}">
+                                                    <img src="/storage/${image}" class="d-block w-100 product-image" 
+                                                         alt="${product.name}" style="height: 200px; object-fit: cover;">
+                                                </div>
+                                            `).join('')}
+                                        </div>
+                                        <button class="carousel-control-prev" type="button" data-bs-target="#carousel-${product.id}" data-bs-slide="prev">
+                                            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                                        </button>
+                                        <button class="carousel-control-next" type="button" data-bs-target="#carousel-${product.id}" data-bs-slide="next">
+                                            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                                        </button>
+                                    </div>
+    
+                                    <div class="card-body">
+                                        <h5 class="card-title">${product.name}</h5>
+                                        <p class="card-text">${product.description}</p>
+                                        <p class="card-text text-muted">
+                                            <strong>Original Price:</strong>
+                                            <span style="text-decoration: line-through;">$${originalPrice.toFixed(2)}</span>
+                                        </p>
+                                        <p class="card-text text-success">
+                                            ${discountText}
+                                        </p>
+                                        <p class="card-text text-dark">
+                                            <strong>Final Price: $${finalPrice.toFixed(2)}</strong>
+                                        </p>
+    
+                                        <div class="rating-container" data-product-id="${product.id}">
+                                            ${starsHTML} 
+                                            <strong>(${averageRating}/5)</strong>
+                                        </div>
+                                    </div>
+    
+                                    <div class="card-footer text-center">
+                                        <button class="btn btn-primary w-100 add-to-cart" data-id="${product.id}">Add to Cart</button>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+    
+                        container.innerHTML += productCard;
+                    });
+    
+                })
+                .catch(function (error) {
+                    console.error('Error fetching the products:', error);
+                });
+    
+            // Redirect to category page when product is clicked
+            document.body.addEventListener("click", function (event) {
+                let productCard = event.target.closest(".product-card");
+                if (productCard) {
+                    const categoryId = productCard.getAttribute("data-category-id");
+                    if (categoryId) {
+                        window.location.href = `/productCat/${categoryId}`;
+                    }
+                }
+            });
+    
+            // Handle rating submission
+            document.body.addEventListener("click", function (event) {
+                if (event.target.classList.contains("rating-star")) {
+                    event.stopPropagation();  // Prevent triggering category click
+                    const productId = event.target.getAttribute("data-product-id");
+                    const rating = event.target.getAttribute("data-rating");
+                    submitRating(productId, rating);
+                }
+            });
+    
+            // Handle add to cart button
+            document.body.addEventListener("click", function (event) {
+                if (event.target.classList.contains("add-to-cart")) {
+                    event.stopPropagation(); // Prevent category click
+                    const productId = event.target.getAttribute("data-id");
+                    addToCart(productId);
+                }
+            });
+    
+        });
+    
+        function addToCart(productId) {
+            axios.post(`/api/add-to-cart/${productId}`)
+                .then(response => {
+                    alert("Product added to cart successfully!");
+                })
+                .catch(error => {
+                    alert("Error adding product to cart. Please try again.");
+                });
+        }
+    
+        function submitRating(productId, rating) {
+            axios.post('/api/rate-product', {
+                product_id: productId,
+                rating: rating
+            })
+            .then(response => {
+                alert("Rating submitted successfully!");
+                location.reload();
+            })
+            .catch(error => {
+                alert("Error submitting rating. Please try again.");
+            });
+        }
+    </script>
+    
+     
+      {{-- <script>
         document.addEventListener("DOMContentLoaded", function () {
     axios.get('/api/products')
         .then(function (response) {
             const products = response.data.products || response.data;
             const container = document.getElementById('products-container');
             container.innerHTML = "";
-            
 
+            products.forEach(function (product) {
+                const originalPrice = parseFloat(product.price) || 0;
+                const discountAmount = parseFloat(product.discount_amount) || 0;
+                const finalPrice = parseFloat(product.discounted_price) || originalPrice;
+                const averageRating = product.average_rating || 0;
+                const maxStars = 5;
+
+                // Generate rating stars
+                let starsHTML = '';
+                for (let i = 1; i <= maxStars; i++) {
+                    starsHTML += `
+                        <i class="fas fa-star rating-star ${i <= averageRating ? 'text-warning' : 'text-secondary'}"
+                            data-product-id="${product.id}" data-rating="${i}">
+                        </i>`;
+                }
+
+                // Generate discount text
+                let discountText = discountAmount > 0 
+                    ? `<strong>✔ Discount: ${(discountAmount / originalPrice * 100).toFixed(0)}%</strong>` 
+                    : `<strong>✔ Discount: No Discount</strong>`;
+
+                // Create Product Card with Clickable Functionality
+                const productCard = `
+                    <div class="col">
+                        <div class="card h-100 shadow-sm border-light rounded product-card" 
+                             data-category-id="${product.category_id}">
+                        
+                            <div id="carousel-${product.id}" class="carousel slide" data-bs-ride="carousel">
+                                <div class="carousel-inner">
+                                    ${JSON.parse(product.images || '[]').map((image, index) => `
+                                        <div class="carousel-item ${index === 0 ? 'active' : ''}">
+                                            <img src="/storage/${image}" class="d-block w-100 product-image" 
+                                                 alt="${product.name}" style="height: 200px; object-fit: cover;">
+                                        </div>
+                                    `).join('')}
+                                </div>
+                                <button class="carousel-control-prev" type="button" data-bs-target="#carousel-${product.id}" data-bs-slide="prev">
+                                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                                </button>
+                                <button class="carousel-control-next" type="button" data-bs-target="#carousel-${product.id}" data-bs-slide="next">
+                                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                                </button>
+                            </div>
+
+                            <div class="card-body">
+                                <h5 class="card-title">${product.name}</h5>
+                                <p class="card-text">${product.description}</p>
+                                <p class="card-text text-muted">
+                                    <strong>Original Price:</strong>
+                                    <span style="text-decoration: line-through;">$${originalPrice.toFixed(2)}</span>
+                                </p>
+                                <p class="card-text text-success">
+                                    ${discountText}
+                                </p>
+                                <p class="card-text text-dark">
+                                    <strong>Final Price: $${finalPrice.toFixed(2)}</strong>
+                                </p>
+
+                                <div class="rating-container" data-product-id="${product.id}">
+                                    ${starsHTML} 
+                                    <strong>(${averageRating}/5)</strong>
+                                </div>
+                            </div>
+
+                            <div class="card-footer text-center">
+                                <button class="btn btn-primary w-100 add-to-cart" data-id="${product.id}">Add to Cart</button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+
+                container.innerHTML += productCard;
+            });
+
+            // Redirect to category page when product is clicked
+            document.addEventListener("DOMContentLoaded", function () {
+        document.body.addEventListener("click", function (event) {
+            let productCard = event.target.closest(".product-card");
+            if (productCard) {
+                const categoryId = productCard.getAttribute("data-category-id");
+                
+                if (categoryId) {
+                    window.location.href = "{{ url('/productCat') }}/" + categoryId;
+                }
+            }
+        });
+    });
+
+            // Rating and Cart event listeners
+            document.querySelectorAll(".rating-star").forEach(star => {
+                star.addEventListener("click", function (event) {
+                    event.stopPropagation();
+                    const productId = this.getAttribute("data-product-id");
+                    const rating = this.getAttribute("data-rating");
+                    submitRating(productId, rating);
+                });
+            });
+
+            document.querySelectorAll(".add-to-cart").forEach(button => {
+                button.addEventListener("click", function (event) {
+                    event.stopPropagation(); 
+                    const productId = this.getAttribute("data-id");
+                    addToCart(productId);
+                });
+            });
+        })
+        .catch(function (error) {
+            console.error('Error fetching the products:', error);
+        });
+});
+
+      </script> --}}
+      {{-- <script>
+        document.addEventListener("DOMContentLoaded", function () {
+    axios.get('/api/products')
+        .then(function (response) {
+            const products = response.data.products || response.data;
+            const container = document.getElementById('products-container');
+            container.innerHTML = "";
             products.forEach(function (product) {
                 const originalPrice = parseFloat(product.price) || 0;
                 const discountAmount = parseFloat(product.discount_amount) || 0;
@@ -182,10 +323,30 @@
                     ? `<strong>✔ Discount: ${(discountAmount / originalPrice * 100).toFixed(0)}%</strong>` 
                     : `<strong>✔ Discount: No Discount</strong>`;
 
-                const productCard = `
+              
+                    const productCard = `
                     <div class="col">
                         <div class="card h-100 shadow-sm border-light rounded">
-                            <img src="/storage/${product.image}" class="card-img-top" alt="${product.name}" style="height: 200px; object-fit: cover;">
+                        
+                            <!-- Bootstrap Carousel for Multiple Images -->
+                            <div id="carousel-${product.id}" class="carousel slide" data-bs-ride="carousel">
+                                <div class="carousel-inner">
+                                    ${JSON.parse(product.images || '[]').map((image, index) => `
+                                        <div class="carousel-item ${index === 0 ? 'active' : ''}">
+                                            <img src="/storage/${image}" class="d-block w-100 product-image" 
+                                                 alt="${product.name}" style="height: 200px; object-fit: cover;" 
+                                                 data-category-id="${product.category_id}">
+                                        </div>
+                                    `).join('')}
+                                </div>
+                                <button class="carousel-control-prev" type="button" data-bs-target="#carousel-${product.id}" data-bs-slide="prev">
+                                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                                </button>
+                                <button class="carousel-control-next" type="button" data-bs-target="#carousel-${product.id}" data-bs-slide="next">
+                                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                                </button>
+                            </div>
+
                             <div class="card-body">
                                 <h5 class="card-title">${product.name}</h5>
                                 <p class="card-text">${product.description}</p>
@@ -203,17 +364,20 @@
                                     <strong>Final Price: $${finalPrice.toFixed(2)}</strong>
                                 </p>
 
+                                <!-- Rating Stars -->
                                 <div class="rating-container" data-product-id="${product.id}">
                                     ${starsHTML} 
                                     <strong>(${averageRating}/5)</strong>
                                 </div>
                             </div>
+                            
                             <div class="card-footer text-center">
                                 <button class="btn btn-primary w-100 add-to-cart" data-id="${product.id}">Add to Cart</button>
                             </div>
                         </div>
                     </div>
                 `;
+
 
                 container.innerHTML += productCard;
             });
@@ -261,182 +425,46 @@ function submitRating(productId, rating) {
         alert("Error submitting rating. Please try again.");
     });
 }
-
-
-      </script>
-      {{-- <script>
-        document.addEventListener("DOMContentLoaded", function () {
-    const categoryForm = document.getElementById("category-form");
-    const productForm = document.getElementById("product-form");
-    const categorySelect = document.getElementById("category_id");
-    const productsContainer = document.getElementById("products-container");
-
-    // Fetch and display products
-    function fetchProducts() {
-        axios.get('/api/products')
-            .then(function (response) {
-                const products = response.data.products || response.data;
-                productsContainer.innerHTML = "";
-
-                products.forEach(function (product) {
-                    const originalPrice = parseFloat(product.price) || 0;
-                    const discountAmount = parseFloat(product.discount_amount) || 0;
-                    const finalPrice = parseFloat(product.discounted_price) || originalPrice;
-                    const averageRating = product.average_rating || 0;
-                    const maxStars = 5;
-                    let starsHTML = '';
-
-                    for (let i = 1; i <= maxStars; i++) {
-                        starsHTML += `<i class="fas fa-star rating-star ${i <= averageRating ? 'text-warning' : 'text-secondary'}" 
-                                        data-product-id="${product.id}" 
-                                        data-rating="${i}"></i>`;
-                    }
-
-                    let discountText = discountAmount > 0 
-                        ? `<strong>✔ Discount: ${(discountAmount / originalPrice * 100).toFixed(0)}%</strong>` 
-                        : `<strong>✔ Discount: No Discount</strong>`;
-
-                    const productCard = `
-                        <div class="col">
-                            <div class="card h-100 shadow-sm border-light rounded">
-                                <img src="/storage/${product.image}" class="card-img-top" alt="${product.name}" style="height: 200px; object-fit: cover;">
-                                <div class="card-body">
-                                    <h5 class="card-title">${product.name}</h5>
-                                    <p class="card-text">${product.description}</p>
-
-                                    <p class="card-text text-muted">
-                                        <strong>Original Price:</strong>
-                                        <span style="text-decoration: line-through;">$${originalPrice.toFixed(2)}</span>
-                                    </p>
-
-                                    <p class="card-text text-success">${discountText}</p>
-
-                                    <p class="card-text text-dark">
-                                        <strong>Final Price: $${finalPrice.toFixed(2)}</strong>
-                                    </p>
-
-                                    <div class="rating-container" data-product-id="${product.id}">
-                                        ${starsHTML} 
-                                        <strong>(${averageRating}/5)</strong>
-                                    </div>
-                                </div>
-                                <div class="card-footer text-center">
-                                    <button class="btn btn-primary w-100 add-to-cart" data-id="${product.id}">Add to Cart</button>
-                                </div>
-                            </div>
-                        </div>
-                    `;
-
-                    productsContainer.innerHTML += productCard;
-                });
-
-                // Handle rating clicks
-                document.querySelectorAll(".rating-star").forEach(star => {
-                    star.addEventListener("click", function () {
-                        const productId = this.getAttribute("data-product-id");
-                        const rating = this.getAttribute("data-rating");
-                        submitRating(productId, rating);
-                    });
-                });
-
-                // Handle add to cart
-                document.querySelectorAll(".add-to-cart").forEach(button => {
-                    button.addEventListener("click", function () {
-                        const productId = this.getAttribute("data-id");
-                        addToCart(productId);
-                    });
-                });
-            })
-            .catch(function (error) {
-                console.error('Error fetching products:', error);
-            });
-    }
-
-    fetchProducts(); // Load products on page load
-
-    // Fetch categories and populate dropdown
-    function fetchCategories() {
-        axios.get('/api/categories')
-            .then(response => {
-                categorySelect.innerHTML = '<option value="" disabled selected>Select a category</option>';
-                response.data.forEach(category => {
-                    const option = document.createElement("option");
-                    option.value = category.id;
-                    option.textContent = category.name;
-                    categorySelect.appendChild(option);
-                });
-            })
-            .catch(error => console.error("Error fetching categories:", error));
-    }
-
-    fetchCategories(); 
-
-    // Handle category form submission
-    document.getElementById("category-form").addEventListener("submit", function (event) {
-    event.preventDefault();
-    const categoryName = document.getElementById("category_name").value;
-    axios.get('/api/products')
-   .then(response => {
-       console.log("Products API Response:", response.data);
-   })
-   .catch(error => console.error("Error fetching products:", error));
-
-
-    // axios.post('/api/categories', { name: categoryName })
-    //     .then(response => {
-    //         console.log(response.data); // Debugging: check API response
-    //         alert(response.data.message);
-    //         fetchCategories(); // Reload category list
-    //         document.getElementById("category-form").reset();
-    //     })
-    //     .catch(error => {
-    //         console.error("Error adding category:", error.response ? error.response.data : error);
-    //         alert("Error adding category.");
-    //     });
+document.addEventListener("DOMContentLoaded", function () {
+    document.querySelectorAll(".category-image").forEach(img => {
+        img.addEventListener("click", function () {
+            const categoryId = this.getAttribute("data-category-id");
+            loadCategoryImages(categoryId);
+        });
+    });
 });
 
-
-    // Handle product form submission
-    productForm.addEventListener("submit", function (event) {
-        event.preventDefault();
-        const formData = new FormData(productForm);
-
-        axios.post('/api/products', formData)
-            .then(response => {
-                alert("Product added successfully!");
-                fetchProducts(); // Refresh product list
-                productForm.reset();
-            })
-            .catch(error => alert("Error adding product."));
-    });
-
-    // Function to add to cart
-    function addToCart(productId) {
-        axios.post(`/api/add-to-cart/${productId}`)
-            .then(response => {
-                alert("Product added to cart successfully!");
-            })
-            .catch(error => {
-                alert("Error adding product to cart. Please try again.");
-            });
-    }
-
-    // Function to submit rating
-    function submitRating(productId, rating) {
-        axios.post('/api/rate-product', {
-            product_id: productId,
-            rating: rating
-        })
+function loadCategoryImages(categoryId) {
+    axios.get(`/api/category-images/${categoryId}`)
         .then(response => {
-            alert("Rating submitted successfully!");
-            location.reload();
+            const images = response.data.images;
+            let modalContent = '';
+
+            if (images.length > 0) {
+                modalContent = images.map(img => `
+                    <div class="col-md-4">
+                        <img src="/storage/${img}" class="img-fluid" alt="Category Image" style="height: 150px; object-fit: cover;">
+                    </div>
+                `).join('');
+            } else {
+                modalContent = `<p class="text-center">No images available for this category.</p>`;
+            }
+
+            document.getElementById("category-images-container").innerHTML = modalContent;
+            const categoryModal = new bootstrap.Modal(document.getElementById("categoryImagesModal"));
+            categoryModal.show();
         })
         .catch(error => {
-            alert("Error submitting rating. Please try again.");
+            console.error("Error fetching category images:", error);
         });
-    }
-});
+}
+
+
 
       </script> --}}
+      <!-- Modal -->
+      <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+      
    </body>
 </html>

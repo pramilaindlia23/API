@@ -97,7 +97,20 @@ Route::get('/user/{id}/orders', [OrderController::class, 'SpecificUser']);
 Route::post('/orders/{id}/cancel', [OrderController::class, 'cancelOrder']);
 Route::post('/place-order', [OrderController::class, 'placeOrder']);
 
+Route::get('/category-images/{categoryId}', function ($categoryId) {
+    $products = Product::where('category_id', $categoryId)->get();
 
+    $allImages = [];
+
+    foreach ($products as $product) {
+        if ($product->images) {
+            $imagesArray = json_decode($product->images, true);
+            $allImages = array_merge($allImages, $imagesArray);
+        }
+    }
+
+    return response()->json(['images' => $allImages]);
+});
 
 
 

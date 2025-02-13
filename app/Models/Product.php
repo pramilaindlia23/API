@@ -8,17 +8,17 @@ use Illuminate\Database\Eloquent\Model;
 class Product extends Model
 {
     use HasFactory;
+   
     protected $fillable = [
         'name',
+        'category_id',
         'price',
+        'discount_code',
+        'discount_amount',
+        'discounted_price',
         'description',
-        'image',
         'stock',
-       'discount_amount', 
-       'discounted_price',  
-       'discount_code',
-       'discount_percentage',
-       'category_id'
+        'images',
     ];
     public function reviews()
     {
@@ -28,9 +28,12 @@ class Product extends Model
     {
         return round($this->reviews()->avg('rating') ?? 0, 1);
     }
+    protected $casts = [
+        'images' => 'array',
+    ];
     public function category()
     {
-        return $this->belongsTo(Category::class);
+        return $this->belongsTo(ProductCat::class, 'category_id');
     }
 
 }

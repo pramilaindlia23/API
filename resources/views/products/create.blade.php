@@ -52,7 +52,8 @@
 <h2 class="text-center mb-4">Add Product Category</h2>
 <div class="card shadow-sm mb-5" style="max-width: 600px; margin: 0 auto;">
     <div class="card-body">
-        <form action="{{ route('category.store') }}" method="POST">
+        {{-- <form action="{{ route('category.store') }}" method="POST"> --}}
+            <form action="{{ route('product.store') }}" method="POST" enctype="multipart/form-data">
             @csrf
             <label for="category_name">Category Name</label>
             <input type="text" id="category_name" name="name" required class="form-control">
@@ -66,11 +67,12 @@
     <div class="card-body">
         <form action="{{ route('product.store') }}" method="POST" enctype="multipart/form-data">
             @csrf
+        
             <div class="mb-3">
                 <label for="name" class="form-label">Product Name</label>
                 <input type="text" id="name" name="name" class="form-control" required>
             </div>
-
+        
             <div class="mb-3">
                 <label for="category_id" class="form-label">Select Category</label>
                 <select id="category_id" name="category_id" class="form-control" required>
@@ -80,34 +82,35 @@
                     @endforeach
                 </select>
             </div>
-
+        
             <div class="mb-3">
                 <label for="stock" class="form-label">Stock Quantity</label>
                 <input type="number" id="stock" name="stock" class="form-control" required>
             </div>
-
+        
             <div class="mb-3">
                 <label for="price" class="form-label">Price</label>
                 <input type="number" id="price" name="price" class="form-control" required>
             </div>
-
+        
             <div class="mb-3">
                 <label for="discount_code" class="form-label">Discount Code</label>
                 <input type="text" id="discount_code" name="discount_code" class="form-control" placeholder="Enter your discount code">
             </div>
-
+        
             <div class="mb-3">
                 <label for="description" class="form-label">Description</label>
                 <textarea class="form-control" id="description" placeholder="Enter Description" name="description"></textarea>
             </div>
-
+        
             <div class="mb-3">
-                <label for="image" class="form-label">Product Image</label>
-                <input type="file" id="image" name="image" class="form-control" accept="image/*" required>
+                <label for="images" class="form-label">Product Images</label>
+                <input type="file" name="images[]" id="images" class="form-control" multiple>
             </div>
-
+        
             <button type="submit" class="btn btn-success w-100">Add Product</button>
         </form>
+        
     </div> 
 </div>
 

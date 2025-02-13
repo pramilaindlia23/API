@@ -206,44 +206,167 @@ class OrderController extends Controller
     
 
 
-    public function placeOrder(Request $request)
-    {
-        // Validate request
-        $validator = Validator::make($request->all(), [
-            'user_id' => 'required|exists:users,id',
-            'name' => 'required|string|max:255',
-            'email' => 'required|email',
-            'address' => 'required|string',
-            'city' => 'required|string',
-            'zip' => 'required|string',
-            'items' => 'required|array',
-            'items.*.product_id' => 'required|exists:products,id',
-            'items.*.quantity' => 'required|integer|min:1',
-            'total' => 'required|numeric|min:0',
-            'discount_code' => 'nullable|string',
-        ]);
+    // public function placeOrder(Request $request)
+    // {
+    //     // Validate request
+    //     $validator = Validator::make($request->all(), [
+    //         'user_id' => 'required|exists:users,id',
+    //         'name' => 'required|string|max:255',
+    //         'email' => 'required|email',
+    //         'address' => 'required|string',
+    //         'city' => 'required|string',
+    //         'zip' => 'required|string',
+    //         'items' => 'required|array',
+    //         'items.*.product_id' => 'required|exists:products,id',
+    //         'items.*.quantity' => 'required|integer|min:1',
+    //         'total' => 'required|numeric|min:0',
+    //         'discount_code' => 'nullable|string',
+    //     ]);
     
-        if ($validator->fails()) {
-            return response()->json(['errors' => $validator->errors()], 422);
-        }
+    //     if ($validator->fails()) {
+    //         return response()->json(['errors' => $validator->errors()], 422);
+    //     }
     
-        // Create order
-        $order = Order::create([
-            'user_id' => $request->user_id,
-            'name' => $request->name,
-            'email' => $request->email,
-            'address' => $request->address,
-            'city' => $request->city,
-            'zip' => $request->zip,
-            'items' => json_encode($request->items), 
-            'total' => $request->total,
-            'discount_code' => $request->discount_code,
-            'status' => 'pending',
-        ]);
+    //     // Create order
+    //     $order = Order::create([
+    //         'user_id' => $request->user_id,
+    //         'name' => $request->name,
+    //         'email' => $request->email,
+    //         'address' => $request->address,
+    //         'city' => $request->city,
+    //         'zip' => $request->zip,
+    //         'items' => json_encode($request->items), 
+    //         'total' => $request->total,
+    //         'discount_code' => $request->discount_code,
+    //         'status' => 'pending',
+    //     ]);
     
-        return response()->json(['message' => 'Order placed successfully', 'order' => $order], 201);
-    }
+    //     return response()->json(['message' => 'Order placed successfully', 'order' => $order], 201);
+    // }
+    
+    // public function placeOrder(Request $request)
+    // {
+    //     // Validate request
+    //     $validator = Validator::make($request->all(), [
+    //         'user_id' => 'required|exists:users,id',
+    //         'name' => 'required|string|max:255',
+    //         'email' => 'required|email',
+    //         'address' => 'required|string',
+    //         'city' => 'required|string',
+    //         'zip' => 'required|string',
+    //         'items' => 'required|array',
+    //         'items.*.product_id' => 'required|exists:products,id',
+    //         'items.*.quantity' => 'required|integer',
+    //         'total' => 'required|numeric|min:0',
+    //         'discount_code' => 'nullable|string',
+    //     ]);
+    
+    //     if ($validator->fails()) {
+    //         return response()->json(['errors' => $validator->errors()], 422);
+    //     }
+    
+    //     // Create order
+    //     $order = Order::create([
+    //         'user_id' => $request->user_id,
+    //         'name' => $request->name,
+    //         'email' => $request->email,
+    //         'address' => $request->address,
+    //         'city' => $request->city,
+    //         'zip' => $request->zip,
+    //         'total' => $request->total,
+    //         'discount_code' => $request->discount_code,
+    //         'status' => 'pending',
+    //     ]);
+    
+    //     // Save multiple products in order_items
+    //     foreach ($request->items as $item) {
+    //         $product = Product::find($item['product_id']);
+    
+    //         OrderItem::create([
+    //             'order_id' => $order->id,
+    //             'product_id' => $product->id,
+    //             'product_name' => $product->name,  
+    //             'quantity' => $item['quantity'],
+    //             'price' => $product->price,  
+    //             'image' => $product->image,  
+    //         ]);
+    //     }
+    
+    //     return response()->json([
+    //         'message' => 'Order placed successfully',
+    //         'order' => $order->load('orderItems') 
+    //     ], 201);
+    // }
+    
     
 
+
+    public function placeOrder(Request $request)
+{
+    // Validate request
+    $validator = Validator::make($request->all(), [
+        'user_id' => 'required|exists:users,id',
+        'name' => 'required|string|max:255',
+        'mobile' => 'required|string|max:15', 
+        'email' => 'required|email',
+        'address' => 'required|string',
+        'city' => 'required|string',
+        'zip' => 'required|string',
+        'items' => 'required|array',
+        'items.*.product_id' => 'required|exists:products,id',
+        'items.*.quantity' => 'required|integer',
+        'total' => 'required|numeric|min:0',
+        'discount_code' => 'nullable|string', 
+    ]);
+
+    if ($validator->fails()) {
+        return response()->json(['errors' => $validator->errors()], 422);
+    }
+
+    // Calculate Discount
+    $discountPercentage = 0;
+    if ($request->discount_code === 'SAVE10' || $request->discount_code === '10') {
+        $discountPercentage = 10;
+    } elseif ($request->discount_code === 'SAVE20' || $request->discount_code === '20') {
+        $discountPercentage = 20;
+    }
     
+    $discountAmount = ($request->total * $discountPercentage) / 100;
+    $finalTotal = $request->total - $discountAmount;
+
+    // Create order
+    $order = Order::create([
+        'user_id' => $request->user_id,
+        'name' => $request->name,
+        'mobile' => $request->mobile, 
+        'email' => $request->email,
+        'address' => $request->address,
+        'city' => $request->city,
+        'zip' => $request->zip,
+        'total' => $finalTotal, 
+        'discount_code' => $request->discount_code,
+        'discount_amount' => $discountAmount, 
+        'status' => 'pending',
+    ]);
+
+    // Save multiple products in order_items
+    foreach ($request->items as $item) {
+        $product = Product::find($item['product_id']);
+
+        OrderItem::create([
+            'order_id' => $order->id,
+            'product_id' => $product->id,
+            'product_name' => $product->name,
+            'quantity' => $item['quantity'],
+            'price' => $product->price,
+            'image' => $product->image,
+        ]);
+    }
+
+    return response()->json([
+        'message' => 'Order placed successfully',
+        'order' => $order->load('orderItems')
+    ], 201);
+}
+
 }

@@ -105,11 +105,13 @@ Route::post('/cart/update/{id}', [CartController::class, 'update'])->name('cart.
 
 // product //
 
+// Route::get('/products', [ProductController::class, 'index'])->name('product.index');
+// Route::get('/product/create', [ProductController::class, 'create'])->name('products.create');
+// Route::post('/product/store', [ProductController::class, 'store'])->name('product.store');
+Route::post('/category/store', [ProductCatController::class, 'store'])->name('category.store');
 Route::get('/products', [ProductController::class, 'index'])->name('product.index');
 Route::get('/product/create', [ProductController::class, 'create'])->name('products.create');
 Route::post('/product/store', [ProductController::class, 'store'])->name('product.store');
-Route::post('/category/store', [ProductCatController::class, 'store'])->name('category.store');
-
 
 Route::get('/products', function () {
     return view('products.index');
@@ -134,4 +136,9 @@ Route::prefix('checkout')->group(function () {
 Route::get('/checkout/success', [CheckoutController::class, 'success'])->name('checkout.success');
 // Order //
 Route::post('/orders/{id}/cancel', [OrderController::class, 'cancelOrder'])->name('orders.cancel');
+Route::get('/productCat', function () {
+    return view('products.productCat');
+});
+
+Route::get('/productCat/{id}', [ProductController::class, 'productsByCategory'])->name('productsCat');
 
