@@ -13,30 +13,44 @@ use Illuminate\Support\Facades\DB;
 
 class ProductController extends Controller
 {
-    public function index()
-{
-    $products = Product::all();
-    $products = $products->map(function ($product) {
-        $discountAmount = $product->discounted_price ?? 0; // If no discount, set 0
-        $product->final_price = $product->price - $discountAmount;
-        return $product;
-    });
-    $products = Product::with('reviews')->get()->map(function ($product) {
-        $product->average_rating = $product->reviews()->avg('rating') ?? 0;
-        return $product;
-    });
+//     public function index()
+// {
+//     $products = Product::all();
+//     $products = $products->map(function ($product) {
+//         $discountAmount = $product->discounted_price ?? 0; // If no discount, set 0
+//         $product->final_price = $product->price - $discountAmount;
+//         return $product;
+//     });
+//     $products = Product::with('reviews')->get()->map(function ($product) {
+//         $product->average_rating = $product->reviews()->avg('rating') ?? 0;
+//         return $product;
+//     });
    
-    return response()->json($products);
+//     return response()->json($products);
+// }
+public function index()
+{
+    $products = Product::with('reviews')->get()->map(function ($product) {
+        $discountAmount = $product->discounted_price ?? 0; 
+        $product->final_price = $product->price - $discountAmount;
+
+        $product->average_rating = $product->reviews()->avg('rating') ?? 0;
+
+        return $product;
+    });
+
+    return view('products.index', compact('products'));
 }
+
     // public function create()
     // {
     //     return view('products.create');
     // }
     public function create()
-{
-    $categories = ProductCat::all();
-    return view('products.create', compact('categories'));
-}
+    {
+        $categories = ProductCat::all(); 
+        return view('products.create', compact('categories')); 
+    }
 
     // public function store(Request $request)
     // {
@@ -90,64 +104,104 @@ class ProductController extends Controller
     //     //   'product' => $product],
     //     //    201);
     // }
+    // public function store(Request $request)
+    // {
+        
+    //         // Log request data for debugging
+    //         Log::info('Product Store Request:', $request->all());
+    
+    //         // Validate form data
+    //         $validatedData = $request->validate([
+    //             'name' => 'required|string|max:255',
+    //             'category_id' => 'required|exists:products_cats,id',
+    //             'price' => 'required|numeric|min:0',
+    //             'discount_code' => 'nullable|string|max:50',
+    //             'description' => 'nullable|string',
+    //             'stock' => 'required|integer|min:0',
+    //             'images' => 'nullable|array',
+    //             'images.*' => 'image|mimes:jpeg,png,jpg,gif|max:2048',
+    //         ]);
+    
+    //         // Calculate discount
+    //         $discountPercentage = in_array($request->discount_code, ['SAVE10', '10']) ? 10 :
+    //                               (in_array($request->discount_code, ['SAVE20', '20']) ? 20 : 0);
+    //         $discountAmount = ($request->price * $discountPercentage) / 100;
+    //         $discountedPrice = $request->price - $discountAmount;
+    
+    //         // Handle image uploads
+    //         $imagePaths = [];
+    //         if ($request->hasFile('images')) {
+    //             foreach ($request->file('images') as $image) {
+    //                 $path = $image->store('product_images', 'public'); // Stores in storage/app/public/product_images
+    //                 $imagePaths[] = $path;
+    //             }
+    //         }
+    
+    //         // Create product
+    //         $product = new Product();
+    //         $product->name = $request->name;
+    //         $product->category_id = $request->category_id;
+    //         $product->price = $request->price;
+    //         $product->discount_code = $request->discount_code;
+    //         $product->description = $request->description;
+    //         $product->stock = $request->stock;
+    //         $product->images = json_encode([]); // Skip images for now
+            
+    //         if ($product->save()) {
+    //             dd('Product saved successfully', $product);
+    //         } else {
+    //             dd('Failed to save product');
+    //         }
+
+    // }
     public function store(Request $request)
 {
-    try {
-        $validatedData = $request->validate([
-            'name' => 'required|string',
-            'category_id' => 'required|exists:products_cats,id',
-            'price' => 'required|numeric',
-            'discount_code' => 'nullable|string',
-            'description' => 'nullable|string',
-            'stock' => 'required|integer|min:0',
-            'images' => 'nullable',
-            'images.*' => 'image|mimes:jpeg,png,jpg,gif|max:2048',
-        ]);
+    Log::info('Incoming Product Data:', $request->all());
 
-        Log::info('Validated product data:', $validatedData);
+    $validatedData = $request->validate([
+        'name' => 'required|string|max:255',
+        'category_id' => 'required|exists:products_cats,id',
+        'price' => 'required|numeric|min:0',
+        'discount_code' => 'nullable|string|max:50',
+        'description' => 'nullable|string',
+        'stock' => 'required|integer|min:0',
+        'image' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048', // Ensure single image
+    ]);
 
-        $discountPercentage = in_array($request->discount_code, ['SAVE10', '10']) ? 10 :
-                              (in_array($request->discount_code, ['SAVE20', '20']) ? 20 : 0);
-        $discountAmount = ($request->price * $discountPercentage) / 100;
-        $discountedPrice = $request->price - $discountAmount;
-
-        $imagePaths = [];
-        if ($request->hasFile('images')) {
-            foreach ($request->file('images') as $image) {
-                $path = $image->store('product_images', 'public');
-                $imagePaths[] = $path;
-            }
-        }
-
-        Log::info('Uploaded images:', $imagePaths);
-
-        $product = Product::create([
-            'name' => $request->name,
-            'category_id' => $request->category_id,
-            'price' => $request->price,
-            'discount_code' => $request->discount_code,
-            'discount_amount' => $discountAmount,
-            'discounted_price' => $discountedPrice,
-            'description' => $request->description,
-            'stock' => $request->stock,
-            'images' => json_encode($imagePaths),
-        ]);
-
-        if (!$product) {
-            Log::error('Product save failed.');
-            return back()->with('error', 'Product save failed.');
-        }
-
-        Log::info('Product created successfully:', ['product' => $product]);
-
-        return redirect()->route('product.index')->with('success', 'Product added successfully!');
-
-    } catch (\Exception $e) {
-        Log::error('Error saving product', ['error' => $e->getMessage()]);
-        return redirect()->back()->with('error', 'Error: ' . $e->getMessage());
+    if (!$request->hasFile('image')) {
+        Log::error('No image file found in request.');
+        return response()->json(['error' => 'No image file found.'], 400);
     }
+
+    $image = $request->file('image');
+
+    if (!$image->isValid()) {
+        Log::error('Invalid image file.');
+        return response()->json(['error' => 'Invalid image file.'], 400);
+    }
+
+    $imagePath = $image->store('public/product_images'); 
+    $imagePath = str_replace('public/', 'storage/', $imagePath); 
+
+    Log::info('Uploaded Image Path:', ['path' => $imagePath]);
+
+    $product = Product::create([
+        'name' => $validatedData['name'],
+        'category_id' => $validatedData['category_id'],
+        'price' => $validatedData['price'],
+        'discount_code' => $validatedData['discount_code'] ?? null,
+        'description' => $validatedData['description'] ?? null,
+        'stock' => $validatedData['stock'],
+        'image' => $imagePath, 
+    ]);
+
+    return response()->json([
+        'message' => 'Product created successfully!',
+        'product' => $product
+    ]);
 }
 
+    
     
     // public function store(Request $request) {
     //     try {
@@ -298,7 +352,6 @@ class ProductController extends Controller
     $discountCode = $request->discount_code;
     $discountPercentage = 0;
 
-   
     if ($discountCode === 'SAVE10') {
         $discountPercentage = 10;
     } elseif ($discountCode === 'SAVE20') {

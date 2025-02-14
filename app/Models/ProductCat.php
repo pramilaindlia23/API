@@ -9,9 +9,10 @@ class ProductCat extends Model
 {
     use HasFactory;
     protected $fillable = ['name'];
-    protected $table = 'products_cats'; 
+
+    protected $table = 'products_cats';
     public function products()
     {
-        return $this->hasMany(Product::class);
+        return $this->hasMany(Product::class, 'category_id');
     }
 }

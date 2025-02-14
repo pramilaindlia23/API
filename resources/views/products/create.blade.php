@@ -12,107 +12,110 @@
 @endif
 <div class="container mt-5">
     <h2 class="text-center mb-5 bg-success text-white p-3 rounded">Create New Product</h2>
-    {{-- <form action="{{ route('product.store') }}" method="POST" id='product-form'  enctype="multipart/form-data">
-        @csrf
-    
-        <div class="mb-3">
-            <label for="name" class="form-label">Product Name</label>
-            <input type="text" class="form-control" id="name" name="name" value="{{ old('name') }}" placeholder="Enter Product Name" required>
-        </div>
 
-        <div class="mb-3">
-            <label for="stock" class="form-label">Stock Quantity</label>
-            <input type="number" class="form-control" id="stock" name="stock" value="{{ old('stock') }}" placeholder="Enter stock quantity" required>
+    <h2 class="text-center mb-4">Add Product Category</h2>
+    <div class="card shadow-sm mb-5" style="max-width: 600px; margin: 0 auto;">
+        <div class="card-body">
+            <form action="{{ route('category.store') }}" method="POST">
+                @csrf
+                <label for="category_name">Category Name</label>
+                <input type="text" id="category_name" name="name" required class="form-control">
+                <button type="submit" class="btn btn-primary mt-3">Add Category</button>
+            </form>
         </div>
-        
-        <div class="mb-3">
-            <label for="price" class="form-label">Price</label>
-            <input type="number" class="form-control" id="price" name="price" value="{{ old('price') }}" placeholder="Enter price">
-        </div>
-    
-        <div class="mb-3">
-            <label for="discount_code" class="form-label">Discount Code</label>
-            <input type="text" id="discount_code" name="discount_code" class="form-control" placeholder="Enter your discount code">
-        </div>
-
-        <div class="mb-3">
-            <label for="description" class="form-label">Description</label>
-            <textarea class="form-control" id="description" placeholder="Enter Description" name="description">{{ old('description') }}</textarea>
-        </div>
-    
-        <div class="mb-3">
-            <label for="image" class="form-label">Product Image</label>
-            <input type="file" class="form-control" id="image" name="image">
-        </div>
-    
-        <button type="submit" class="btn btn-success width-100 rounded">Add Product</button>
-    </form> --}}
     </div>
-  
-<h2 class="text-center mb-4">Add Product Category</h2>
-<div class="card shadow-sm mb-5" style="max-width: 600px; margin: 0 auto;">
-    <div class="card-body">
-        {{-- <form action="{{ route('category.store') }}" method="POST"> --}}
+
+    <h2 class="text-center mb-4">Add New Product</h2>
+    <div class="card shadow-sm" style="max-width: 600px; margin: 0 auto;">
+        {{-- <div class="card-body">
             <form action="{{ route('product.store') }}" method="POST" enctype="multipart/form-data">
-            @csrf
-            <label for="category_name">Category Name</label>
-            <input type="text" id="category_name" name="name" required class="form-control">
-            <button type="submit" class="btn btn-primary mt-3">Add Category</button>
-        </form> 
-    </div>
-</div>
-
-<h2 class="text-center mb-4">Add New Product</h2>
-<div class="card shadow-sm" style="max-width: 600px; margin: 0 auto;">
-    <div class="card-body">
-        <form action="{{ route('product.store') }}" method="POST" enctype="multipart/form-data">
-            @csrf
-        
-            <div class="mb-3">
-                <label for="name" class="form-label">Product Name</label>
-                <input type="text" id="name" name="name" class="form-control" required>
-            </div>
-        
-            <div class="mb-3">
-                <label for="category_id" class="form-label">Select Category</label>
+                @csrf
+                <label for="name">Product Name</label>
+                <input type="text" id="name" name="name" class="form-control" value="{{ old('name') }}" required>
+                @error('name') <small class="text-danger">{{ $message }}</small> @enderror
+            
+                <label for="category_id">Select Category</label>
                 <select id="category_id" name="category_id" class="form-control" required>
                     <option value="" disabled selected>Select a category</option>
                     @foreach ($categories as $category)
-                        <option value="{{ $category->id }}">{{ $category->name }}</option>
+                        <option value="{{ $category->id }}" {{ old('category_id') == $category->id ? 'selected' : '' }}>
+                            {{ $category->name }}
+                        </option>
                     @endforeach
                 </select>
-            </div>
+                @error('category_id') <small class="text-danger">{{ $message }}</small> @enderror
+            
+                <label for="price">Price</label>
+                <input type="number" id="price" name="price" class="form-control" value="{{ old('price') }}" required>
+                @error('price') <small class="text-danger">{{ $message }}</small> @enderror
+            
+                <label for="discount_code">Discount Code</label>
+                <input type="text" id="discount_code" name="discount_code" class="form-control" value="{{ old('discount_code') }}">
+                @error('discount_code') <small class="text-danger">{{ $message }}</small> @enderror
+            
+                <label for="description">Description</label>
+                <textarea id="description" name="description" class="form-control">{{ old('description') }}</textarea>
+                @error('description') <small class="text-danger">{{ $message }}</small> @enderror
+            
+                <label for="stock">Stock Quantity</label>
+                <input type="number" id="stock" name="stock" class="form-control" value="{{ old('stock') }}" required>
+                @error('stock') <small class="text-danger">{{ $message }}</small> @enderror
+            
+                <label for="images">Product Images</label>
+                <input type="file" name="images[]"  id="images" class="form-control"  multiple>
+                @error('images') <small class="text-danger">{{ $message }}</small> @enderror
+            
+                <button type="submit" class="btn btn-success w-100">Add Product</button>
+            </form>
+        </div> --}}
+        <div class="card-body">
+            <form action="{{ route('product.store') }}" method="POST" enctype="multipart/form-data">
+                @csrf
+            
+                <label for="name">Product Name</label>
+                <input type="text" id="name" name="name" class="form-control" value="{{ old('name') }}" required>
+                @error('name') <small class="text-danger">{{ $message }}</small> @enderror
+            
+                <label for="category_id">Select Category</label>
+                <select id="category_id" name="category_id" class="form-control" required>
+                    <option value="" disabled selected>Select a category</option>
+                    @foreach ($categories as $category)
+                        <option value="{{ $category->id }}" {{ old('category_id') == $category->id ? 'selected' : '' }}>
+                            {{ $category->name }}
+                        </option>
+                    @endforeach
+                </select>
+                @error('category_id') <small class="text-danger">{{ $message }}</small> @enderror
+            
+                <label for="price">Price</label>
+                <input type="number" id="price" name="price" class="form-control" value="{{ old('price') }}" required>
+                @error('price') <small class="text-danger">{{ $message }}</small> @enderror
+            
+                <label for="discount_code">Discount Code</label>
+                <input type="text" id="discount_code" name="discount_code" class="form-control" value="{{ old('discount_code') }}">
+                @error('discount_code') <small class="text-danger">{{ $message }}</small> @enderror
+            
+                <label for="description">Description</label>
+                <textarea id="description" name="description" class="form-control">{{ old('description') }}</textarea>
+                @error('description') <small class="text-danger">{{ $message }}</small> @enderror
+            
+                <label for="stock">Stock Quantity</label>
+                <input type="number" id="stock" name="stock" class="form-control" value="{{ old('stock') }}" required>
+                @error('stock') <small class="text-danger">{{ $message }}</small> @enderror
+            
+                <label for="image">Product Image</label>
+                <input type="file" name="image" id="image" class="form-control" accept="image/*" required>
+                @error('image') <small class="text-danger">{{ $message }}</small> @enderror
+            
+                <button type="submit" class="btn btn-success w-100 mt-3">Add Product</button>
+            </form>
+            
+            
+        </div>
         
-            <div class="mb-3">
-                <label for="stock" class="form-label">Stock Quantity</label>
-                <input type="number" id="stock" name="stock" class="form-control" required>
-            </div>
-        
-            <div class="mb-3">
-                <label for="price" class="form-label">Price</label>
-                <input type="number" id="price" name="price" class="form-control" required>
-            </div>
-        
-            <div class="mb-3">
-                <label for="discount_code" class="form-label">Discount Code</label>
-                <input type="text" id="discount_code" name="discount_code" class="form-control" placeholder="Enter your discount code">
-            </div>
-        
-            <div class="mb-3">
-                <label for="description" class="form-label">Description</label>
-                <textarea class="form-control" id="description" placeholder="Enter Description" name="description"></textarea>
-            </div>
-        
-            <div class="mb-3">
-                <label for="images" class="form-label">Product Images</label>
-                <input type="file" name="images[]" id="images" class="form-control" multiple>
-            </div>
-        
-            <button type="submit" class="btn btn-success w-100">Add Product</button>
-        </form>
-        
-    </div> 
+    </div>
 </div>
+
 
 {{-- <script>
     document.addEventListener('DOMContentLoaded', function () {
