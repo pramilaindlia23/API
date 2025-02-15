@@ -104,10 +104,6 @@ Route::post('/cart/remove/{id}', [CartController::class, 'remove'])->name('cart.
 Route::post('/cart/update/{id}', [CartController::class, 'update'])->name('cart.update');
 
 // product //
-
-// Route::get('/products', [ProductController::class, 'index'])->name('product.index');
-// Route::get('/product/create', [ProductController::class, 'create'])->name('products.create');
-// Route::post('/product/store', [ProductController::class, 'store'])->name('product.store');
 Route::post('/category/store', [ProductCatController::class, 'store'])->name('category.store');
 Route::get('/products', [ProductController::class, 'index'])->name('product.index');
 Route::get('/product/create', [ProductController::class, 'create'])->name('products.create');
@@ -140,5 +136,11 @@ Route::get('/productCat', function () {
     return view('products.productCat');
 });
 
+
 Route::get('/productCat/{id}', [ProductController::class, 'productsByCategory'])->name('productsCat');
+Route::get('/productCat/{id}', [ProductCatController::class, 'showCategoryProducts']);
+Route::get('/products/category/{categoryId}', [ProductController::class, 'getProductsByCategory']);
+
+
+
 

@@ -33,101 +33,35 @@ public function index()
         $categories = ProductCat::all(); 
         return view('products.create', compact('categories')); 
     }
+    
     public function store(Request $request)
     {
-        Log::info('Incoming Product Data:', $request->all());
-    
-        $validatedData = $request->validate([
+        $request->validate([
             'name' => 'required|string|max:255',
-            'category_id' => 'required|exists:products_cats,id',
-            'price' => 'required|numeric|min:0',
-            'discount_code' => 'nullable|string|max:50',
             'description' => 'nullable|string',
-            'stock' => 'required|integer|min:0',
-            'image' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'price' => 'required|numeric',
+            'discount_code' => 'nullable|numeric',
+            'category_id' => 'required|exists:products_cats,id',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048'
         ]);
     
-        if (!$request->hasFile('image')) {
-            Log::error('No image file found in request.');
-            return response()->json(['error' => 'No image file found.'], 400);
+        $product = new Product();
+        $product->name = $request->name;
+        $product->description = $request->description;
+        $product->price = $request->price;
+        $product->discount_code = $request->discount_code;
+        $product->category_id = $request->category_id;
+    
+        if ($request->hasFile('image')) {
+            $imagePath = $request->file('image')->store('product_images', 'public');
+            $product->image = $imagePath; // Store only "product_images/image.jpg"
         }
     
-        $image = $request->file('image');
+        $product->save();
     
-        if (!$image->isValid()) {
-            Log::error('Invalid image file.');
-            return response()->json(['error' => 'Invalid image file.'], 400);
-        }
-    
-        // ✅ Save only the relative path
-        $imagePath = $image->store('product_images', 'public');
-    
-        Log::info('Uploaded Image Path:', ['path' => $imagePath]);
-    
-        $product = Product::create([
-            'name' => $validatedData['name'],
-            'category_id' => $validatedData['category_id'],
-            'price' => $validatedData['price'],
-            'discount_code' => $validatedData['discount_code'] ?? null,
-            'description' => $validatedData['description'] ?? null,
-            'stock' => $validatedData['stock'],
-            'image' => $imagePath,  // ✅ Save only the relative path
-        ]);
-    
-        return response()->json([
-            'message' => 'Product created successfully!',
-            'product' => $product
-        ]);
+        return response()->json(['message' => 'Product created successfully', 'product' => $product]);
     }
-    
-    
-//     public function store(Request $request)
-// {
-//     Log::info('Incoming Product Data:', $request->all());
-
-//     $validatedData = $request->validate([
-//         'name' => 'required|string|max:255',
-//         'category_id' => 'required|exists:products_cats,id',
-//         'price' => 'required|numeric|min:0',
-//         'discount_code' => 'nullable|string|max:50',
-//         'description' => 'nullable|string',
-//         'stock' => 'required|integer|min:0',
-//         'image' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048', // Ensure single image
-//     ]);
-
-//     if (!$request->hasFile('image')) {
-//         Log::error('No image file found in request.');
-//         return response()->json(['error' => 'No image file found.'], 400);
-//     }
-
-//     $image = $request->file('image');
-
-//     if (!$image->isValid()) {
-//         Log::error('Invalid image file.');
-//         return response()->json(['error' => 'Invalid image file.'], 400);
-//     }
-
-//     $imagePath = $image->store('public/product_images'); 
-//     $imagePath = str_replace('public/', 'storage/', $imagePath); 
-
-//     Log::info('Uploaded Image Path:', ['path' => $imagePath]);
-
-//     $product = Product::create([
-//         'name' => $validatedData['name'],
-//         'category_id' => $validatedData['category_id'],
-//         'price' => $validatedData['price'],
-//         'discount_code' => $validatedData['discount_code'] ?? null,
-//         'description' => $validatedData['description'] ?? null,
-//         'stock' => $validatedData['stock'],
-//         'image' => $imagePath, 
-//     ]);
-
-//     return response()->json([
-//         'message' => 'Product created successfully!',
-//         'product' => $product
-//     ]);
-// }
-
+ 
     public function applyDiscount(Request $request)
 {
     $product = Product::find($request->product_id);
@@ -161,7 +95,45 @@ public function productsByCategory($id)
 
     return view('products.productCat', compact('category', 'products'));
 }
+public function getProducts()
+{
+    $products = Product::all();
+
+    // Fix image path before sending response
+    foreach ($products as $product) {
+        $product->image = asset('storage/' . $product->image);
+    }
+
+    return response()->json($products);
+}
+
+    public function getProductsByCategory($categoryId)
+    {
+        $products = Product::where('category_id', $categoryId)->get();
+
+        if ($products->isEmpty()) {
+            return response()->json(['message' => 'No products found'], 404);
+        }
+
+        return response()->json($products);
+    }
+
+    public function categoryProducts($categoryId)
+    {
+        $products = Product::where('category_id', $categoryId)->get();
+
+        if ($products->isEmpty()) {
+            return response()->json(['message' => 'No products found for this category.'], 404);
+        }
+
+        return response()->json($products);
+    }
 
 
+    public function showCategoryProducts($id)
+{
+    $products = Product::where('category_id', $id)->get();
+    return view('products.productCat', compact('products', 'id'));
+}
 }
 

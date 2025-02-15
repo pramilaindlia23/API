@@ -11,7 +11,7 @@
 </head>
 <body class="bg-light">
 
-    <div class="container py-4">
+    {{-- <div class="container py-4">
         <h2 class="text-center mb-4">{{ $category->name }} Products</h2>
 
         <div class="row" id="product-container">
@@ -71,8 +71,24 @@
                 </div>
             @endforeach
         </div>
+    </div> --}}
+    <div class="container">
+        <h2>Products in this Category</h2>
+        <div class="row">
+            @foreach($products as $product)
+                <div class="col-md-4">
+                    <div class="card">
+                        <img src="/storage/{{ $product->image }}" class="card-img-top" alt="{{ $product->name }}">
+                        <div class="card-body">
+                            <h5>{{ $product->name }}</h5>
+                            <p>{{ $product->description }}</p>
+                            <p>Price: ${{ $product->price }}</p>
+                        </div>
+                    </div>
+                </div>
+            @endforeach
+        </div>
     </div>
-
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
@@ -83,7 +99,7 @@
             document.body.addEventListener("click", function (event) {
                 if (event.target.classList.contains("add-to-cart")) {
                     const productId = event.target.getAttribute("data-id");
-                    alert("✅ Product " + productId + " added to cart!");
+                    alert(" Product " + productId + " added to cart!");
                 }
             });
         });
@@ -99,7 +115,7 @@
                 location.reload();
             })
             .catch(error => {
-                alert("❌ Error submitting rating. Please try again.");
+                alert("Error submitting rating. Please try again.");
             });
         }
     </script>

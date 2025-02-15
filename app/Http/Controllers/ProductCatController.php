@@ -50,27 +50,11 @@ class ProductCatController extends Controller
             'categories'=> $categories,
         ]);
     }
-
-    // public function index()
-    // {
-    //     return response()->json(ProductCat::all());
-    // }
-    // public function store(Request $request)
-    // {
-    //     $validated = $request->validate([
-    //         'name' => 'required|string|unique:products_cats|max:255'
-    //     ]);
+    public function showCategoryProducts($id)
+    {
+        $products = ProductCat::where('category_id', $id)->get();
+        return view('productCat', compact('products'));
+    }
     
-    //     $category = new ProductCat();
-    //     $category->name = $validated['name'];
-    //     $saved = $category->save();
-    
-    //     if ($saved) {
-    //         return redirect()->back()->with('success', 'Category added successfully!');
-    //     } else {
-    //         return redirect()->back()->with('error', 'Failed to add category.');
-    //     }
-
-    // }
     
 }
