@@ -27,47 +27,6 @@
 
     <h2 class="text-center mb-4">Add New Product</h2>
     <div class="card shadow-sm" style="max-width: 600px; margin: 0 auto;">
-        {{-- <div class="card-body">
-            <form action="{{ route('product.store') }}" method="POST" enctype="multipart/form-data">
-                @csrf
-                <label for="name">Product Name</label>
-                <input type="text" id="name" name="name" class="form-control" value="{{ old('name') }}" required>
-                @error('name') <small class="text-danger">{{ $message }}</small> @enderror
-            
-                <label for="category_id">Select Category</label>
-                <select id="category_id" name="category_id" class="form-control" required>
-                    <option value="" disabled selected>Select a category</option>
-                    @foreach ($categories as $category)
-                        <option value="{{ $category->id }}" {{ old('category_id') == $category->id ? 'selected' : '' }}>
-                            {{ $category->name }}
-                        </option>
-                    @endforeach
-                </select>
-                @error('category_id') <small class="text-danger">{{ $message }}</small> @enderror
-            
-                <label for="price">Price</label>
-                <input type="number" id="price" name="price" class="form-control" value="{{ old('price') }}" required>
-                @error('price') <small class="text-danger">{{ $message }}</small> @enderror
-            
-                <label for="discount_code">Discount Code</label>
-                <input type="text" id="discount_code" name="discount_code" class="form-control" value="{{ old('discount_code') }}">
-                @error('discount_code') <small class="text-danger">{{ $message }}</small> @enderror
-            
-                <label for="description">Description</label>
-                <textarea id="description" name="description" class="form-control">{{ old('description') }}</textarea>
-                @error('description') <small class="text-danger">{{ $message }}</small> @enderror
-            
-                <label for="stock">Stock Quantity</label>
-                <input type="number" id="stock" name="stock" class="form-control" value="{{ old('stock') }}" required>
-                @error('stock') <small class="text-danger">{{ $message }}</small> @enderror
-            
-                <label for="images">Product Images</label>
-                <input type="file" name="images[]"  id="images" class="form-control"  multiple>
-                @error('images') <small class="text-danger">{{ $message }}</small> @enderror
-            
-                <button type="submit" class="btn btn-success w-100">Add Product</button>
-            </form>
-        </div> --}}
         <div class="card-body">
             <form action="{{ route('product.store') }}" method="POST" enctype="multipart/form-data">
                 @csrf
@@ -115,37 +74,6 @@
         
     </div>
 </div>
-
-
-{{-- <script>
-    document.addEventListener('DOMContentLoaded', function () {
-        const originalPrice = parseFloat(product.price);
-        const discountedPrice = parseFloat(product.discounted_price);
-        const discountPercentage = ((originalPrice - discountedPrice) / originalPrice * 100).toFixed(2);
-function updateDiscount() {
-    let price = parseFloat(priceInput.value) || 0;
-    let discountCode = discountCodeInput.value;
-    let discountPercent = 0;
-
-    
-    if (discountCode === 'SAVE10') {
-        discountPercent = 10; 
-    } else if (discountCode === 'SAVE20') {
-        discountPercent = 20;
-    } else {
-        discountPercent = 0; 
-    }
-
-    
-    discountPercentageDisplay.textContent = discountPercent + "%"; 
-}
-
-discountCodeInput.addEventListener('input', updateDiscount);
-priceInput.addEventListener('input', updateDiscount);
-});
-
-</script> --}}
-
     <script>
     document.addEventListener('DOMContentLoaded', function () {
         let priceInput = document.getElementById('price');
@@ -172,13 +100,6 @@ priceInput.addEventListener('input', updateDiscount);
         priceInput.addEventListener('input', updateDiscount);
     });
 </script>
-
-
-
-
-
-
-    
 </body>
 </html>
 

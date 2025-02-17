@@ -63,17 +63,32 @@ public function store(Request $request)
         Log::info('Rating Saved:', $review->toArray());
 
         return response()->json(['message' => 'Rating submitted successfully!', 'review' => $review], 201);
-    } catch (\Exception $e) {
+        } catch (\Exception $e) {
         Log::error('Error saving rating:', ['error' => $e->getMessage()]);
         return response()->json(['error' => 'Something went wrong.', 'details' => $e->getMessage()], 500);
     }
 }
 
-
-
-
 public function index() {
         $products = Product::with('reviews')->get();
         return response()->json($products);
+    }
+
+    public function getAllRatings()
+    {
+        try {
+            $ratings = Review::with('product')->get(); // Load associated product data
+            
+            return response()->json([
+                'success' => true,
+                'ratings' => $ratings
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to retrieve ratings',
+                'error' => $e->getMessage()
+            ], 500);
+        }
     }
 }

@@ -42,7 +42,7 @@ public function index()
             'price' => 'required|numeric',
             'discount_code' => 'nullable|numeric',
             'category_id' => 'required|exists:products_cats,id',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048'
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp,svg|max:2048'
         ]);
     
         $product = new Product();
@@ -103,7 +103,6 @@ public function getProducts()
     foreach ($products as $product) {
         $product->image = asset('storage/' . $product->image);
     }
-
     return response()->json($products);
 }
 

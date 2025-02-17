@@ -52,8 +52,13 @@ class ProductCatController extends Controller
     }
     public function showCategoryProducts($id)
     {
+        // Fetch category
+        $category = ProductCat::findOrFail($id);
+
+        // Fetch products under this category
         $products = ProductCat::where('category_id', $id)->get();
-        return view('productCat', compact('products'));
+
+        return view('products.productCat', compact('category', 'products'));
     }
     
     

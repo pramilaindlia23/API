@@ -19,13 +19,15 @@ class UserController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:8|confirmed',
+            'role' => 'nullable|integer|in:0,1',
         ]);
 
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),  
-        ]);
+            'role' => $request->role ?? 0,  
+      ]);
 
         return redirect()->route('login');
     }
@@ -41,11 +43,24 @@ class UserController extends Controller
             'password' => 'required',
         ]);
 
-        if (Auth::attempt([
-            'email' => $request->email,
-            'password' => $request->password
-        ])) {
-            return redirect()->intended('/dashboard'); 
+        // if (Auth::attempt([
+        //     'email' => $request->email,
+        //     'password' => $request->password
+        // ])) {
+        //     if (Auth::attempt(['email' => $request->email, 'password' => $request->password])) {
+        //         if (Auth::user()->role === 'admin') {
+        //             return redirect()->route('admin.dashboard');
+        //         }
+        //     return redirect()->intended('/dashboard'); 
+        // }
+        if (Auth::attempt(['email' => $request->email, 'password' => $request->password])) {
+            $user = Auth::user();
+    
+            if ($user->role == 1) { // Admin
+                return redirect('/admin');
+            } else { // Normal user
+                return redirect()->intended('/dashboard'); 
+            }
         }
 
         return back()->withErrors([

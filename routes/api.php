@@ -72,8 +72,10 @@ Route::get('/products', function () {
 });
 
 Route::post('/add-to-cart/{id}', [CartController::class, 'add']);
-
+// Review //
 Route::post('/rate-product', [ReviewController::class, 'store']);
+Route::get('/ratings', [ReviewController::class, 'getAllRatings']);
+
 Route::get('/categories', [ProductCatController::class, 'getCategories']);
 // Route::get('/show-cats', [ProductCatController::class, 'index']);
 Route::get('/products/category/{categoryId}', [ProductController::class, 'getProductsByCategory']);

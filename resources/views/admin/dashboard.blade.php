@@ -31,7 +31,7 @@
         <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
 
             <!-- Sidebar - Brand -->
-            <a class="sidebar-brand d-flex align-items-center justify-content-center" href="/">
+            <a class="sidebar-brand d-flex align-items-center justify-content-center" href="index.html">
                 <div class="sidebar-brand-icon rotate-n-15">
                     <i class="fas fa-laugh-wink"></i>
                 </div>
@@ -291,8 +291,8 @@
                         <li class="nav-item dropdown no-arrow">
                             <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 @if(Auth::check())
-                                    <span class="mr-2 d-none d-lg-inline text-dark h4">Welcome,{{ Auth::user()->name }}</span>
-                                    {{-- <p>You are logged in as a User.</p> --}}
+                                    <span class="mr-2 d-none d-lg-inline text-dark h4">Welcome, Admin {{ Auth::user()->name }}</span>
+                                    <p>You have full access to the system.</p>
                                     <img class="img-profile rounded-circle" 
                                          src="{{ Auth::user()->profile_picture ? asset('storage/' . Auth::user()->profile_picture) : asset('assets/img/undraw_profile.svg') }}">
                                 @endif

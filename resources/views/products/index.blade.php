@@ -6,6 +6,9 @@
       <title>Products</title>
       <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
       <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+      <!-- Add FontAwesome in <head> -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
    </head>
    <style>
     .product-card img {
@@ -16,7 +19,6 @@
     min-height: 100px; 
     border-radius: 8px; 
 }
-
    </style>
    <body>
       <div class="container mt-5">
@@ -61,15 +63,16 @@
                         const finalPrice = originalPrice - (originalPrice * discountCode / 100);
                         const averageRating = product.average_rating || 0;
                         const maxStars = 5;
-
+                        function generateStars(productId, rating) {
                         let starsHTML = '';
                         for (let i = 1; i <= maxStars; i++) {
                             starsHTML += `
-                                <i class="fas fa-star rating-star ${i <= averageRating ? 'text-warning' : 'text-secondary'}"
-                                    data-product-id="${product.id}" data-rating="${i}">
+                                <i class="fas fa-star rating-star ${i <= rating ? 'text-warning' : 'text-secondary'}"
+                                    data-product-id="${productId}" data-rating="${i}">
                                 </i>`;
                         }
-
+                        return `${starsHTML} <strong>(${rating}/5)</strong>`;
+                    }
                         let imageUrl = product.image
                             ? `/storage/${product.image}`
                             : "/storage/default-product.jpg";
@@ -79,15 +82,10 @@
                                 <div class="card h-100 shadow-sm border-light rounded product-card" data-category-id="${product.category_id}">
                                     <img src="${imageUrl}" class="card-img-top category-image" data-category-id="${product.category_id}" alt="${product.name}">
                                     <div class="card-body">
-                                        <h5 class="card-title">${product.name}</h5>
-                                        <p class="card-text">${product.description}</p>
-                                        <p class="card-text text-muted"><strong>Original Price:</strong> <span style="text-decoration: line-through;">$${originalPrice.toFixed(2)}</span></p>
-                                        <p class="card-text text-success"><strong>✔ Discount: ${discountCode > 0 ? discountCode + "%" : "No Discount"}</strong></p>
-                                        <p class="card-text text-dark"><strong>Final Price: $${finalPrice.toFixed(2)}</strong></p>
-                                        <div class="rating-container" data-product-id="${product.id}">${starsHTML} <strong>(${averageRating}/5)</strong></div>
+                                         <h5 class="card-title">${product.name}</h5>
+                                          <div class="rating-container" data-product-id="${product.id}">
+                                        ${generateStars(product.id, averageRating)}
                                     </div>
-                                    <div class="card-footer text-center">
-                                        <button class="btn btn-primary w-100 add-to-cart" data-id="${product.id}">Add to Cart</button>
                                     </div>
                                 </div>
                             </div>`;
@@ -97,81 +95,97 @@
                 }
 
                 renderProducts(products); // Show all products on page load
-
-                // **Category Click Event**
                 document.body.addEventListener("click", function (event) {
-    if (event.target.classList.contains("category-image")) {
-        const categoryId = event.target.getAttribute("data-category-id");
-        window.location.href = `/productCat/${categoryId}`;
-    }
-});
-
+                    if (event.target.classList.contains("category-image")) {
+                        const categoryId = event.target.getAttribute("data-category-id");
+                        window.location.href = `/productCat/${categoryId}`;
+                    }
+                });
                 
-//                 document.body.addEventListener("click", function (event) {
-//     if (event.target.classList.contains("category-image")) {
-//         const categoryId = event.target.getAttribute("data-category-id");
-
-//         if (categoryId) {
-//             console.log("Redirecting to category page:", categoryId);
-//             window.location.href = `/products/category/${categoryId}`;
-//             // Redirect to category page
-//         } else {
-//             console.error("Error: categoryId is undefined");
-//         }
-//     }
-// });
-                // **Submit Rating**
-                // document.body.addEventListener("click", function (event) {
-                //     if (event.target.classList.contains("rating-star")) {
-                //         const productId = event.target.getAttribute("data-product-id");
-                //         const rating = event.target.getAttribute("data-rating");
-                //         axios.post('/api/rate-product', { product_id: productId, rating: rating })
-                //             .then(() => {
-                //                 alert("Rating submitted successfully!");
-                //                 location.reload();
-                //             })
-                //             .catch(() => alert("Error submitting rating."));
-                //     }
-                // });
-                                document.body.addEventListener("click", function (event) {
-                    if (event.target.classList.contains("rating-star")) {
-                        const productId = event.target.getAttribute("data-product-id");
-                        const rating = event.target.getAttribute("data-rating");
-                        const review = event.target.getAttribute('data-review');
-
-                        // Ask user for a title when submitting a rating
-                        const title = prompt("Enter a title for your rating (optional):");
-
-                        axios.post('/api/rate-product', { 
-                            product_id: productId, 
-                            rating: rating, 
-                            title: title || "" ,
-                            review: review || ""
-                        })
-                        .then(() => {
-                            alert("Rating submitted successfully!");
-                            location.reload();
-                        })
-                        .catch(() => alert("Error submitting rating."));
-                    }
-                });
-
-                // **Add to Cart**
                 document.body.addEventListener("click", function (event) {
-                    if (event.target.classList.contains("add-to-cart")) {
-                        const productId = event.target.getAttribute("data-id");
-                        axios.post(`/api/add-to-cart/${productId}`)
-                            .then(() => alert("Product added to cart successfully!"))
-                            .catch(() => alert("Error adding product to cart."));
-                    }
+                if (event.target.classList.contains("rating-star")) {
+                    const productId = event.target.getAttribute("data-product-id");
+                    const rating = event.target.getAttribute("data-rating");
+                    axios.get('/api/ratings')
+                .then(response => {
+                    console.log("All Ratings:", response.data.ratings);
+                })
+                .catch(error => {
+                    console.error("Error fetching ratings:", error);
                 });
-            })
-            .catch(error => console.error('Error fetching the products:', error));
-    });
+
+                console.log("Star clicked! Product ID:", productId, "Rating:", rating);
+
+                const title = prompt("Enter a title for your rating (optional):");
+
+                axios.post('/api/rate-product', { 
+                    product_id: productId, 
+                    rating: rating, 
+                    title: title || ""
+                })
+                .then(response => {
+                    if (response.status === 200) {
+                        alert(`You rated this product ${rating}/5!`);
+
+                        updateRatingUI(productId, rating);
+                    } else {
+                        alert("Failed to submit rating. Please try again.");
+                    }
+                })
+                .catch(error => {
+                    console.error("Error submitting rating:", error);
+                    alert("Error submitting rating.");
+                });
+            }
+            });
+
+            //  Function to Update the UI 
+            function updateRatingUI(productId, rating) {
+                const ratingContainer = document.querySelector(`.rating-container[data-product-id="${productId}"]`);
+
+                if (ratingContainer) {
+                    console.log(`Updating UI for product ${productId} with rating ${rating}/5`);
+                    ratingContainer.innerHTML = generateStars(rating);
+                } else {
+                    console.error(`Rating container not found for product ID: ${productId}`);
+                }
+            }
+
+            // Function to Generate Star Rating UI
+            function generateStars(rating) {
+                let starsHTML = '';
+                const maxStars = 5;
+
+                for (let i = 1; i <= maxStars; i++) {
+                    starsHTML += `<i class="fas fa-star ${i <= rating ? 'text-warning' : 'text-secondary'}"></i>`;
+                }
+                return `${starsHTML} <strong>(${rating}/5)</strong>`;
+            }
+                            // **Add to Cart**
+                            document.body.addEventListener("click", function (event) {
+                                if (event.target.classList.contains("add-to-cart")) {
+                                    const productId = event.target.getAttribute("data-id");
+                                    axios.post(`/api/add-to-cart/${productId}`)
+                                        .then(() => alert("Product added to cart successfully!"))
+                                        .catch(() => alert("Error adding product to cart."));
+                                }
+                            });
+                        })
+                        .catch(error => console.error('Error fetching the products:', error));
+                });
 </script>
       <!-- Modal -->
       <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
-      
    </body>
 </html>
+                {{-- <div class="card-body">
+                    <h5 class="card-title">${product.name}</h5>
+                    <p class="card-text">${product.description}</p>
+                    <p class="card-text text-muted"><strong>Original Price:</strong> <span style="text-decoration: line-through;">$${originalPrice.toFixed(2)}</span></p>
+                    <p class="card-text text-success"><strong>✔ Discount: ${discountCode > 0 ? discountCode + "%" : "No Discount"}</strong></p>
+                    <p class="card-text text-dark"><strong>Final Price: $${finalPrice.toFixed(2)}</strong></p>
+                    <div class="rating-container" data-product-id="${product.id}">${starsHTML} <strong>(${averageRating}/5)</strong></div>
+                </div>
+                <div class="card-footer text-center">
+                    <button class="btn btn-primary w-100 add-to-cart" data-id="${product.id}">Add to Cart</button> --}}

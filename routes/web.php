@@ -11,6 +11,7 @@ use App\Http\Controllers\ReelController;
 use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\ProductCatController;
+use App\Http\Controllers\AdminController;
 
 
 
@@ -43,20 +44,43 @@ Route::post('/register', [UserController::class, 'register']);
 Route::get('login', [UserController::class, 'showlogin'])->name('login');
 Route::post('login', [UserController::class, 'login']);
 
-/// Dashboard Routes ///
-Route::get('dashboard',[UserController::class,'dashboard'])->name('dashboard');
-Route::middleware('auth')->get('/dashboard', [UserController::class, 'dashboard'])->name('dashboard');
+Route::middleware(['auth', 'admin'])->group(function () {
+    Route::get('/admin', function () {
+        return view('admin.dashboard'); // Admin Dashboard View
+    })->name('admin.dashboard');
 
-/// Users Routes ///
-Route::get('userlist',function(){
-    return view('userlist');
+    Route::post('/admin/update-role/{id}', [AdminController::class, 'updateRole'])->name('admin.update-role');
 });
 
-Route::get('/userlist', [UserController::class, 'index'])->name('userlist');
-Route::get('/users', action: [UserController::class, 'index'])->name('users.index');
-Route::get('/users/{id}/edit', [UserController::class, 'edit'])->name('users.edit');
-Route::put('/users/{id}', [UserController::class, 'update'])->name('users.update');
-Route::delete('/users/{id}', [UserController::class, 'destroy'])->name('users.destroy');
+/// Dashboard Routes ///
+// Route::get('dashboard',[UserController::class,'dashboard'])->name('dashboard');
+// Route::middleware(['auth'])->get('/dashboard', [UserController::class, 'dashboard'])->name('dashboard');
+Route::middleware(['auth'])->group(function () {
+    Route::get('/dashboard', [UserController::class, 'dashboard'])->name('dashboard');
+    Route::post('/logout', [UserController::class, 'logout'])->name('logout');
+    Route::get('userlist',function(){
+        return view('userlist');
+    });
+    
+    Route::get('/userlist', [UserController::class, 'index'])->name('userlist');
+    Route::get('/users', action: [UserController::class, 'index'])->name('users.index');
+    Route::get('/users/{id}/edit', [UserController::class, 'edit'])->name('users.edit');
+    Route::put('/users/{id}', [UserController::class, 'update'])->name('users.update');
+    Route::delete('/users/{id}', [UserController::class, 'destroy'])->name('users.destroy');
+    
+});
+
+
+/// Users Routes ///
+// Route::get('userlist',function(){
+//     return view('userlist');
+// });
+
+// Route::get('/userlist', [UserController::class, 'index'])->name('userlist');
+// Route::get('/users', action: [UserController::class, 'index'])->name('users.index');
+// Route::get('/users/{id}/edit', [UserController::class, 'edit'])->name('users.edit');
+// Route::put('/users/{id}', [UserController::class, 'update'])->name('users.update');
+// Route::delete('/users/{id}', [UserController::class, 'destroy'])->name('users.destroy');
 
 /// Logout Routes ///
 Route::post('logout', [UserController::class, 'logout'])->name('logout');
@@ -138,7 +162,7 @@ Route::get('/productCat', function () {
 
 
 Route::get('/productCat/{id}', [ProductController::class, 'productsByCategory'])->name('productsCat');
-Route::get('/productCat/{id}', [ProductCatController::class, 'showCategoryProducts']);
+Route::get('/productCat/{id}', [ProductController::class, 'showCategoryProducts'])->name('category.products');
 Route::get('/products/category/{categoryId}', [ProductController::class, 'getProductsByCategory']);
 
 
