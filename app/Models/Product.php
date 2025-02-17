@@ -30,5 +30,26 @@ class Product extends Model
         return $this->belongsTo(ProductCat::class, 'category_id');
     }
 
-    
+    public function setPriceAttribute($value)
+    {
+        $this->attributes['price'] = $value;
+        $this->calculateDiscount();
+    }
+
+    public function setDiscountCodeAttribute($value)
+    {
+        $this->attributes['discount_code'] = $value;
+        $this->calculateDiscount();
+    }
+
+    private function calculateDiscount()
+    {
+        $price = $this->attributes['price'] ?? 0;
+        $discount = $this->attributes['discount_code'] ?? 0;
+
+        $discountAmount = ($price * $discount) / 100;
+        $this->attributes['discount_amount'] = round($discountAmount, 2);
+
+        $this->attributes['discounted_price'] = round($price - $discountAmount, 2);
+    }
 }
