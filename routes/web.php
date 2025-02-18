@@ -111,7 +111,6 @@ Route::post('/categories', [CategoryController::class, 'store'])->name('category
 Route::get('/categories', [CategoryController::class, 'index'])->name('categories.index');
 Route::post('/upload-image', [CategoryController::class, 'uploadImage'])->name('uploadImage');
 
-
 Route::get('/category/{id}/edit', [CategoryController::class, 'edit'])->name('category.editcategory');
 
 Route::post('/category/{id}/update', [CategoryController::class, 'update'])->name('category.update');
@@ -121,7 +120,6 @@ Route::delete('/category/{id}', [CategoryController::class, 'destroy'])->name('c
 Route::get('/video/edit/{id}', [VideoController::class, 'edit'])->name('videos.edit');
 Route::put('/video/update/{id}', [VideoController::class, 'update'])->name('videos.update');
                
-
 Route::post('/cart/add/{id}', [CartController::class, 'add'])->name('cart.add');
 Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
 Route::post('/cart/remove/{id}', [CartController::class, 'remove'])->name('cart.remove');
@@ -159,8 +157,6 @@ Route::post('/orders/{id}/cancel', [OrderController::class, 'cancelOrder'])->nam
 Route::get('/productCat', function () {
     return view('products.productCat');
 });
-
-
 Route::get('/productCat/{id}', [ProductController::class, 'productsByCategory'])->name('productsCat');
 Route::get('/productCat/{id}', [ProductController::class, 'showCategoryProducts'])->name('category.products');
 Route::get('/products/category/{categoryId}', [ProductController::class, 'getProductsByCategory']);

@@ -28,7 +28,7 @@ class ParagraphController extends Controller
             'content' => $request->content,
         ]);
 
-        return response()->json(['message' => 'Paragraph created successfully', 'paragraph' => $paragraph], 201);
+        return response()->json(['message' => 'Paragraph created successfully', 'paragraph' => $paragraph], 200);
     }
 
     public function index()

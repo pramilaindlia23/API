@@ -151,19 +151,23 @@
         
             <div>
                 <h5>Order Summary</h5>
+                @php
+                $originalPrice = $item['price'] ?? 0;
+                $discount = $item['discount_code'] ?? 0; // Assuming discount is in percentage
+                $discountAmount = ($originalPrice * $discount) / 100;
+                $finalPrice = $originalPrice - $discountAmount;
+            @endphp
                 <div class="mb-3">
                     @php $total = 0; @endphp
                     @foreach(session('cart', []) as $item)
                         <div class="d-flex justify-content-between mb-2">
-                            <div>
-                                @if(isset($item['image']))
-                                <img src="{{ $item['image'] }}" alt="Product Image" width="50" class="me-2">
-                            @else
-                                <img src="{{ asset('images/default.png') }}" alt="No Image" width="50" class="me-2">
-                            @endif
+                            <img src="{{ asset('storage/' . $item['image']) }}" alt="Product Image" width="50" class="me-2">
                             </div>
                             <div>{{ $item['name'] }} (x{{ $item['quantity'] ?? 1 }})</div>
-                            <div>${{ number_format(($item['price'] ?? 0) * ($item['quantity'] ?? 1), 2) }}</div>
+                            <div>
+                                    ${{ number_format(($item['price'] ?? 0) * ($item['quantity'] ?? 1), 2) }}
+                                    ${{ number_format($finalPrice, 2) }}
+                            </div>
                         </div>
                     @endforeach
                 </div>

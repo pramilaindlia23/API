@@ -11,7 +11,7 @@ class Product extends Model
    
     
     protected $fillable = [
-        'name', 'category_id', 'price', 'discount_code', 'description', 'stock', 'image','discount_amount','discounted_price'
+        'name', 'category_id', 'price', 'discount_code', 'description', 'stock', 'image','discount_amount','discounted_price','brand_name','rating','review','category_name'
     ];
     protected $table = 'products';
     public function reviews()

@@ -216,8 +216,11 @@
 <div class="container mt-5">
     <h4>Results</h4>
     <p>Check each product page for other buying options. Price and other details may vary based on product size and colour.</p>
-    {{-- <h2 class="text-center mb-5 bg-success text-white p-3 rounded">Category: {{ $category->name }}</h2> --}}
-
+   {{-- <script>
+    const productCard = `
+     <p><strong>Category:</strong> ${product.category_name}</p>`
+    container.innerHTML += productCard;
+   </script> --}}
     <div class="row row-cols-1 row-cols-md-3 g-4">
        
         @foreach ($products as $product)

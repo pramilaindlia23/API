@@ -25,7 +25,7 @@ class OrderController extends Controller
         }
 
         return view('checkout.index', compact('cart'));
-    }
+    }   
 
     public function store(Request $request)
     {
@@ -38,7 +38,7 @@ class OrderController extends Controller
         'zip' => 'required|string|max:20',
         'mobile' => 'required',
         'brand_name' => 'required',
-        'product_image' => 'nullable|image|max:2048',
+        'product_image' => 'required|image|max:2048',
     ]);
     $imagePath = null;
     if ($request->hasFile('product_image')) {
@@ -53,17 +53,33 @@ class OrderController extends Controller
         return redirect()->route('checkout.index')->with('error', 'Your cart is empty.');
     }
    
+    // $total = 0;
+
+    // foreach ($cart as $item) {
+    //     if (!isset($item['id'], $item['price'], $item['quantity'])) {
+           
+    //         \Log::error('Missing cart item data', $item);
+    //         return redirect()->route('cart.index')->with('error', 'One or more cart items are missing required information.');
+    //     }
+
+    //     $total += $item['price'] * $item['quantity'];
+    // }
     $total = 0;
 
-    foreach ($cart as $item) {
-        if (!isset($item['id'], $item['price'], $item['quantity'])) {
-           
-            \Log::error('Missing cart item data', $item);
-            return redirect()->route('cart.index')->with('error', 'One or more cart items are missing required information.');
-        }
+foreach ($cart as $item) {
+    \Log::info('Cart Item Data:', $item); // Debugging
 
-        $total += $item['price'] * $item['quantity'];
+    if (!isset($item['id'], $item['price'], $item['quantity'])) {
+        \Log::error('Missing cart item data', $item);
+        return redirect()->route('cart.index')->with('error', 'One or more cart items are missing required information.');
     }
+
+    $total += ((float) $item['total']) * (int) $item['quantity'];
+}
+
+// Debug final total before saving order
+\Log::info('Calculated Total:', ['total' => $total]);
+
 
     $order = Order::create([
         'user_id' => auth()->check() ? auth()->id() : null,
@@ -77,15 +93,33 @@ class OrderController extends Controller
         'mobile' => $request->mobile,
         'brand_name' => $request->brand_name,
         'product_image' => $imagePath,
+        
     ]);
 
+    // foreach ($cart as $item) {
+    //     if (isset($item['id'], $item['price'], $item['quantity'])) {
+    //         OrderItem::create([
+    //             'order_id' => $order->id,
+    //             'product_id' => $item['id'], 
+    //             'quantity' => $item['quantity'],
+    //             'price' => $item['price'],
+    //         ]);
+    //     }
+    // }
     foreach ($cart as $item) {
         if (isset($item['id'], $item['price'], $item['quantity'])) {
+            \Log::info('Order Item:', [
+                'order_id' => $order->id,
+                'product_id' => $item['id'],
+                'quantity' => $item['quantity'],
+                'price' => (float) $item['total'], 
+            ]);
+    
             OrderItem::create([
                 'order_id' => $order->id,
-                'product_id' => $item['id'], 
+                'product_id' => $item['id'],
                 'quantity' => $item['quantity'],
-                'price' => $item['price'],
+                'price' => (float) $item['total'], 
             ]);
         }
     }

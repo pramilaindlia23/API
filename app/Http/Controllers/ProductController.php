@@ -35,6 +35,36 @@ public function index()
     }
     
     
+    // public function store(Request $request)
+    // {
+    //     $request->validate([
+    //         'name' => 'required|string|max:255',
+    //         'description' => 'nullable|string',
+    //         'price' => 'required|numeric',
+    //         'discount_code' => 'nullable|numeric',
+    //         'category_id' => 'required|exists:products_cats,id',
+    //         'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp,svg|max:2048'
+    //     ]);
+    
+    //     $product = new Product();
+    //     $product->name = $request->name;
+    //     $product->description = $request->description;
+    //     $product->price = $request->price;
+    //     $product->discount_code = $request->discount_code;
+    //     $product->category_id = $request->category_id;
+    
+    //     if ($request->hasFile('image')) {
+    //         $imagePath = $request->file('image')->store('product_images', 'public');
+    //         $product->image = $imagePath; // Store only "product_images/image.jpg"
+    //     }
+    
+    //     $product->save();
+    
+    //     return response()->json(['message' => 'Product created successfully', 'product' => $product]);
+    // }
+ 
+
+
     public function store(Request $request)
     {
         $request->validate([
@@ -43,6 +73,10 @@ public function index()
             'price' => 'required|numeric',
             'discount_code' => 'nullable|numeric',
             'category_id' => 'required|exists:products_cats,id',
+            'category_name' => 'required|string|max:255',
+            'brand_name' => 'nullable|string|max:255',
+            'rating' => 'nullable|numeric|min:0|max:5',
+            'review' => 'nullable|string',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp,svg|max:2048'
         ]);
     
@@ -52,17 +86,23 @@ public function index()
         $product->price = $request->price;
         $product->discount_code = $request->discount_code;
         $product->category_id = $request->category_id;
+        $product->category_name = $request->category_name;
+        $product->brand_name = $request->brand_name;
+        $product->rating = $request->rating;
+        $product->review = $request->review;
     
         if ($request->hasFile('image')) {
             $imagePath = $request->file('image')->store('product_images', 'public');
-            $product->image = $imagePath; // Store only "product_images/image.jpg"
+            $product->image = $imagePath;
         }
     
         $product->save();
     
         return response()->json(['message' => 'Product created successfully', 'product' => $product]);
     }
- 
+    
+    
+
     public function applyDiscount(Request $request)
 {
     $product = Product::find($request->product_id);
