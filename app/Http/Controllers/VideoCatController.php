@@ -31,5 +31,8 @@ class VideoCatController extends Controller
         $categories = VideoCat::all();
         return response()->json($categories);
     }
+
+    
+    
     
 }

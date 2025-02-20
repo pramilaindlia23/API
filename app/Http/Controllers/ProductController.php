@@ -183,5 +183,12 @@ public function update(Request $request, $id)
 
         return response()->json(['message' => 'Product updated successfully', 'product' => $product]);
     }
+    public function show($id)
+{
+    $product = Product::findOrFail($id);
+    $reviews = Review::where('product_id', $id)->latest()->get();
+
+    return view('products.show', compact('product', 'reviews'));
+}
 }
 

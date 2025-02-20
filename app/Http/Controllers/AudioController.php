@@ -13,6 +13,7 @@ class AudioController extends Controller
     {
         
         $request->validate([
+            'title' => 'required|string|max:255', 
             'audio' => 'required|file|mimes:mp3,wav,ogg|max:10240', 
         ]);
 
@@ -21,11 +22,14 @@ class AudioController extends Controller
         $filename = basename($path);
 
         $audio = AudioFile::create([
+            'title' => $request->input('title'), 
             'filename' => $filename,
             'path' => $path,
         ]);
 
-        return response()->json($audio, 201);
+        return response()->json([
+            'message' => 'audio created successfully!',
+            'audio' => $audio],200);
     }
 
     // List all uploaded audio files

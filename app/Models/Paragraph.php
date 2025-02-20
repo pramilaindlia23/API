@@ -9,5 +9,6 @@ class Paragraph extends Model
 {
     use HasFactory;
     protected $table = 'paragraphs';
-    protected $fillable = ['title', 'content'];
+    protected $fillable = ['title', 'content', 'date', 'time', 'location'];
+
 }

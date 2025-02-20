@@ -105,4 +105,10 @@ public function show($id)
     return response()->json($video);
 }
 
+public function create()
+    {
+        $categories = VideoCat::all(); // Fetch all categories
+        return view('videoupload', compact('categories'));
+    }
+
 }

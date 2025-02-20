@@ -36,13 +36,28 @@
                     <label for="title" class="form-label">Title</label>
                     <input type="text" class="form-control" id="title" name="title" required>
                 </div>
-
+        
                 <div class="mb-3">
                     <label for="content" class="form-label">Text</label>
                     <textarea class="form-control" id="content" name="content" rows="5" required></textarea>
                 </div>
-
-                <button type="submit" class="btn btn-primary w-100">Upload Text</button>
+        
+                <div class="mb-3">
+                    <label for="date" class="form-label">Event Date</label>
+                    <input type="date" class="form-control" id="date" name="date" required>
+                </div>
+        
+                <div class="mb-3">
+                    <label for="time" class="form-label">Event Time</label>
+                    <input type="time" class="form-control" id="time" name="time" required>
+                </div>
+        
+                <div class="mb-3">
+                    <label for="location" class="form-label">Event Location</label>
+                    <input type="text" class="form-control" id="location" name="location" required>
+                </div>
+        
+                <button type="submit" class="btn btn-primary w-100">Upload Event</button>
             </form>
         </div>
     </div>
@@ -58,6 +73,9 @@
                 <tr>
                     <th>Title</th>
                     <th>Content</th>
+                    <th>Event Date</th>
+                    <th>Event Time</th>
+                    <th>Event Location</th>
                     <th>Actions</th>
                 </tr>
             </thead>
@@ -99,8 +117,103 @@
 </div>
 <!-- Bootstrap 5 JS and Popper.js -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
-
 <script>
+    document.getElementById('upload-form').addEventListener('submit', function (e) {
+    e.preventDefault();
+
+    const formData = new FormData();
+    formData.append('title', document.getElementById('title').value);
+    formData.append('content', document.getElementById('content').value);
+    formData.append('date', document.getElementById('date').value);
+    formData.append('time', document.getElementById('time').value);
+    formData.append('location', document.getElementById('location').value);
+
+    fetch('http://127.0.0.1:8000/api/paragraphs', {
+        method: 'POST',
+        headers: {
+            'Accept': 'application/json'
+        },
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.message) {
+            alert('Event added successfully!');
+            loadParagraphs();
+        } else {
+            alert('Error: ' + JSON.stringify(data.errors));
+        }
+    })
+    .catch(error => console.error('Error uploading event:', error));
+});
+
+
+    // Fetch and display upcoming events
+    function loadParagraphs() {
+        fetch('http://127.0.0.1:8000/api/paragraphs')
+            .then(response => response.json())
+            .then(events => {
+                let eventsHtml = '';
+                events.forEach(event => {
+                    eventsHtml += `
+                        <tr>
+                            <td>${event.title}</td>
+                            <td>${event.content}</td>
+                            <td>${event.date}</td>
+                            <td>${event.time}</td>
+                            <td>${event.location}</td>
+                            <td>
+                                <button class="btn btn-warning btn-sm" onclick="editParagraph(${event.id})">Edit</button>
+                                <button class="btn btn-danger btn-sm" onclick="deleteParagraph(${event.id})">Delete</button>
+                            </td>
+                        </tr>
+                    `;
+                });
+                paragraphListDiv.innerHTML = eventsHtml;
+            })
+            .catch(error => console.error('Error loading events:', error));
+    }
+
+    // Edit an event
+    function editParagraph(id) {
+        fetch(`http://127.0.0.1:8000/api/paragraphs/${id}`)
+            .then(response => response.json())
+            .then(event => {
+                document.getElementById('edit-paragraph-id').value = event.id;
+                document.getElementById('edit-title').value = event.title;
+                document.getElementById('edit-content').value = event.content;
+                document.getElementById('edit-date').value = event.date;
+                document.getElementById('edit-time').value = event.time;
+                document.getElementById('edit-location').value = event.location;
+
+                new bootstrap.Modal(document.getElementById('editParagraphModal')).show();
+            })
+            .catch(error => console.error('Error fetching event:', error));
+    }
+
+    // Delete an event
+    function deleteParagraph(id) {
+        if (confirm('Are you sure you want to delete this event?')) {
+            fetch(`http://127.0.0.1:8000/api/paragraphs/${id}`, {
+                method: 'DELETE',
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.message) {
+                    alert(data.message);
+                    loadParagraphs();
+                }
+            })
+            .catch(error => console.error('Error deleting event:', error));
+        }
+    }
+
+    // Load events when page loads
+    document.addEventListener('DOMContentLoaded', loadParagraphs);
+</script>
+
+
+{{-- <script>
     const form = document.getElementById('upload-form');
     const messageDiv = document.getElementById('message');
     const paragraphListDiv = document.getElementById('paragraph-list');
@@ -224,7 +337,7 @@
     document.addEventListener('DOMContentLoaded', function() {
         loadParagraphs();
     });
-</script>
+</script> --}}
 <script src="{{ asset('assets/vendor/jquery/jquery.min.js') }}"></script>
 <script src="{{ asset('assets/vendor/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
 

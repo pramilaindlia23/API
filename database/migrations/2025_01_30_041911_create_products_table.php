@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->decimal('price', 8, 2);
-            $table->integer('discount_code');
+            $table->integer('discount_code')->default(0);
             $table->decimal('discount_amount', 8, 2)->default(0);
             $table->decimal('discounted_price', 8, 2)->default(0);
             $table->text('description')->nullable();

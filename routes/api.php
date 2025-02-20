@@ -13,6 +13,8 @@ use App\Http\Controllers\OrderController;
 use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\ProductCatController;
+use App\Http\Controllers\VideoLinkController;
+
 
 
 use App\Models\Product;
@@ -61,9 +63,11 @@ Route::delete('paragraphs/{id}', [ParagraphController::class, 'destroy']);
 
 
 // api.php
+Route::get('/videocats', [VideocatController::class, 'index']); // Fetch categories
+Route::post('/videocats', [VideocatController::class, 'store']); // Add category
 
-Route::post('videocategory', [VideoCatController::class, 'store']); 
-Route::get('categories', [VideoCatController::class, 'index']);
+// Route::post('videocategory', [VideoCatController::class, 'store']); 
+// Route::get('categories', [VideoCatController::class, 'index']);
 
 //products //
 Route::get('/products', [ProductController::class, 'index']);
@@ -114,6 +118,12 @@ Route::get('/category-images/{categoryId}', function ($categoryId) {
 
     return response()->json(['images' => $allImages]);
 });
+// video links //
+Route::get('/video-links', [VideoLinkController::class, 'index']);  // Fetch all video links
+Route::post('/video-links', [VideoLinkController::class, 'store']); // Add a new video link
+Route::delete('/video-links/{id}', [VideoLinkController::class, 'destroy']); 
+// review //
+Route::post('/reviews', [ReviewController::class, 'store']);
 
 
 

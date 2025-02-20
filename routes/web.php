@@ -12,6 +12,7 @@ use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\ProductCatController;
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\VideoLinkController;
 
 
 
@@ -161,6 +162,10 @@ Route::get('/productCat/{id}', [ProductController::class, 'productsByCategory'])
 Route::get('/productCat/{id}', [ProductController::class, 'showCategoryProducts'])->name('category.products');
 Route::get('/products/category/{categoryId}', [ProductController::class, 'getProductsByCategory']);
 
+// video link //
+// Route::get('videolink',[VideoLinkController::class,'index'])->name('videolink');
 
-
-
+Route::get('/videolink', function () {
+    return view('videolink.createvideolink');
+});
+Route::get('/products/{id}', [ProductController::class, 'show'])->name('products.show');

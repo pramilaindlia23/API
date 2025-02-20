@@ -35,6 +35,7 @@ class Kernel extends HttpKernel
             \Illuminate\Session\Middleware\StartSession::class,
             \Illuminate\View\Middleware\ShareErrorsFromSession::class,
             \App\Http\Middleware\VerifyCsrfToken::class,
+            \Illuminate\Http\Middleware\HandleCors::class,
             \Illuminate\Routing\Middleware\SubstituteBindings::class,
             \Illuminate\Session\Middleware\StartSession::class,
         ],
@@ -70,5 +71,6 @@ class Kernel extends HttpKernel
     protected $routeMiddleware = [
         // Other middlewares
         'admin' => \App\Http\Middleware\AdminMiddleware::class,
+        
     ];
 }

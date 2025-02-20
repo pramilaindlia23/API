@@ -96,132 +96,141 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', function () {
-        // Fetch categories to populate dropdown for video upload
-        fetchCategories();
+    // Fetch categories to populate dropdown for video upload
+    fetchVideoCategories();
 
-        // Add category form submission handler
-        const categoryForm = document.getElementById('category-form');
-        categoryForm.addEventListener('submit', function (e) {
-            e.preventDefault();
+    // Add category form submission handler
+    const categoryForm = document.getElementById('category-form');
+    categoryForm.addEventListener('submit', function (e) {
+        e.preventDefault();
 
-            const categoryName = document.getElementById('category_name').value;
-            fetch('api/videocategory', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Accept': 'application/json',
-                },
-                body: JSON.stringify({
-                    name: categoryName
-                }),
-            })
-            .then(response => response.json())
-            .then(data => {
-                alert('Category added successfully!');
-                fetchCategories(); // Re-fetch categories after adding a new one
-            })
-            .catch(error => {
-                console.error('Error adding category:', error);
-            });
+        const categoryName = document.getElementById('category_name').value;
+        fetch('api/videocats', { // Updated API endpoint
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+            },
+            body: JSON.stringify({
+                name: categoryName
+            }),
+        })
+        .then(response => response.json())
+        .then(data => {
+            alert('Category added successfully!');
+            fetchVideoCategories(); // Re-fetch categories after adding a new one
+        })
+        .catch(error => {
+            console.error('Error adding category:', error);
         });
-
-        // Video upload form submission handler
-        const uploadForm = document.getElementById('upload-form');
-        uploadForm.addEventListener('submit', function (e) {
-            e.preventDefault();
-
-            const formData = new FormData(uploadForm);
-
-            fetch('api/upload-video', {
-                method: 'POST',
-                body: formData,
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.message) {
-                    alert(data.message);
-                } else {
-                    alert('Error uploading video');
-                }
-            })
-            .catch(error => {
-                console.error('Error uploading video:', error);
-            });
-        });
-
-        // Load the videos from the API
-        loadVideos();
-
-        // Fetch and display videos
-        function loadVideos() {
-            fetch('api/videos')
-                .then(response => response.json())
-                .then(videos => {
-                    const videoList = document.getElementById('video-list');
-                    videoList.innerHTML = ''; 
-
-                    videos.forEach((video, index) => {
-                        const row = document.createElement('tr');
-                        row.innerHTML = `
-                            <td>${index + 1}</td>
-                            <td>${video.category.category_name}</td> <!-- Display category -->
-                            <td>${video.title}</td> <!-- Display video title -->
-                            <td><a href="/storage/${video.video_path}" target="_blank">Watch Video</a></td> <!-- Display video path as link -->
-                            <td>
-                                <button class="btn btn-danger btn-sm delete-btn" data-video-id="${video.id}">Delete</button>
-                            </td>`;
-                        videoList.appendChild(row);
-                    });
-
-                    // Attach event listener for delete buttons
-                    attachDeleteButtonListeners();
-                })
-                .catch(error => console.error('Error loading videos:', error));
-        }
-
-        // Attach event listener for delete buttons
-        function attachDeleteButtonListeners() {
-            const deleteButtons = document.querySelectorAll('.delete-btn');
-            deleteButtons.forEach(button => {
-                button.addEventListener('click', function () {
-                    const videoId = this.getAttribute('data-video-id');
-                    deleteVideo(videoId);
-                });
-            });
-        }
-
-        // Delete video
-        function deleteVideo(videoId) {
-            if (confirm('Are you sure you want to delete this video?')) {
-                fetch(`api/video/${videoId}`, {
-                    method: 'DELETE',
-                })
-                .then(response => response.json())
-                .then(data => {
-                    alert(data.message);
-                    loadVideos(); 
-                })
-                .catch(error => console.error('Error deleting video:', error));
-            }
-        }
-
-        // Fetch categories for the upload form
-        function fetchCategories() {
-            fetch('api/categories')
-                .then(response => response.json())
-                .then(categories => {
-                    const categorySelect = document.getElementById('category_id');
-                    categorySelect.innerHTML = '<option value="" disabled selected>Select a category</option>';
-                    categories.forEach(category => {
-                        const option = document.createElement('option');
-                        option.value = category.id;
-                        option.textContent = category.category_name;
-                        categorySelect.appendChild(option);
-                    });
-                })
-                .catch(error => console.error('Error loading categories:', error));
-        }
     });
+
+    // Video upload form submission handler
+    const uploadForm = document.getElementById('upload-form');
+    uploadForm.addEventListener('submit', function (e) {
+        e.preventDefault();
+
+        const formData = new FormData(uploadForm);
+
+        fetch('api/upload-video', {
+            method: 'POST',
+            body: formData,
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.message) {
+                alert(data.message);
+            } else {
+                alert('Error uploading video');
+            }
+        })
+        .catch(error => {
+            console.error('Error uploading video:', error);
+        });
+    });
+
+    // Load the videos from the API
+    loadVideos();
+
+    // Fetch and display videos
+    function loadVideos() {
+        fetch('api/videos')
+            .then(response => response.json())  
+            .then(videos => {
+                const videoList = document.getElementById('video-list');
+                videoList.innerHTML = ''; 
+
+                videos.forEach((video, index) => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${index + 1}</td>
+                        <td>${video.category.category_name}</td> <!-- Display category -->
+                        <td>${video.title}</td> <!-- Display video title -->
+                        <td><a href="/storage/${video.video_path}" target="_blank">Watch Video</a></td> <!-- Display video path as link -->
+                        <td>
+                            <button class="btn btn-danger btn-sm delete-btn" data-video-id="${video.id}">Delete</button>
+                        </td>`;
+                    videoList.appendChild(row);
+                });
+
+                // Attach event listener for delete buttons
+                attachDeleteButtonListeners();
+            })
+            .catch(error => console.error('Error loading videos:', error));
+    }
+
+    // Attach event listener for delete buttons
+    function attachDeleteButtonListeners() {
+        const deleteButtons = document.querySelectorAll('.delete-btn');
+        deleteButtons.forEach(button => {
+            button.addEventListener('click', function () {
+                const videoId = this.getAttribute('data-video-id');
+                deleteVideo(videoId);
+            });
+        });
+    }
+
+    // Delete video
+    function deleteVideo(videoId) {
+        if (confirm('Are you sure you want to delete this video?')) {
+            fetch(`api/video/${videoId}`, {
+                method: 'DELETE',
+            })
+            .then(response => response.json())
+            .then(data => {
+                alert(data.message);
+                loadVideos(); 
+            })
+            .catch(error => console.error('Error deleting video:', error));
+        }
+    }
+
+    // Fetch categories for the upload form
+    function fetchVideoCategories() {
+        fetch('api/videocats') // Corrected API endpoint to match controller
+            .then(response => response.json())
+            .then(categories => {
+                console.log("API Response:", categories); // Debugging output
+
+                if (!Array.isArray(categories)) {
+                    console.error("Expected an array but got:", categories);
+                    return;
+                }
+
+                const categorySelect = document.getElementById('category_id');
+                categorySelect.innerHTML = '<option value="" disabled selected>Select a category</option>';
+
+                categories.forEach(category => {
+                    const option = document.createElement('option');
+                    option.value = category.id;
+                    option.textContent = category.category_name; 
+                    categorySelect.appendChild(option);
+                });
+            })
+            .catch(error => console.error('Error loading video categories:', error));
+    }
+});
+
 </script>
 
 
