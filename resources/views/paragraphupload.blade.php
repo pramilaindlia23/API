@@ -38,8 +38,8 @@
                 </div>
         
                 <div class="mb-3">
-                    <label for="content" class="form-label">Text</label>
-                    <textarea class="form-control" id="content" name="content" rows="5" required></textarea>
+                    <label for="content" class="form-label">Event Content</label>
+                    <textarea class="form-control" id="content" name="content"  rows="5" required></textarea>
                 </div>
         
                 <div class="mb-3">
@@ -118,65 +118,88 @@
 <!-- Bootstrap 5 JS and Popper.js -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
 <script>
+document.addEventListener("DOMContentLoaded", function () {
     document.getElementById('upload-form').addEventListener('submit', function (e) {
-    e.preventDefault();
+        e.preventDefault();
 
-    const formData = new FormData();
-    formData.append('title', document.getElementById('title').value);
-    formData.append('content', document.getElementById('content').value);
-    formData.append('date', document.getElementById('date').value);
-    formData.append('time', document.getElementById('time').value);
-    formData.append('location', document.getElementById('location').value);
+       
+        const title = document.getElementById('title')?.value.trim();
+        const content = document.querySelector('textarea#content')?.value.trim();  
+        const date = document.getElementById('date')?.value.trim();
+        const time = document.getElementById('time')?.value.trim();
+        const location = document.getElementById('location')?.value.trim();
 
-    fetch('http://127.0.0.1:8000/api/paragraphs', {
-        method: 'POST',
-        headers: {
-            'Accept': 'application/json'
-        },
-        body: formData
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.message) {
-            alert('Event added successfully!');
-            loadParagraphs();
-        } else {
-            alert('Error: ' + JSON.stringify(data.errors));
+        console.log("Title:", title);
+        console.log("Content:", content);
+        console.log("Date:", date);
+        console.log("Time:", time);
+        console.log("Location:", location);
+
+        if (!title || !content || !date || !time || !location) {
+            alert('Please fill out all fields before submitting.');
+            return;
         }
-    })
-    .catch(error => console.error('Error uploading event:', error));
-});
 
+        const formData = { title, content, date, time, location };
+
+        fetch('/api/paragraphs', {
+    method: 'POST',
+    headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(formData)
+})
+.then(response => response.json())
+.then(data => {
+    console.log('Response:', data); 
+    if (data.errors) {
+        console.error("Validation Errors:", data.errors);
+        alert("Validation Errors: " + JSON.stringify(data.errors));
+    } else if (data.message) {
+        alert('Event added successfully!');
+        loadParagraphs();
+    }
+})
+.catch(error => console.error('Error uploading event:', error));
+    });
+});
 
     // Fetch and display upcoming events
     function loadParagraphs() {
-        fetch('http://127.0.0.1:8000/api/paragraphs')
-            .then(response => response.json())
-            .then(events => {
-                let eventsHtml = '';
-                events.forEach(event => {
-                    eventsHtml += `
-                        <tr>
-                            <td>${event.title}</td>
-                            <td>${event.content}</td>
-                            <td>${event.date}</td>
-                            <td>${event.time}</td>
-                            <td>${event.location}</td>
-                            <td>
-                                <button class="btn btn-warning btn-sm" onclick="editParagraph(${event.id})">Edit</button>
-                                <button class="btn btn-danger btn-sm" onclick="deleteParagraph(${event.id})">Delete</button>
-                            </td>
-                        </tr>
-                    `;
-                });
-                paragraphListDiv.innerHTML = eventsHtml;
-            })
-            .catch(error => console.error('Error loading events:', error));
+    let paragraphListDiv = document.getElementById('paragraph-list');
+
+    if (!paragraphListDiv) {
+        console.error('Error: #paragraph-list not found in DOM');
+        return;
     }
 
+    fetch('api/paragraphs')
+        .then(response => response.json())
+        .then(events => {
+            let eventsHtml = '';
+            events.forEach(event => {
+                eventsHtml += `
+                    <tr>
+                        <td>${event.title}</td>
+                        <td>${event.content}</td>
+                        <td>${event.date}</td>
+                        <td>${event.time}</td>
+                        <td>${event.location}</td>
+                        <td>
+                            <button class="btn btn-warning btn-sm" onclick="editParagraph(${event.id})">Edit</button>
+                            <button class="btn btn-danger btn-sm" onclick="deleteParagraph(${event.id})">Delete</button>
+                        </td>
+                    </tr>
+                `;
+            });
+            paragraphListDiv.innerHTML = eventsHtml;
+        })
+        .catch(error => console.error('Error loading events:', error));
+}
     // Edit an event
     function editParagraph(id) {
-        fetch(`http://127.0.0.1:8000/api/paragraphs/${id}`)
+        fetch(`api/paragraphs/${id}`)
             .then(response => response.json())
             .then(event => {
                 document.getElementById('edit-paragraph-id').value = event.id;
@@ -194,7 +217,7 @@
     // Delete an event
     function deleteParagraph(id) {
         if (confirm('Are you sure you want to delete this event?')) {
-            fetch(`http://127.0.0.1:8000/api/paragraphs/${id}`, {
+            fetch(`api/paragraphs/${id}`, {
                 method: 'DELETE',
             })
             .then(response => response.json())
@@ -211,133 +234,6 @@
     // Load events when page loads
     document.addEventListener('DOMContentLoaded', loadParagraphs);
 </script>
-
-
-{{-- <script>
-    const form = document.getElementById('upload-form');
-    const messageDiv = document.getElementById('message');
-    const paragraphListDiv = document.getElementById('paragraph-list');
-    const editForm = document.getElementById('edit-form');
-    const editParagraphModal = new bootstrap.Modal(document.getElementById('editParagraphModal'));
-
-   
-    function loadParagraphs() {
-        fetch('http://127.0.0.1:8000/api/paragraphs')  
-            .then(response => response.json())
-            .then(paragraphs => {
-                let paragraphsHtml = '';
-                paragraphs.forEach(paragraph => {
-                    paragraphsHtml += `
-                        <tr id="paragraph-${paragraph.id}">
-                            <td>${paragraph.title}</td>
-                            <td>${paragraph.content}</td>
-                            <td>
-                                <button class="btn btn-warning btn-sm" onclick="editParagraph(${paragraph.id})">Edit</button>
-                                <button class="btn btn-danger btn-sm" onclick="deleteParagraph(${paragraph.id})">Delete</button>
-                            </td>
-                        </tr>
-                    `;
-                });
-                paragraphListDiv.innerHTML = paragraphsHtml;  
-            })
-            .catch(error => {
-                console.error('Error loading paragraphs:', error);
-            });
-    }
-
-    //  upload new paragraph //
-    form.addEventListener('submit', function(e) {
-        e.preventDefault();
-
-        const formData = new FormData(form);
-        fetch('api/paragraph', {  
-            method: 'POST',
-            body: formData, 
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.message) {
-                messageDiv.innerHTML = `<div class="alert alert-success">${data.message}</div>`;
-                loadParagraphs();  
-            } else {
-                messageDiv.innerHTML = `<div class="alert alert-danger">Error: ${data.errors}</div>`;
-            }
-        })
-        .catch(error => {
-            messageDiv.innerHTML = `<div class="alert alert-danger">An error occurred: ${error.message}</div>`;
-        });
-    });
-
-    //  the edit form in a modal //
-    function editParagraph(id) {
-        fetch(`api/paragraphs/${id}`)
-            .then(response => response.json())
-            .then(paragraph => {
-                document.getElementById('edit-paragraph-id').value = paragraph.id;
-                document.getElementById('edit-title').value = paragraph.title;
-                document.getElementById('edit-content').value = paragraph.content;
-                editParagraphModal.show();  
-            })
-            .catch(error => {
-                console.error('Error fetching paragraph for edit:', error);
-            });
-    }
-
-    //  editing a paragraph //
-    editForm.addEventListener('submit', function(e) {
-        e.preventDefault();
-
-        const paragraphId = document.getElementById('edit-paragraph-id').value;
-        const updatedTitle = document.getElementById('edit-title').value;
-        const updatedContent = document.getElementById('edit-content').value;
-
-        fetch(`api/paragraphs/${paragraphId}`, {
-            method: 'PUT',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                title: updatedTitle,
-                content: updatedContent,
-            })
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.message) {
-                alert(data.message);
-                editParagraphModal.hide(); 
-                loadParagraphs();  
-            }
-        })
-        .catch(error => {
-            console.error('Error updating paragraph:', error);
-        });
-    });
-
-    // Function to delete a paragraph
-    function deleteParagraph(id) {
-        if (confirm('Are you sure you want to delete this paragraph?')) {
-            fetch(`http://127.0.0.1:8000/api/paragraphs/${id}`, {
-                method: 'DELETE',  
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.message) {
-                    alert(data.message);
-                    loadParagraphs(); 
-                }
-            })
-            .catch(error => {
-                console.error('Error deleting paragraph:', error);
-            });
-        }
-    }
-
-    // Initial load of paragraphs when page is loaded
-    document.addEventListener('DOMContentLoaded', function() {
-        loadParagraphs();
-    });
-</script> --}}
 <script src="{{ asset('assets/vendor/jquery/jquery.min.js') }}"></script>
 <script src="{{ asset('assets/vendor/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
 

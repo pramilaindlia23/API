@@ -15,9 +15,10 @@ use App\Http\Controllers\CartController;
 use App\Http\Controllers\ProductCatController;
 use App\Http\Controllers\VideoLinkController;
 
-
-
 use App\Models\Product;
+use App\Models\Review;
+use App\Models\User;
+
 
 
 
@@ -42,7 +43,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 Route::get('video-list', [VideoController::class, 'index']);
 Route::get('video/{id}', [VideoController::class, 'show']);
 Route::post('upload-video', [VideoController::class, 'upload']);
-Route::get('videos', [VideoController::class, 'index']); // Fetch all videos
+Route::get('videos', [VideoController::class, 'index']); 
 Route::delete('video/{id}', [VideoController::class, 'destroy']);
 
 
@@ -55,7 +56,7 @@ Route::get('show-image{id}',[ImageController::class,'showimage']);
 
 /////// paragraphs routes /////
 
-Route::post('paragraph', [ParagraphController::class, 'store']); 
+Route::post('/paragraphs', [ParagraphController::class, 'store']);
 Route::get('paragraphs/{id}', [ParagraphController::class, 'showparagraph']);
 Route::get('paragraphs', [ParagraphController::class, 'index']);
 Route::put('paragraphs/{id}', [ParagraphController::class, 'update']);
@@ -63,11 +64,8 @@ Route::delete('paragraphs/{id}', [ParagraphController::class, 'destroy']);
 
 
 // api.php
-Route::get('/videocats', [VideocatController::class, 'index']); // Fetch categories
-Route::post('/videocats', [VideocatController::class, 'store']); // Add category
-
-// Route::post('videocategory', [VideoCatController::class, 'store']); 
-// Route::get('categories', [VideoCatController::class, 'index']);
+Route::get('/videocats', [VideocatController::class, 'index']); 
+Route::post('/videocats', [VideocatController::class, 'store']); 
 
 //products //
 Route::get('/products', [ProductController::class, 'index']);
@@ -81,7 +79,6 @@ Route::post('/rate-product', [ReviewController::class, 'store']);
 Route::get('/ratings', [ReviewController::class, 'getAllRatings']);
 
 Route::get('/categories', [ProductCatController::class, 'getCategories']);
-// Route::get('/show-cats', [ProductCatController::class, 'index']);
 Route::get('/products/category/{categoryId}', [ProductController::class, 'getProductsByCategory']);
 
 
@@ -119,11 +116,22 @@ Route::get('/category-images/{categoryId}', function ($categoryId) {
     return response()->json(['images' => $allImages]);
 });
 // video links //
-Route::get('/video-links', [VideoLinkController::class, 'index']);  // Fetch all video links
-Route::post('/video-links', [VideoLinkController::class, 'store']); // Add a new video link
+Route::get('/video-links', [VideoLinkController::class, 'index']);  
+Route::post('/video-links', [VideoLinkController::class, 'store']); 
 Route::delete('/video-links/{id}', [VideoLinkController::class, 'destroy']); 
 // review //
 Route::post('/reviews', [ReviewController::class, 'store']);
+Route::get('/reviews/{product_id}', function ($product_id) {
+    $reviews = Review::where('product_id', $product_id)->latest()->get();
+    return response()->json(['reviews' => $reviews]);
+});
 
+Route::get('/users/{id}', function ($id) {
+    $user = User::find($id);
+    if (!$user) {
+        return response()->json(['error' => 'User not found'], 404);
+    }
+    return response()->json($user);
+});
 
 

@@ -12,7 +12,8 @@ class ParagraphController extends Controller
 {
     public function store(Request $request)
     {
-        // Validate the request
+        \Log::info('Request Data:', $request->all()); 
+    
         $validator = Validator::make($request->all(), [
             'title' => 'required|string|max:255',
             'content' => 'required|string|min:10',
@@ -22,56 +23,21 @@ class ParagraphController extends Controller
         ]);
     
         if ($validator->fails()) {
+            \Log::error('Validation Failed:', $validator->errors()->toArray()); 
             return response()->json(['message' => 'Validation failed', 'errors' => $validator->errors()], 400);
         }
     
-        // Create new paragraph/event
-        $paragraph = Paragraph::create([
-            'title' => $request->title,
-            'content' => $request->content,
-            'date' => $request->date,
-            'time' => $request->time,
-            'location' => $request->location,
-        ]);
+        $paragraph = Paragraph::create($request->all());
     
         return response()->json(['message' => 'Event created successfully', 'event' => $paragraph], 201);
     }
-    
+ 
 public function index()
 {
     // Fetch upcoming events sorted by date
     $paragraphs = Paragraph::orderBy('date', 'asc')->get();
     return response()->json($paragraphs);
 }
-
-    // public function store(Request $request)
-    // {
-    //     // Validate the incoming request
-    //     $validator = Validator::make($request->all(), [
-    //         'title' => 'required|string|max:255',
-    //         'content' => 'required|string|min:10', 
-    //     ]);
-
-    //     if ($validator->fails()) {
-    //         return response()->json(['message' => 'Validation failed', 'errors' => $validator->errors()], 400);
-    //     }
-
-    //     // Create the paragraph
-    //     $paragraph = Paragraph::create([
-    //         'title' => $request->title,
-    //         'content' => $request->content,
-    //     ]);
-
-    //     return response()->json(['message' => 'Paragraph created successfully', 'paragraph' => $paragraph], 200);
-    // }
-
-    // public function index()
-    // {
-    //     // Get all paragraphs and return them as a JSON response
-    //     $paragraphs = Paragraph::all();
-    //     return response()->json($paragraphs);
-    // }
-
     public function showparagraph($id)
     {
         $paragraph = Paragraph::find($id);

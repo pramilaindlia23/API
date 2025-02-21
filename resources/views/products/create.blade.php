@@ -24,55 +24,6 @@
             </form>
         </div>
     </div>
-
-    <h2 class="text-center mb-4">Add New Product</h2>
-    {{-- <div class="card shadow-sm" style="max-width: 600px; margin: 0 auto;">
-        <div class="card-body">
-            <form action="{{ route('product.store') }}" method="POST" enctype="multipart/form-data">
-                @csrf
-            
-                <label for="name">Product Name</label>
-                <input type="text" id="name" name="name" class="form-control" value="{{ old('name') }}" required>
-                @error('name') <small class="text-danger">{{ $message }}</small> @enderror
-            
-                <label for="category_id">Select Category</label>
-                <select id="category_id" name="category_id" class="form-control" required>
-                    <option value="" disabled selected>Select a category</option>
-                    @foreach ($categories as $category)
-                        <option value="{{ $category->id }}" {{ old('category_id') == $category->id ? 'selected' : '' }}>
-                            {{ $category->name }}
-                        </option>
-                    @endforeach
-                </select>
-                @error('category_id') <small class="text-danger">{{ $message }}</small> @enderror
-            
-                <label for="price">Price</label>
-                <input type="number" id="price" name="price" class="form-control" value="{{ old('price') }}" required>
-                @error('price') <small class="text-danger">{{ $message }}</small> @enderror
-            
-                <label for="discount_code">Discount Code</label>
-                <input type="text" id="discount_code" name="discount_code" class="form-control" value="{{ old('discount_code') }}">
-                @error('discount_code') <small class="text-danger">{{ $message }}</small> @enderror
-            
-                <label for="description">Description</label>
-                <textarea id="description" name="description" class="form-control">{{ old('description') }}</textarea>
-                @error('description') <small class="text-danger">{{ $message }}</small> @enderror
-            
-                <label for="stock">Stock Quantity</label>
-                <input type="number" id="stock" name="stock" class="form-control" value="{{ old('stock') }}" required>
-                @error('stock') <small class="text-danger">{{ $message }}</small> @enderror
-            
-                <label for="image">Product Image</label>
-                <input type="file" name="image" id="image" class="form-control" accept="image/*" required>
-                @error('image') <small class="text-danger">{{ $message }}</small> @enderror
-            
-                <button type="submit" class="btn btn-success w-100 mt-3">Add Product</button>
-            </form>
-            
-            
-        </div>
-        
-    </div> --}}
     <h2 class="text-center mb-4">Add New Product</h2>
 <div class="card shadow-sm" style="max-width: 600px; margin: 0 auto;">
     <div class="card-body">
@@ -125,14 +76,6 @@
             <label for="stock">Stock Quantity</label>
             <input type="number" id="stock" name="stock" class="form-control" value="{{ old('stock') }}" required>
             @error('stock') <small class="text-danger">{{ $message }}</small> @enderror
-
-            <label for="rating">Rating (0-5)</label>
-            <input type="number" id="rating" name="rating" class="form-control" min="0" max="5" step="0.1" value="{{ old('rating') }}">
-            @error('rating') <small class="text-danger">{{ $message }}</small> @enderror
-
-            <label for="review">Customer Review</label>
-            <textarea id="review" name="review" class="form-control">{{ old('review') }}</textarea>
-            @error('review') <small class="text-danger">{{ $message }}</small> @enderror
 
             <label for="image">Product Image</label>
             <input type="file" name="image" id="image" class="form-control" accept="image/*" required>

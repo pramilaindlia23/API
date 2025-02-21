@@ -47,8 +47,10 @@
                     </a>
                     <div class="card-body">
                         <h5 class="card-title">
-                            <a href="{{ route('products.show', $product->id) }}" class="text-dark text-decoration-none">{{ $product->name }}</a>
+                            <a href="{{ route('products.show', $product->id) }}" class="text-dark text-decoration-none"><strong>Name:</strong>           
+                            {{ $product->name }}</a>
                         </h5>
+                        <p class="card-text"><strong>Brand:</strong>    {{$product->brand_name}}</p>
                         <p class="card-text">{{ $product->description }}</p>
                         <p class="card-text text-muted"><strong>Original Price:</strong> <span style="text-decoration: line-through;">${{ number_format($product->price, 2) }}</span></p>
                         <p class="card-text text-success"><strong>✔ Discount: {{ $product->discount_code ? $product->discount_code . "%" : "No Discount" }}</strong></p>

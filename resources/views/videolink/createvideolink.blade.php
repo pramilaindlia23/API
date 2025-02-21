@@ -12,7 +12,7 @@
     <h2 class="text-center mb-4">Video Links Management</h2>
     
     <!-- Add Video Form -->
-    {{-- <div class="card shadow p-4 mb-4">
+    <div class="card shadow p-4 mb-4">
         <h4>Add New Video</h4>
         <form id="video-form">
             <div class="mb-3">
@@ -34,7 +34,7 @@
             </div>
             <button type="submit" class="btn btn-primary w-100">Add Video</button>
         </form>
-    </div> --}}
+    </div>
 
     <!-- Video List -->
     <div class="card shadow p-4">

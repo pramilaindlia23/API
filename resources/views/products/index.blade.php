@@ -82,16 +82,7 @@
                                 <div class="card h-100 shadow-sm border-light rounded product-card" data-category-id="${product.category_id}">
                                     <img src="${imageUrl}" class="card-img-top category-image" data-category-id="${product.category_id}" alt="${product.name}">
                                     <div class="card-body">
-                                    <h5 class="card-title">${product.name}</h5>
-                                    <p><strong>Brand:</strong> ${product.brand_name}</p>
                                     <p><strong>Category:</strong> ${product.category_name}</p>
-                                    <p><strong>Original Price:</strong> $${originalPrice.toFixed(2)}</p>
-                                    <p><strong>Discount:</strong> ${discountCode}%</p>
-                                    <p><strong>Final Price:</strong> $${finalPrice.toFixed(2)}</p>
-                                   
-                                    <div class="rating-container">${generateStars(averageRating)}</div>
-                                    <p><strong>Review:</strong> ${product.review || "No reviews yet"}</p>
-                                    <button class="btn btn-primary add-to-cart" data-id="${product.id}">Add to Cart</button>
                                 </div>
                                 </div>
                             </div>`;
@@ -185,13 +176,15 @@
 
    </body>
 </html>
-                {{-- <div class="card-body">
-                    <h5 class="card-title">${product.name}</h5>
-                    <p class="card-text">${product.description}</p>
-                    <p class="card-text text-muted"><strong>Original Price:</strong> <span style="text-decoration: line-through;">$${originalPrice.toFixed(2)}</span></p>
-                    <p class="card-text text-success"><strong>✔ Discount: ${discountCode > 0 ? discountCode + "%" : "No Discount"}</strong></p>
-                    <p class="card-text text-dark"><strong>Final Price: $${finalPrice.toFixed(2)}</strong></p>
-                    <div class="rating-container" data-product-id="${product.id}">${starsHTML} <strong>(${averageRating}/5)</strong></div>
-                </div>
-                <div class="card-footer text-center">
-                    <button class="btn btn-primary w-100 add-to-cart" data-id="${product.id}">Add to Cart</button> --}}
+{{-- <div class="card-body">
+    <h5 class="card-title">${product.name}</h5>
+    <p><strong>Brand:</strong> ${product.brand_name}</p>
+    <p><strong>Category:</strong> ${product.category_name}</p>
+    <p><strong>Original Price:</strong> $${originalPrice.toFixed(2)}</p>
+    <p><strong>Discount:</strong> ${discountCode}%</p>
+    <p><strong>Final Price:</strong> $${finalPrice.toFixed(2)}</p>
+   
+    <div class="rating-container">${generateStars(averageRating)}</div>
+    <p><strong>Review:</strong> ${product.review || "No reviews yet"}</p>
+    <button class="btn btn-primary add-to-cart" data-id="${product.id}">Add to Cart</button>
+</div> --}}
