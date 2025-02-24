@@ -14,6 +14,7 @@ use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\ProductCatController;
 use App\Http\Controllers\VideoLinkController;
+use App\Http\Controllers\PaymentController;
 
 use App\Models\Product;
 use App\Models\Review;
@@ -133,5 +134,11 @@ Route::get('/users/{id}', function ($id) {
     }
     return response()->json($user);
 });
+
+//payment //
+Route::post('/cash-on-delivery', [PaymentController::class, 'cashOnDelivery']);
+Route::post('/upi-payment', [PaymentController::class, 'upiPayment']);
+
+
 
 

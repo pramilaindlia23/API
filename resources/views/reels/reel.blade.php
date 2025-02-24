@@ -13,16 +13,16 @@
    
     <div class="container mt-5">
         <!-- Video Upload Form -->
-        <h2 class="text-center mb-4">Upload Your Reel</h2>
+        <h2 class="text-center mb-4">Upload Video Reel</h2>
         <div class="card shadow-lg" style="max-width: 600px; margin: 0 auto; border-radius: 10px;">
             <div class="card-body">
                 <form id="upload-form" enctype="multipart/form-data">
                     <div class="form-group">
-                        <label for="reel" class="h5">Select Reel (Video/Audio):</label>
+                        <label for="reel" class="h5">Select Reel (Video):</label>
                         <input type="file" id="reel" name="reel" accept="video/*,audio/*" class="form-control" required>
                     </div>
                     <div class="text-center">
-                        <button type="submit" class="btn btn-success btn-lg mt-3">Upload Reel</button>
+                        <button type="submit" class="btn btn-success w-100 btn-lg mt-3">Upload Reel</button>
                     </div>
                 </form>
             </div>

@@ -9,27 +9,53 @@ use Illuminate\Support\Facades\Storage;
 class AudioController extends Controller
 {
     // Store audio file
-    public function store(Request $request)
-    {
+    // public function store(Request $request)
+    // {
         
-        $request->validate([
-            'title' => 'required|string|max:255', 
-            'audio' => 'required|file|mimes:mp3,wav,ogg|max:10240', 
-        ]);
+    //     $request->validate([
+    //         'title' => 'required|string|max:255', 
+    //         'audio' => 'required|file|mimes:mp3,wav,ogg|max:102400', // 100MB
+    //     ]);
 
-        // Store the audio file in the 'public/audio' directory
-        $path = $request->file('audio')->store('audio', 'public');
-        $filename = basename($path);
+    //     // Store the audio file in the 'public/audio' directory
+    //     $path = $request->file('audio')->store('audio', 'public');
+    //     $filename = basename($path);
 
-        $audio = AudioFile::create([
-            'title' => $request->input('title'), 
-            'filename' => $filename,
-            'path' => $path,
-        ]);
+    //     $audio = AudioFile::create([
+    //         'title' => $request->input('title'), 
+    //         'filename' => $filename,
+    //         'path' => $path,
+    //     ]);
 
-        return response()->json([
-            'message' => 'audio created successfully!',
-            'audio' => $audio],200);
+    //     return response()->json([
+    //         'message' => 'audio created successfully!',
+    //         'audio' => $audio],200);
+    // }
+
+    public function store(Request $request){
+        try {
+            $request->validate([
+                'title' => 'required|string|max:255', 
+                'audio' => 'required|file|mimes:mp3,wav,ogg|max:102400', // 100MB
+            ]);
+        
+            $path = $request->file('audio')->store('audio', 'public');
+            $filename = basename($path);
+        
+            $audio = AudioFile::create([
+                'title' => $request->input('title'), 
+                'filename' => $filename,
+                'path' => $path,
+            ]);
+        
+            return response()->json([
+                'message' => 'Audio uploaded successfully!',
+                'audio' => $audio
+            ], 200);
+        
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 400);
+        }
     }
 
     // List all uploaded audio files

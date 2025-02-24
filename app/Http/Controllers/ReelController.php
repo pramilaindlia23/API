@@ -14,7 +14,7 @@ class ReelController extends Controller
     try {
         // Validate the uploaded file
         $validated = $request->validate([
-            'reel' => 'required|file|mimes:mp4,mov,avi,mp3,wav,flac|max:20000',
+            'reel' => 'required|file|mimes:mp4,mov,avi,mp3,wav,flac|max:9000000',
         ]);
 
         if ($request->hasFile('reel')) {

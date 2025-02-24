@@ -49,7 +49,7 @@
 
     </div>
 
-    <script>
+    {{-- <script>
         document.getElementById('upload-form').addEventListener('submit', function(event) {
             event.preventDefault();
 
@@ -57,7 +57,7 @@
             formData.append('title', document.getElementById('title').value);
             formData.append('audio', document.getElementById('audio').files[0]);
 
-            fetch('http://127.0.0.1:8000/api/audio', {
+            fetch('api/audio', {
                 method: 'POST',
                 body: formData
             })
@@ -70,7 +70,7 @@
         });
 
         function fetchAudioFiles() {
-            fetch('http://127.0.0.1:8000/api/audio')
+            fetch('api/audio')
                 .then(response => response.json())
                 .then(data => {
                     const audioList = document.getElementById('audio-list');
@@ -88,7 +88,7 @@
                         const cellPreview = document.createElement('td');
                         const audioElement = document.createElement('audio');
                         audioElement.controls = true;
-                        audioElement.src = 'http://127.0.0.1:8000/storage/' + audio.path;
+                        audioElement.src = 'storage/' + audio.path;
                         cellPreview.appendChild(audioElement);
 
                         row.appendChild(cellIndex);
@@ -101,7 +101,67 @@
         }
 
         window.onload = fetchAudioFiles;
-    </script>
+    </script> --}}
+
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+<script>
+    document.getElementById('upload-form').addEventListener('submit', function(event) {
+        event.preventDefault();
+
+        const formData = new FormData();
+        formData.append('title', document.getElementById('title').value);
+        formData.append('audio', document.getElementById('audio').files[0]);
+
+        axios.post('/api/audio', formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data',
+            }
+        })
+        .then(response => {
+            alert('Audio uploaded successfully!');
+            fetchAudioFiles();
+        })
+        .catch(error => {
+            console.error('Error uploading audio:', error);
+            alert('Error uploading audio');
+        });
+    });
+
+    function fetchAudioFiles() {
+        axios.get('/api/audio')
+        .then(response => {
+            const audioList = document.getElementById('audio-list');
+            audioList.innerHTML = '';
+
+            response.data.forEach((audio, index) => {
+                const row = document.createElement('tr');
+
+                const cellIndex = document.createElement('td');
+                cellIndex.textContent = index + 1;
+
+                const cellTitle = document.createElement('td');
+                cellTitle.textContent = audio.title;
+
+                const cellPreview = document.createElement('td');
+                const audioElement = document.createElement('audio');
+                audioElement.controls = true;
+                audioElement.src = '/storage/' + audio.path;
+                cellPreview.appendChild(audioElement);
+
+                row.appendChild(cellIndex);
+                row.appendChild(cellTitle);
+                row.appendChild(cellPreview);
+                audioList.appendChild(row);
+            });
+        })
+        .catch(error => {
+            console.error('Error fetching audio files:', error);
+        });
+    }
+
+    window.onload = fetchAudioFiles;
+</script>
+
 
 </body>
 </html>

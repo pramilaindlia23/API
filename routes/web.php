@@ -12,7 +12,8 @@ use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\ProductCatController;
 use App\Http\Controllers\AdminController;
-use App\Http\Controllers\VideoLinkController;
+use App\Http\Controllers\PaymentController;
+
 
 
 
@@ -116,8 +117,8 @@ Route::post('/category/store', [ProductCatController::class, 'store'])->name('ca
 Route::get('/product/create', [ProductController::class, 'create'])->name('products.create');
 Route::post('/product/store', [ProductController::class, 'store'])->name('product.store');
 
-Route::get('category/products', function () {
-    return view('products.index');
+Route::get('category', function () {
+    return view('products.index');  
 });
 
 // audio //
@@ -139,6 +140,7 @@ Route::prefix('checkout')->group(function () {
 Route::get('/checkout/success', [CheckoutController::class, 'success'])->name('checkout.success');
 // Order //
 Route::post('/orders/{id}/cancel', [OrderController::class, 'cancelOrder'])->name('orders.cancel');
+// products Category //
 Route::get('/productCat', function () {
     return view('products.productCat');
 });
@@ -150,3 +152,8 @@ Route::get('/videolink', function () {
     return view('videolink.createvideolink');
 });
 Route::get('/products/{id}', [ProductController::class, 'show'])->name('products.show');
+
+// payment //
+
+// Route::get('/checkout', [PaymentController::class, 'showcheckout'])->name('payment.checkout');
+// Route::post('/process-payment', [PaymentController::class, 'processPayment'])->name('payment.process');
