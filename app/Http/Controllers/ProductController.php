@@ -43,8 +43,10 @@ public function index()
             'category_id' => 'required|exists:products_cats,id',
             'category_name' => 'required|string|max:255',
             'brand_name' => 'nullable|string|max:255',
-            'rating' => 'nullable|numeric|min:0|max:5',
-            'review' => 'nullable|string',
+            'average_rating'=>'required|decimal',
+            'total_reviews' => 'required|integer',
+            // 'rating' => 'nullable|numeric|min:0|max:5',
+            // 'review' => 'nullable|string',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp,svg|max:2048'
         ]);
     
@@ -56,8 +58,10 @@ public function index()
         $product->category_id = $request->category_id;
         $product->category_name = $request->category_name;
         $product->brand_name = $request->brand_name;
-        $product->rating = $request->rating;
-        $product->review = $request->review;
+        // $product->rating = $request->rating;
+        // $product->review = $request->review;
+        $product->average_rating = $request->average_rating;
+        $product->total_reviews = $request->total_reviews;
     
         if ($request->hasFile('image')) {
             $imagePath = $request->file('image')->store('product_images', 'public');
@@ -157,6 +161,77 @@ public function update(Request $request, $id)
     $reviews = Review::where('product_id', $id)->latest()->get();
 
     return view('products.show', compact('product', 'reviews'));
+}
+
+public function details($id)
+{
+    // Fetch product details with reviews
+    $product = Product::with('reviews')->find($id);
+
+    if (!$product) {
+        return response()->json(['error' => 'Product not found'], 404);
+    }
+
+    // Calculate total reviews and average rating
+    $totalReviews = $product->reviews->count();
+    $averageRating = $totalReviews > 0 ? round($product->reviews->avg('rating'), 1) : 0;
+
+    return response()->json([
+        'message' => 'Product details fetched successfully',
+        'product' => [
+            'id' => $product->id,
+            'name' => $product->name,
+            'description' => $product->description,
+            'price' => $product->price,
+            'discount_code' => $product->discount_code,
+            'category_id' => $product->category_id,
+            'category_name' => $product->category_name,
+            'brand_name' => $product->brand_name,
+            'image' => $product->image ? asset('storage/' . $product->image) : null,
+            'total_reviews' => $totalReviews,
+            'average_rating' => $averageRating,
+        ],
+        'reviews' => $product->reviews->map(function ($review) {
+            return [
+                'id' => $review->id,
+                'user_name' => $review->user->name ?? 'Anonymous',
+                'rating' => $review->rating,
+                'review' => $review->review,
+                'created_at' => $review->created_at->format('Y-m-d H:i:s'),
+            ];
+        }),
+    ]);
+}
+// public function showreview($id)
+// {
+//     $product = Product::with('reviews')->find($id);
+
+//     if (!$product) {
+//         return response()->json(['error' => 'Product not found'], 404);
+//     }
+
+//     return response()->json([
+//         'message' => 'Product details fetched successfully',
+//         'product' => $product,
+//         'total_reviews' => $product->total_reviews, // Total reviews count
+//         'average_rating' => $product->average_rating, // Average rating
+//     ]);
+// }
+
+public function showreview($id)
+{
+    $product = Product::with('reviews')->find($id);
+
+    if (!$product) {
+        return response()->json(['error' => 'Product not found'], 404);
+    }
+
+    return response()->json([
+        'message' => 'Product details fetched successfully',
+        'product' => $product,
+        'total_reviews' => $product->total_reviews, // Total reviews count
+        'average_rating' => $product->average_rating, // Average rating
+    ]);
 }
 }
 

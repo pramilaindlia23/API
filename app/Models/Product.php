@@ -11,17 +11,28 @@ class Product extends Model
    
     
     protected $fillable = [
-        'name', 'category_id', 'price', 'discount_code', 'description', 'stock', 'image','discount_amount','discounted_price','brand_name','rating','review','category_name'
+        'name', 'category_id', 'price', 'discount_code', 'description', 'stock', 'image','discount_amount','discounted_price','brand_name','category_name','total_reviews','average_rating'
     ];
     protected $table = 'products';
+    protected $appends = ['average_rating', 'total_reviews'];
+
     public function reviews()
     {
         return $this->hasMany(Review::class);
     }
     public function getAverageRatingAttribute()
-    {
-        return round($this->reviews()->avg('rating') ?? 0, 1);
-    }
+{
+    return $this->reviews()->avg('rating') ?? 0; // If no reviews, return 0
+}
+
+public function getTotalReviewsAttribute()
+{
+    return $this->reviews()->count(); // Count total reviews
+}
+    // public function getAverageRatingAttribute()
+    // {
+    //     return round($this->reviews()->avg('rating') ?? 0, 1);
+    // }
     protected $casts = [
         'images' => 'array',
     ];

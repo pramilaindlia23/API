@@ -42,11 +42,6 @@ class CheckoutController extends Controller
         if (empty($cart)) {
             return redirect()->route('checkout.index')->with('error', 'Your cart is empty.');
         }
-    
-        // $total = 0;
-        // foreach ($cart as $item) {
-        //     $total += $item['price'] * $item['quantity'];
-        // }
         $total = 0;
 
         foreach ($cart as $item) {
@@ -90,31 +85,38 @@ class CheckoutController extends Controller
             'status' => 'pending',
         ]);
         // Store order items
-        foreach ($cart as $productId => $item) {
-            $orderItem = OrderItem::create([
-                'order_id' => $order->id,
-                'product_id' => $productId,
-                'quantity' => $item['quantity'],
-                'price' => $item['price'],
-                'product_name' => $item['name'],
-                'image' => 'products_image/' . ($item['image'] ?? 'default.png'), // Correct path
- 
-            ]);
-        }
+    foreach ($cart as $productId => $item) {
+    $originalPrice = (float) $item['price'];
+    $quantity = (int) $item['quantity'];
+    
+    // Calculate discount per item
+    $discountedPrice = $originalPrice;
+    if ($total > 0) { 
+        $discountedPrice = $originalPrice - ($originalPrice * ($discount / $total));
+    }
+
+    OrderItem::create([
+        'order_id' => $order->id,
+        'product_id' => $productId,
+        'quantity' => $quantity,
+        'price' => $discountedPrice, 
+        'product_name' => $item['name'],
+        'image' => 'products_image/' . ($item['image'] ?? 'default.png'),
+    ]);
+}
+
         if ($request->hasFile('image')) {
             $orderItem = $request->file('image')->store('products_image', 'public');
         } else {
-            $orderItem = 'products_image/default.png'; // Fallback image
+            $orderItem = 'products_image/default.png';
         }
         // dd(session('cart'));
 
-    
         Mail::to($request->email)->send(new OrderConfirmationMail($order));
     
         session()->forget('cart');
         // dd(session('cart'));
 
-    
         session([
             'total' => $total, 
             'discount' => $discount,

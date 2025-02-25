@@ -52,18 +52,6 @@ class OrderController extends Controller
     if (empty($cart)) {
         return redirect()->route('checkout.index')->with('error', 'Your cart is empty.');
     }
-   
-    // $total = 0;
-
-    // foreach ($cart as $item) {
-    //     if (!isset($item['id'], $item['price'], $item['quantity'])) {
-           
-    //         \Log::error('Missing cart item data', $item);
-    //         return redirect()->route('cart.index')->with('error', 'One or more cart items are missing required information.');
-    //     }
-
-    //     $total += $item['price'] * $item['quantity'];
-    // }
     $total = 0;
 
 foreach ($cart as $item) {
@@ -80,7 +68,6 @@ foreach ($cart as $item) {
 // Debug final total before saving order
 \Log::info('Calculated Total:', ['total' => $total]);
 
-
     $order = Order::create([
         'user_id' => auth()->check() ? auth()->id() : null,
         'name' => $request->name,
@@ -96,34 +83,26 @@ foreach ($cart as $item) {
         
     ]);
 
-    // foreach ($cart as $item) {
-    //     if (isset($item['id'], $item['price'], $item['quantity'])) {
-    //         OrderItem::create([
-    //             'order_id' => $order->id,
-    //             'product_id' => $item['id'], 
-    //             'quantity' => $item['quantity'],
-    //             'price' => $item['price'],
-    //         ]);
-    //     }
-    // }
     foreach ($cart as $item) {
         if (isset($item['id'], $item['price'], $item['quantity'])) {
+            $itemTotalPrice = (float) $item['price'] * (int) $item['quantity']; 
+
             \Log::info('Order Item:', [
                 'order_id' => $order->id,
                 'product_id' => $item['id'],
                 'quantity' => $item['quantity'],
-                'price' => (float) $item['total'], 
+                'price' => $itemTotalPrice, 
             ]);
     
             OrderItem::create([
                 'order_id' => $order->id,
                 'product_id' => $item['id'],
                 'quantity' => $item['quantity'],
-                'price' => (float) $item['total'], 
+                'price' => $itemTotalPrice, 
             ]);
         }
     }
-
+    
     session()->forget('cart');
     return redirect()->route('checkout.success',['order' => $order->id])->with('success', 'Order placed successfully!');
 
@@ -183,158 +162,6 @@ foreach ($cart as $item) {
         return response()->json(['message' => 'Order canceled successfully', 'order' => $order], 200);
     }
 
-//     public function placeOrder(Request $request)
-// {
-//     // Validate request
-//     $validator = Validator::make($request->all(), [
-//         'user_id' => 'required|exists:users,id',
-//         'name' => 'required|string|max:255',
-//         'email' => 'required|email',
-//         'address' => 'required|string',
-//         'city' => 'required|string',
-//         'zip' => 'required|string',
-//         'items' => 'required|array',
-//         'items.*.product_id' => 'required|exists:products,id',
-//         'items.*.quantity' => 'required|integer|min:1',
-//         'total' => 'required|numeric|min:0',
-//         'discount_code' => 'nullable|string',
-//     ]);
-
-//     if ($validator->fails()) {
-//         return response()->json(['errors' => $validator->errors()], 422);
-//     }
-
-//     // Create order
-//     $order = Order::create([
-//         'user_id' => $request->user_id,
-//         'name' => $request->name,
-//         'email' => $request->email,
-//         'address' => $request->address,
-//         'city' => $request->city,
-//         'zip' => $request->zip,
-//         'total' => $request->total,
-//         'discount_code' => $request->discount_code,
-//         'status' => 'pending',
-//     ]);
-
-//     // Insert multiple products in order_items table
-//     foreach ($request->items as $item) {
-//         $product = Product::find($item['product_id']);
-//         if ($product) {
-//             OrderItem::create([
-//                 'order_id' => $order->id,
-//                 'product_id' => $product->id,
-//                 'quantity' => $item['quantity'],
-//                 // Assuming price is stored in products table
-//             ]);
-//         }
-//     }
-
-//     return response()->json([
-//         'message' => 'Order placed successfully',
-//         'order' => $order,
-//         'order_items' => $order->orderItems // Retrieve related items
-//     ], 201);
-// }
-
-    
-
-
-    // public function placeOrder(Request $request)
-    // {
-    //     // Validate request
-    //     $validator = Validator::make($request->all(), [
-    //         'user_id' => 'required|exists:users,id',
-    //         'name' => 'required|string|max:255',
-    //         'email' => 'required|email',
-    //         'address' => 'required|string',
-    //         'city' => 'required|string',
-    //         'zip' => 'required|string',
-    //         'items' => 'required|array',
-    //         'items.*.product_id' => 'required|exists:products,id',
-    //         'items.*.quantity' => 'required|integer|min:1',
-    //         'total' => 'required|numeric|min:0',
-    //         'discount_code' => 'nullable|string',
-    //     ]);
-    
-    //     if ($validator->fails()) {
-    //         return response()->json(['errors' => $validator->errors()], 422);
-    //     }
-    
-    //     // Create order
-    //     $order = Order::create([
-    //         'user_id' => $request->user_id,
-    //         'name' => $request->name,
-    //         'email' => $request->email,
-    //         'address' => $request->address,
-    //         'city' => $request->city,
-    //         'zip' => $request->zip,
-    //         'items' => json_encode($request->items), 
-    //         'total' => $request->total,
-    //         'discount_code' => $request->discount_code,
-    //         'status' => 'pending',
-    //     ]);
-    
-    //     return response()->json(['message' => 'Order placed successfully', 'order' => $order], 201);
-    // }
-    
-    // public function placeOrder(Request $request)
-    // {
-    //     // Validate request
-    //     $validator = Validator::make($request->all(), [
-    //         'user_id' => 'required|exists:users,id',
-    //         'name' => 'required|string|max:255',
-    //         'email' => 'required|email',
-    //         'address' => 'required|string',
-    //         'city' => 'required|string',
-    //         'zip' => 'required|string',
-    //         'items' => 'required|array',
-    //         'items.*.product_id' => 'required|exists:products,id',
-    //         'items.*.quantity' => 'required|integer',
-    //         'total' => 'required|numeric|min:0',
-    //         'discount_code' => 'nullable|string',
-    //     ]);
-    
-    //     if ($validator->fails()) {
-    //         return response()->json(['errors' => $validator->errors()], 422);
-    //     }
-    
-    //     // Create order
-    //     $order = Order::create([
-    //         'user_id' => $request->user_id,
-    //         'name' => $request->name,
-    //         'email' => $request->email,
-    //         'address' => $request->address,
-    //         'city' => $request->city,
-    //         'zip' => $request->zip,
-    //         'total' => $request->total,
-    //         'discount_code' => $request->discount_code,
-    //         'status' => 'pending',
-    //     ]);
-    
-    //     // Save multiple products in order_items
-    //     foreach ($request->items as $item) {
-    //         $product = Product::find($item['product_id']);
-    
-    //         OrderItem::create([
-    //             'order_id' => $order->id,
-    //             'product_id' => $product->id,
-    //             'product_name' => $product->name,  
-    //             'quantity' => $item['quantity'],
-    //             'price' => $product->price,  
-    //             'image' => $product->image,  
-    //         ]);
-    //     }
-    
-    //     return response()->json([
-    //         'message' => 'Order placed successfully',
-    //         'order' => $order->load('orderItems') 
-    //     ], 201);
-    // }
-    
-    
-
-
     public function placeOrder(Request $request)
 {
     // Validate request
@@ -349,6 +176,7 @@ foreach ($cart as $item) {
         'items' => 'required|array',
         'items.*.product_id' => 'required|exists:products,id',
         'items.*.quantity' => 'required|integer',
+        'items.*.price' => 'required|integer',
         'total' => 'required|numeric|min:0',
         'discount_code' => 'nullable|string', 
     ]);

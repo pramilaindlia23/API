@@ -139,6 +139,9 @@ Route::get('/users/{id}', function ($id) {
 Route::post('/cash-on-delivery', [PaymentController::class, 'cashOnDelivery']);
 Route::post('/upi-payment', [PaymentController::class, 'upiPayment']);
 
+Route::get('/productdetails/{id}', [ProductController::class, 'details']);
+
+
 
 
 

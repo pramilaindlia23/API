@@ -12,8 +12,8 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('products', function (Blueprint $table) {
-            $table->string('category_name')->nullable();
-        $table->string('brand_name')->nullable();
+            $table->integer('total_reviews')->default(0);
+            $table->decimal('average_rating')->default(0);
         });
     }
 
@@ -23,7 +23,7 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('products', function (Blueprint $table) {
-            $table->dropColumn('category_name','brand_name');
+            $table->dropColumn('total_reviews','average_rating');
         });
     }
 };
