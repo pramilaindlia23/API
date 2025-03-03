@@ -48,24 +48,26 @@ Route::post('login', [UserController::class, 'login']);
 
 Route::middleware(['auth', 'admin'])->group(function () {
     Route::get('/admin', function () {
-        return view('admin.dashboard'); // Admin Dashboard View
+        return view('dashboard'); // Admin Dashboard View
     })->name('admin.dashboard');
 
     Route::post('/admin/update-role/{id}', [AdminController::class, 'updateRole'])->name('admin.update-role');
-});
-
-Route::middleware(['auth'])->group(function () {
-    Route::get('/dashboard', [UserController::class, 'dashboard'])->name('dashboard');
-    Route::post('/logout', [UserController::class, 'logout'])->name('logout');
     Route::get('userlist',function(){
         return view('userlist');
     });
-    
     Route::get('/userlist', [UserController::class, 'index'])->name('userlist');
     Route::get('/users', action: [UserController::class, 'index'])->name('users.index');
     Route::get('/users/{id}/edit', [UserController::class, 'edit'])->name('users.edit');
     Route::put('/users/{id}', [UserController::class, 'update'])->name('users.update');
     Route::delete('/users/{id}', [UserController::class, 'destroy'])->name('users.destroy');
+    Route::get('/dashboard', function () {
+        return view('dashboard'); 
+    })->name('dashboard'); 
+    
+});
+
+Route::middleware(['auth'])->group(function () {
+    Route::post('/logout', [UserController::class, 'logout'])->name('logout');
     
 });
 
@@ -119,7 +121,7 @@ Route::post('/product/store', [ProductController::class, 'store'])->name('produc
 
 Route::get('category', function () {
     return view('products.index');  
-});
+})->name('category');
 
 // audio //
 Route::view('audio/upload', 'audio.audioupload')->name('audio/upload');
@@ -153,16 +155,9 @@ Route::get('/videolink', function () {
 });
 Route::get('/products/{id}', [ProductController::class, 'show'])->name('products.show');
 
-// payment //
-
-// Route::get('/checkout', [PaymentController::class, 'showcheckout'])->name('payment.checkout');
-// Route::post('/process-payment', [PaymentController::class, 'processPayment'])->name('payment.process');
-
 Route::get('/email/verify/{id}', [UserController::class, 'verifyEmail'])->name('verification.verify');
 
 Route::get('/forgot-password', function () {
     return view('password.forgot-password');
 })->name('forgot-password');
-Route::get('/dashboard', function () {
-    return view('dashboard');
-})->name('dashboard');
+

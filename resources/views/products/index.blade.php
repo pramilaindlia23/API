@@ -22,7 +22,7 @@
    </style>
    <body>
       <div class="container mt-5">
-         <a href="{{ route('products.create') }}" class="btn btn-dark float-right mt-3">Add New Product</a>
+         {{-- <a href="{{ route('products.create') }}" class="btn btn-dark float-right mt-3">Add New Product</a> --}}
          <h2 class="text-center mb-5 bg-success text-white p-3 rounded">Our Products</h2>
          <div class="row row-cols-1 row-cols-md-3 g-4" id="products-container">
             <div class="modal fade" id="categoryImagesModal" tabindex="-1" aria-labelledby="categoryImagesModalLabel" aria-hidden="true">

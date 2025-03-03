@@ -10,70 +10,57 @@ use Illuminate\Support\Facades\Mail;
 use App\Mail\VerifyEmail;
 use Illuminate\Support\Facades\Cache;
 
-
-
-
-
 class UserController extends Controller
 {
     public function show(){
         return view('register');
     }
+
     public function register(Request $request)
-    {
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users',
-            'password' => 'required|string|min:6|confirmed',
-            'role' => 'required|in:user,admin',
-        ]);
+{
+    $request->validate([
+        'name' => 'required|string|max:255',
+        'email' => 'required|string|email|max:255|unique:users',
+        'password' => 'required|string|min:6|confirmed',
+        'role' => 'in:admin,user', 
+    ]);
 
-        $user = User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
-            'role' => $request->role,
-            'email_verified_at' => null,
-        ]);
-
-       
-        Mail::to($user->email)->send(new VerifyEmail($user));
-
-        return response()->json(['message' => 'Registration successful! Check your email for verification.']);
+    if ($request->role === 'admin' && User::where('role', 'admin')->count() >= 3) {
+        return response()->json(['message' => 'Admin limit reached.'], 403);
     }
+    $user = User::create([
+        'name' => $request->name,
+        'email' => $request->email,
+        'password' => Hash::make($request->password),
+        // 'role' => $request->role,
+    ]);
 
-    // public function verifyEmail($id)
-    // {
-    //     $user = User::find($id);
-    //     if (!$user) {
-    //         return response()->json(['message' => 'User not found'], 404);
-    //     }
+    Mail::to($user->email)->send(new VerifyEmail($user));
 
-    //     if ($user->email_verified_at) {
-    //         return response()->json(['message' => 'Email already verified']);
-    //     }
+    return response()->json(['message' => 'Registration successful! Check your email for verification.']);
+}
 
-    //     $user->email_verified_at = now();
-    //     $user->save();
-
-    //     return response()->json(['message' => 'Email verified successfully!']);
-    // }
     public function verifyEmail(Request $request, $id)
     {
-        $user = User::findOrFail($id);
-
-        if (!$user->email_verified_at) {
-            $user->email_verified_at = now();
-            $user->save();
+        $user = User::find($id);
+    
+        if (!$user) {
+            return response()->json(['message' => 'User not found'], 404);
         }
-
-        if ($request->wantsJson()) {
-            return response()->json(['message' => 'Email verified successfully!']);
+    
+        if ($user->email_verified_at) {
+            return response()->json(['message' => 'Email is already verified'], 200);
         }
-
-        return redirect()->route('login')->with('success', 'Email verified successfully!');
+    
+        $user->email_verified_at = now();
+        $user->save();
+    
+        return response()->json([
+            'message' => 'Email verified successfully!',
+            'user' => $user
+        ], 200);
     }
-   
+    
     public function showlogin(){
         return view('login');
     }
@@ -97,76 +84,17 @@ class UserController extends Controller
 
     $token = $user->createToken('auth_token')->plainTextToken;
 
-    //  Redirect only non-admin users to dashboard
-    if ($user->role !== 'admin') {
-        return redirect()->route('dashboard')->with('message', 'Login successful!');
-    }
+    Auth::login($user);
+
+    $redirectUrl = $user->role === 'admin' ? route('dashboard') : route('category');
 
     return response()->json([
         'message' => 'Login successful',
         'token' => $token,
         'user' => $user,
-    ]);
+        'redirect_url' => $redirectUrl,
+    ], 200);
 }
-
-    // public function login(Request $request)
-    // {
-    //     $request->validate([
-    //         'email' => 'required|email',
-    //         'password' => 'required',
-    //     ]);
-    
-    //     $user = User::where('email', $request->email)->first();
-    
-    //     if (!$user || !Hash::check($request->password, $user->password)) {
-    //         return response()->json(['message' => 'Invalid credentials'], 401);
-    //     }
-    
-    //     if (!$user->email_verified_at) {
-    //         return response()->json(['message' => 'Please verify your email first'], 403);
-    //     }
-    
-        // $token = $user->createToken('auth_token')->plainTextToken;
-    
-        // if ($request->wantsJson()) {
-        //     return response()->json([
-        //         'message' => 'Login successful',
-        //         'token' => $token,
-        //         'user' => $user,
-        //         'redirect_url' => $user->role === 'admin' ? url('/admin/dashboard') : url('/user/dashboard')
-        //     ]);
-        // }
-    
-        // return redirect()->route($user->role === 'admin' ? 'admin.dashboard' : 'dashboard')
-        //     ->with('success', 'Login successful!');
-    // }
-    
-    
-    // public function login(Request $request)
-    // {
-    //     $request->validate([
-    //         'email' => 'required|email',
-    //         'password' => 'required',
-    //     ]);
-
-    //     $user = User::where('email', $request->email)->first();
-
-    //     if (!$user || !Hash::check($request->password, $user->password)) {
-    //         return response()->json(['message' => 'Invalid credentials'], 401);
-    //     }
-
-    //     if (!$user->email_verified_at) {
-    //         return response()->json(['message' => 'Please verify your email first'], 403);
-    //     }
-
-    //     $token = $user->createToken('auth_token')->plainTextToken;
-
-    //     return response()->json([
-    //         'message' => 'Login successful',
-    //         'token' => $token,
-    //         'user' => $user,
-    //     ]);
-    // }
 
     public function dashboard(){
         return view('dashboard');
@@ -180,14 +108,12 @@ class UserController extends Controller
     return redirect('/login');
 }
 
-
     public function index()
 {
     $users = User::paginate(10);
 
     return view('userlist', compact('users'));
 }
-
 
 public function edit($id)
 {

@@ -32,7 +32,7 @@
 <h3 class="mb-4 text-success fw-bold">Customer Reviews</h3>
 <div class="card shadow-sm p-4 border-0">
     <div id="review-list" class="list-group">
-        @foreach ($reviews as $review)
+        {{-- @foreach ($reviews as $review)
             <div class="list-group-item py-3 border-0">
                 <div class="d-flex justify-content-between align-items-center">
                     <div>
@@ -48,7 +48,26 @@
                 </div>
             </div>
             <hr class="my-2 text-muted">
-        @endforeach
+        @endforeach --}}
+        @foreach ($reviews as $review)
+    <div class="list-group-item py-3 border-0">
+        <div class="d-flex justify-content-between align-items-center">
+            <div>
+                <h5 class="mb-1 text-primary fw-bold">
+                    {{ $review->user ? $review->user->name : 'Unknown User' }}
+                </h5>
+                <h6 class="text-secondary">{{ $review->title }}</h6>
+                <p class="mb-2 text-muted">{{ $review->review }}</p>
+            </div>
+            <div>
+                <span class="badge bg-success fs-6 p-2 rounded-pill">
+                    ⭐ {{ $review->rating }}/5
+                </span>
+            </div>
+        </div>
+    </div>
+    <hr class="my-2 text-muted">
+@endforeach
     </div>
 </div>
         <hr class="my-5">

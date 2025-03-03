@@ -72,6 +72,7 @@ class Kernel extends HttpKernel
         // Other middlewares
         'admin' => \App\Http\Middleware\AdminMiddleware::class,
         'verified' => \App\Http\Middleware\EnsureEmailIsVerified::class,
+        'role' => \App\Http\Middleware\RoleMiddleware::class,
 
         
     ];

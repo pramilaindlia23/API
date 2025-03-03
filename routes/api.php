@@ -158,6 +158,19 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
     });
 });
 
+// Protected routes for authenticated users
+Route::middleware('auth:sanctum')->group(function () {
+    // Admin-only routes
+    Route::middleware('role:admin')->group(function () {
+        Route::get('/dashboard', [UserController::class, 'dashboard']);
+        Route::resource('/manage-users', UserController::class);
+        Route::resource('/manage-categories', UserController::class);
+    });
+
+    // User routes (everyone can see categories)
+    Route::get('/category', [UserController::class, 'index']);
+
+});
 Route::post('/forgot-password', [UserController::class, 'sendOtp']);
 Route::post('/verify-otp', [UserController::class, 'verifyOtp']);
 Route::post('/reset-password', [UserController::class, 'resetPassword']);

@@ -69,12 +69,12 @@ public function index() {
         }
     }
 
-//     public function getReviews($productId)
-// {
-//     $reviews = Review::where('product_id', $productId)
-//         ->with('user') // Ensure user data is included
-//         ->get();
+    public function getReviews($productId)
+{
+    $reviews = Review::where('product_id', $productId)
+        ->with('user') // Ensure user data is included
+        ->get();
 
-//     return response()->json(['reviews' => $reviews]);
-// }
+    return response()->json(['reviews' => $reviews]);
+}
 }
