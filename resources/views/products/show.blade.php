@@ -51,8 +51,6 @@
         @endforeach
     </div>
 </div>
-
-    
         <hr class="my-5">
     
         <!-- Add Review Form -->
@@ -108,7 +106,7 @@
             const review = document.getElementById('review')?.value;
         
             // Validate required fields
-            if (!user_id || !product_id || !title || !rating || !review) {
+            if (!user_id || !product_id ||!user_name || !title || !rating || !review) {
                 alert('Please fill out all fields before submitting.');
                 return;
             }
@@ -138,6 +136,7 @@
                 // Clear form fields
                 document.getElementById('title').value = '';
                 document.getElementById('review').value = '';
+                document.getElementById('user_name').value = '';
                 document.querySelectorAll('input[name="rating"]').forEach(radio => radio.checked = false);
         
                 // Fetch updated reviews and show on frontend
@@ -155,10 +154,7 @@
                 .then(data => updateReviewList(data.reviews))
                 .catch(error => console.error('Error fetching reviews:', error));
         }
-        
-        // Function to update the review list dynamically
-
-        function updateReviewList(reviews) {
+function updateReviewList(reviews) {
     let reviewList = document.getElementById('review-list');
 
     if (!reviewList) {
@@ -169,31 +165,13 @@
     reviewList.innerHTML = ''; 
 
     reviews.forEach(review => {
-        let userName = "Anonymous"; 
-
-        // If user data is present in the review, use it
-        if (review.user) {
-            userName = review.user.name;
-        } else {
-            // Fetch user data by user_id if not included in review
-            fetch(`/api/users/${review.user_id}`)
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error('User not found');
-                    }
-                    return response.json();
-                })
-                .then(userData => {
-                    document.querySelector(`#user-${review.user_id}`).innerText = userData.name;
-                })
-                .catch(error => console.error("Error fetching user:", error));
-        }
+        let userName = review.user_name || "Anonymous"; // Use API response directly
 
         let reviewItem = `
             <div class="list-group-item py-3 border-0">
                 <div class="d-flex justify-content-between align-items-center">
                     <div>
-                        <h5 class="mb-1 text-primary fw-bold" id="user-${review.user_id}">${userName}</h5>
+                        <h5 class="mb-1 text-primary fw-bold">${userName}</h5>
                         <h6 class="text-secondary">${review.title}</h6>
                         <p class="mb-2 text-muted">${review.review}</p>
                     </div>

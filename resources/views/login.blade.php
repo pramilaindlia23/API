@@ -37,7 +37,7 @@
                     <button type="submit" class="btn btn-primary w-100 mb-3">Login</button>
 
                     <div class="text-center">
-                        <p>Don't have an account? <a href="{{ route('register') }}">Register here</a></p>
+                        <p>Forgot Password? <a href="{{ route('forgot-password') }}">Forgot password here</a></p>
                     </div>
                 </form>
             </div>

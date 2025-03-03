@@ -157,3 +157,12 @@ Route::get('/products/{id}', [ProductController::class, 'show'])->name('products
 
 // Route::get('/checkout', [PaymentController::class, 'showcheckout'])->name('payment.checkout');
 // Route::post('/process-payment', [PaymentController::class, 'processPayment'])->name('payment.process');
+
+Route::get('/email/verify/{id}', [UserController::class, 'verifyEmail'])->name('verification.verify');
+
+Route::get('/forgot-password', function () {
+    return view('password.forgot-password');
+})->name('forgot-password');
+Route::get('/dashboard', function () {
+    return view('dashboard');
+})->name('dashboard');

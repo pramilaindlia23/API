@@ -20,19 +20,20 @@ class Product extends Model
     {
         return $this->hasMany(Review::class);
     }
-    public function getAverageRatingAttribute()
-{
-    return $this->reviews()->avg('rating') ?? 0; // If no reviews, return 0
-}
-
-public function getTotalReviewsAttribute()
-{
-    return $this->reviews()->count(); // Count total reviews
-}
     // public function getAverageRatingAttribute()
     // {
-    //     return round($this->reviews()->avg('rating') ?? 0, 1);
+    //     return $this->reviews()->avg('rating') ?? 0; // If no reviews, return 0
     // }
+    public function getAverageRatingAttribute(): float
+{
+    return round((float) $this->reviews()->avg('rating'), 1) ?? 0.0; 
+}
+
+    public function getTotalReviewsAttribute()
+    {
+        return $this->reviews()->count(); // Count total reviews
+    }
+    
     protected $casts = [
         'images' => 'array',
     ];

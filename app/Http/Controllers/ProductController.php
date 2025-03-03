@@ -45,8 +45,6 @@ public function index()
             'brand_name' => 'nullable|string|max:255',
             'average_rating'=>'required|decimal',
             'total_reviews' => 'required|integer',
-            // 'rating' => 'nullable|numeric|min:0|max:5',
-            // 'review' => 'nullable|string',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp,svg|max:2048'
         ]);
     
@@ -58,8 +56,6 @@ public function index()
         $product->category_id = $request->category_id;
         $product->category_name = $request->category_name;
         $product->brand_name = $request->brand_name;
-        // $product->rating = $request->rating;
-        // $product->review = $request->review;
         $product->average_rating = $request->average_rating;
         $product->total_reviews = $request->total_reviews;
     
@@ -202,6 +198,7 @@ public function details($id)
         }),
     ]);
 }
+
 // public function showreview($id)
 // {
 //     $product = Product::with('reviews')->find($id);
@@ -213,14 +210,16 @@ public function details($id)
 //     return response()->json([
 //         'message' => 'Product details fetched successfully',
 //         'product' => $product,
-//         'total_reviews' => $product->total_reviews, // Total reviews count
-//         'average_rating' => $product->average_rating, // Average rating
+//         'total_reviews' => (int) $product->total_reviews, // Total reviews count
+//         'average_rating' =>(float) $product->average_rating, // Average rating
 //     ]);
 // }
 
+
+
 public function showreview($id)
 {
-    $product = Product::with('reviews')->find($id);
+    $product = Product::with(['reviews.user'])->find($id);
 
     if (!$product) {
         return response()->json(['error' => 'Product not found'], 404);
@@ -228,10 +227,15 @@ public function showreview($id)
 
     return response()->json([
         'message' => 'Product details fetched successfully',
-        'product' => $product,
-        'total_reviews' => $product->total_reviews, // Total reviews count
-        'average_rating' => $product->average_rating, // Average rating
+        'product' => [
+            'id' => $product->id,
+            'name' => $product->name,
+            'total_reviews' => (int) $product->reviews->count(), // Total reviews count
+            'average_rating' => (float) $product->reviews->avg('rating'), // Average rating
+        ],
+        
     ]);
 }
+
 }
 

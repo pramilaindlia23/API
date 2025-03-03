@@ -15,6 +15,7 @@ use App\Http\Controllers\CartController;
 use App\Http\Controllers\ProductCatController;
 use App\Http\Controllers\VideoLinkController;
 use App\Http\Controllers\PaymentController;
+use App\Http\Controllers\UserController;
 
 use App\Models\Product;
 use App\Models\Review;
@@ -122,8 +123,15 @@ Route::post('/video-links', [VideoLinkController::class, 'store']);
 Route::delete('/video-links/{id}', [VideoLinkController::class, 'destroy']); 
 // review //
 Route::post('/reviews', [ReviewController::class, 'store']);
+
 Route::get('/reviews/{product_id}', function ($product_id) {
     $reviews = Review::where('product_id', $product_id)->latest()->get();
+
+    $reviews = $reviews->map(function ($review) {
+        $review->user_name = $review->user ? $review->user->name : "Anonymous";
+        return $review ->makeHidden(['user']); 
+    });
+
     return response()->json(['reviews' => $reviews]);
 });
 
@@ -141,7 +149,17 @@ Route::post('/upi-payment', [PaymentController::class, 'upiPayment']);
 
 Route::get('/productdetails/{id}', [ProductController::class, 'details']);
 
+Route::post('/register', [UserController::class, 'register']);
+Route::get('/verify-email/{id}', [UserController::class, 'verifyEmail']);
+Route::post('/login', [UserController::class, 'login']);
+Route::middleware(['auth:sanctum', 'verified'])->group(function () {
+    Route::get('/profile', function (Request $request) {
+        return response()->json($request->user());
+    });
+});
 
-
+Route::post('/forgot-password', [UserController::class, 'sendOtp']);
+Route::post('/verify-otp', [UserController::class, 'verifyOtp']);
+Route::post('/reset-password', [UserController::class, 'resetPassword']);
 
 
