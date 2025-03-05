@@ -100,6 +100,21 @@ public function store(Request $request)
         'duration' => $audio->duration // Send duration
     ]);
 }
+public function destroy($id)
+    {
+        $audio = AudioFile::find($id);
 
+        if (!$audio) {
+            return response()->json(['message' => 'Audio not found'], 404);
+        }
+
+        // Delete the file from storage
+        Storage::delete("public/{$audio->path}");
+
+        // Delete the record from the database
+        $audio->delete();
+
+        return response()->json(['message' => 'Audio deleted successfully']);
+    }
 }
 

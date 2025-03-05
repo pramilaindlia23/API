@@ -3,14 +3,25 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Video Category and Upload</title>
-    <!-- Bootstrap CSS -->
-    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Optional: Add FontAwesome for icons if needed -->
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet">
+    <title>Reels</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="assets/vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
+    <link
+    href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i"
+    rel="stylesheet">
+    <!-- Custom styles for this template-->
+<link href="assets/css/sb-admin-2.min.css" rel="stylesheet">
+<link rel="icon" type="image/x-icon" href="https://pbs.twimg.com/profile_images/1625786717935640577/QUQt8syP_400x400.png">
 </head>
-<body>
-   
+<body id="page-top">
+    <div id="wrapper">
+ <!-- Sidebar -->
+ @include('dashboard.sidebar')
+ <div id="content-wrapper" class="d-flex flex-column">
+ <div id="content">
+    
+    @include('dashboard.header')
     <div class="container mt-5">
         <!-- Video Upload Form -->
         <h2 class="text-center mb-4">Upload Video Reel</h2>
@@ -56,19 +67,9 @@
             </div>
         </div>
     </div>
-    
     <!-- Optional: Add a footer to enhance the design -->
-    <footer class="bg-dark text-white text-center py-3">
-        <p>&copy; 2025 ReelUploader. All rights reserved.</p>
-    </footer>
-    
-    <!-- Bootstrap and Optional JS libraries -->
-<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
- 
 <script>
- 
+
  document.getElementById('upload-form').addEventListener('submit', function(event) {
     event.preventDefault();
 
@@ -163,5 +164,22 @@ window.onload = function() {
 </script>
 
 
+<script src="{{ asset('assets/vendor/jquery/jquery.min.js') }}"></script>
+<script src="{{ asset('assets/vendor/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
+
+<!-- Core plugin JavaScript-->
+<script src="{{ asset('assets/vendor/jquery-easing/jquery.easing.min.js') }}"></script>
+
+<!-- Custom scripts for all pages-->
+<script src="{{ asset('assets/js/sb-admin-2.min.js') }}"></script>
+
+<!-- Page level plugins -->
+<script src="{{ asset('assets/vendor/chart.js/Chart.min.js') }}"></script>
+
+<!-- Page level custom scripts -->
+<script src="{{ asset('assets/js/demo/chart-area-demo.js') }}"></script>
+<script src="{{ asset('assets/js/demo/chart-pie-demo.js') }}"></script>
+@include('dashboard.footer')
 </body>
+
 </html>

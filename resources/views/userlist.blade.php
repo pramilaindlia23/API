@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Document</title>
+    <title>Userlist</title>
     <link href="assets/vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
     <link
     href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i"
@@ -12,6 +12,7 @@
 
 <!-- Custom styles for this template-->
 <link href="assets/css/sb-admin-2.min.css" rel="stylesheet">
+<link rel="icon" type="image/x-icon" href="https://pbs.twimg.com/profile_images/1625786717935640577/QUQt8syP_400x400.png">
 </head>
 <body id="page-top">
 
@@ -71,7 +72,12 @@
                         </table>
 
                         <!-- Pagination -->
-                        {{ $users->links() }}
+                        <nav aria-label="Page navigation">
+                            <ul class="pagination justify-content-right">
+                                {{ $users->links('pagination::bootstrap-5') }}
+                            </ul>
+                        </nav>
+                        
                     </div>
 
                 </div>

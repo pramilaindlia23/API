@@ -18,54 +18,90 @@ class UserController extends Controller
 
     public function register(Request $request)
 {
-    $request->validate([
+    $validator = Validator::make($request->all(), [
         'name' => 'required|string|max:255',
         'email' => 'required|string|email|max:255|unique:users',
         'password' => 'required|string|min:6|confirmed',
-        'role' => 'in:admin,user', 
+        'role' => 'in:admin,user',
     ]);
 
-    if ($request->role === 'admin' && User::where('role', 'admin')->count() >= 3) {
-        return response()->json(['message' => 'Admin limit reached.'], 403);
+    if ($validator->fails()) {
+        $errorMessage = collect($validator->errors()->all())->implode(', '); 
+
+        if ($request->ajax() || str_starts_with($request->path(), 'api')) {
+            return response()->json([
+                'message' => $errorMessage, 
+            ], 422);
+        } else {
+            return redirect()->back()->with('error', $errorMessage)->withInput();
+        }
     }
+
     $user = User::create([
         'name' => $request->name,
         'email' => $request->email,
         'password' => Hash::make($request->password),
-        // 'role' => $request->role,
+        'role' => $request->role ?? 'user',
     ]);
 
-    Mail::to($user->email)->send(new VerifyEmail($user));
+    try {
+        Mail::to($user->email)->send(new VerifyEmail($user));
+        $email_status = "Verification email sent successfully.";
+    } catch (\Exception $e) {
+        $email_status = "Email not sent due to SMTP limit. Please verify manually.";
+    }
 
-    return response()->json(['message' => 'Registration successful! Check your email for verification.']);
+    if ($request->ajax() || str_starts_with($request->path(), 'api')) {
+        return response()->json([
+            'message' => 'Registration successful!',
+            'user' => $user,
+            'email_status' => $email_status
+        ], 201);
+    } else {
+        return view('emails.registration_success', [
+            'user' => $user,
+            'email_status' => $email_status
+        ]);
+    }
 }
-
     public function verifyEmail(Request $request, $id)
     {
         $user = User::find($id);
     
         if (!$user) {
-            return response()->json(['message' => 'User not found'], 404);
+            return $this->handleResponse($request, 'User not found', 'error', 404);
         }
     
         if ($user->email_verified_at) {
-            return response()->json(['message' => 'Email is already verified'], 200);
+            return $this->handleResponse($request, 'Email is already verified', 'info', 200);
         }
     
         $user->email_verified_at = now();
         $user->save();
     
-        return response()->json([
-            'message' => 'Email verified successfully!',
-            'user' => $user
-        ], 200);
+        return $this->handleResponse($request, 'Email verified successfully!', 'success', 200, $user);
     }
     
+    private function handleResponse($request, $message, $status, $code = 200, $user = null)
+    {
+        if ($request->expectsJson() || $request->query('json')) {
+            $response = ['message' => $message];
+            if ($user) {
+                $response['user'] = [
+                    'id' => $user->id,
+                    'name' => $user->name,
+                    'email' => $user->email,
+                ];
+            }
+            return response()->json($response, $code);
+        }
+    
+        return view('emails.emailverification', compact('message', 'status'));
+    }
     public function showlogin(){
         return view('login');
     }
-
-    public function login(Request $request)
+public function login(Request $request)
 {
     $request->validate([
         'email' => 'required|email',
@@ -75,25 +111,36 @@ class UserController extends Controller
     $user = User::where('email', $request->email)->first();
 
     if (!$user || !Hash::check($request->password, $user->password)) {
-        return response()->json(['message' => 'Invalid credentials'], 401);
+        if ($request->ajax() || str_starts_with($request->path(), 'api')) {
+            return response()->json(['message' => 'Invalid credentials'], 401);
+        } else {
+            return redirect()->back()->withErrors(['email' => 'Invalid credentials'])->withInput();
+        }
     }
 
     if (!$user->email_verified_at) {
-        return response()->json(['message' => 'Please verify your email first'], 403);
+        if ($request->ajax() || str_starts_with($request->path(), 'api')) {
+            return response()->json(['message' => 'Please verify your email first'], 403);
+        } else {
+            return redirect()->back()->withErrors(['email' => 'Please verify your email first'])->withInput();
+        }
     }
 
     $token = $user->createToken('auth_token')->plainTextToken;
-
     Auth::login($user);
 
     $redirectUrl = $user->role === 'admin' ? route('dashboard') : route('category');
 
-    return response()->json([
-        'message' => 'Login successful',
-        'token' => $token,
-        'user' => $user,
-        'redirect_url' => $redirectUrl,
-    ], 200);
+    if ($request->ajax() || str_starts_with($request->path(), 'api')) {
+        return response()->json([
+            'message' => 'Login successful',
+            'token' => $token,
+            'user' => $user,
+            'redirect_url' => $redirectUrl,
+        ], 200);
+    } else {
+        return redirect($redirectUrl)->with('success', 'Login successful!');
+    }
 }
 
     public function dashboard(){

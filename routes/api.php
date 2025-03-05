@@ -89,6 +89,8 @@ Route::post('audio', [AudioController::class, 'store']);
 Route::get('audio', [AudioController::class, 'index']);
 Route::get('audio/{id}', [AudioController::class, 'show']); 
 Route::get('audio/play/{filename}', [AudioController::class, 'play']);
+Route::delete('/audio/{id}', [AudioController::class, 'destroy'])->name('audio.destroy');
+
 
 // Reels //
 

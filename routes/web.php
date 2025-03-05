@@ -13,6 +13,8 @@ use App\Http\Controllers\OrderController;
 use App\Http\Controllers\ProductCatController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\PaymentController;
+use App\Http\Controllers\AudioController;
+
 
 
 
@@ -45,6 +47,7 @@ Route::post('/register', [UserController::class, 'register']);
 /// Login Routes ///
 Route::get('login', [UserController::class, 'showlogin'])->name('login');
 Route::post('login', [UserController::class, 'login']);
+
 
 Route::middleware(['auth', 'admin'])->group(function () {
     Route::get('/admin', function () {
@@ -125,6 +128,8 @@ Route::get('category', function () {
 
 // audio //
 Route::view('audio/upload', 'audio.audioupload')->name('audio/upload');
+Route::delete('/audio/{id}', [AudioController::class, 'destroy'])->name('audio.destroy');
+
 
 //reels //
 
@@ -152,7 +157,7 @@ Route::get('/products/category/{categoryId}', [ProductController::class, 'getPro
 
 Route::get('/videolink', function () {
     return view('videolink.createvideolink');
-});
+})->name('videolink');
 Route::get('/products/{id}', [ProductController::class, 'show'])->name('products.show');
 
 Route::get('/email/verify/{id}', [UserController::class, 'verifyEmail'])->name('verification.verify');
@@ -161,3 +166,6 @@ Route::get('/forgot-password', function () {
     return view('password.forgot-password');
 })->name('forgot-password');
 
+Route::get('/registration-success', function () {
+    return view('password.successregister');
+})->name('registration.success');

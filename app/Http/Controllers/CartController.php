@@ -77,4 +77,13 @@ public function add(Request $request, $id)
 
         return redirect()->route('cart.index')->with('success', 'Cart updated');
     }
+    public function cartindex()
+{
+    $cart = session()->get('cart', []);
+    return response()->json([
+        'count' => count($cart),
+        'items' => array_values($cart)
+    ]);
+}
+
 }

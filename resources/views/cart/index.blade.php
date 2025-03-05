@@ -158,6 +158,43 @@
     </div>
     </div>
     </div>
+    <script>
+        function updateCartUI() {
+    fetch('/cart')
+        .then(response => response.json())
+        .then(data => {
+            const cartCount = document.getElementById("cart-count");
+            const cartItems = document.getElementById("cart-items");
+
+            cartCount.textContent = data.count;
+
+            if (data.count === 0) {
+                cartItems.innerHTML = `<p class="dropdown-item text-center small text-gray-500">Your cart is empty</p>`;
+            } else {
+                cartItems.innerHTML = "";
+                data.items.forEach(item => {
+                    cartItems.innerHTML += `
+                        <a class="dropdown-item d-flex align-items-center" href="#">
+                            <div class="mr-3">
+                                <img src="/storage/${item.image}" alt="Product Image" width="40" height="40" class="rounded">
+                            </div>
+                            <div>
+                                <span class="font-weight-bold">${item.name}</span>
+                                <div class="small text-gray-500">₹${item.price} | Qty: ${item.quantity}</div>
+                            </div>
+                        </a>`;
+                });
+            }
+        });
+}
+
+// Call this function after adding to cart
+function addToCart(productId) {
+    fetch(`/cart/add/${productId}`, { method: "POST" })
+        .then(() => updateCartUI());
+}
+
+    </script>
 
     <!-- Bootstrap JS and Popper.js -->
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.10.2/dist/umd/popper.min.js"></script>
